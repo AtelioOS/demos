@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<title>One system, three companies — scope &amp; approach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200..400;1,9..144,200..400&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --canvas:#FBF8F2; --surface:#FFFFFF; --sunken:#F0ECE5; --sunken2:#E9E4DB;
+  --border:#E1DCD2; --border-strong:#CFC8BD;
+  --ink:#211D18; --ink2:#514A41; --muted:#71695F;
+  --clay:#AB5C2C; --clay-h:#90491D; --clay-sub:#FFF3EB; --clay-deep:#6E370F;
+  --ok:#3F6B48; --warn:#8A5A08; --dan:#A32E22; --info:#1F5F8B;
+  --ok-bg:#EAF1EB; --warn-bg:#FBF1DC; --dan-bg:#F9E9E7; --info-bg:#E7F0F6;
+  --c1:#B54E12; --c2:#136FD6; --c3:#A47D17;
+  --sh1:0 1px 2px rgba(45,35,25,.06),0 1px 3px rgba(45,35,25,.05);
+  --sh2:0 2px 6px rgba(45,35,25,.07),0 6px 18px rgba(45,35,25,.06);
+  --disp:"Fraunces",Georgia,serif; --ui:"Inter",-apple-system,sans-serif; --mono:"IBM Plex Mono",monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:78px}
+body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--ui);font-size:15px;line-height:1.6;
+     -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+h1,h2,h3,h4{margin:0;font-weight:400}
+p{margin:0 0 14px}
+a{color:var(--clay);text-decoration:none}
+ul{margin:0 0 14px;padding-left:19px}
+li{margin-bottom:7px}
+table{border-collapse:collapse;width:100%}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.04em}
+.ucap{font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.muted{color:var(--muted)} .ink2{color:var(--ink2)}
+.sm{font-size:13.5px} .xs{font-size:12px}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:40;background:rgba(251,248,242,.97);border-bottom:1px solid var(--border)}
+.nav-in{max-width:1080px;margin:0 auto;padding:0 28px;display:flex;align-items:center;gap:20px;height:60px}
+.brand{font-family:var(--disp);font-size:19px;letter-spacing:-.015em;flex:none}
+.navlinks{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+.navlinks::-webkit-scrollbar{display:none}
+.navlinks a{padding:6px 0;margin-right:22px;font-size:13px;font-weight:500;color:var(--muted);white-space:nowrap;flex:none;border-bottom:2px solid transparent}
+.navlinks a:hover{color:var(--ink2)}
+
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px}
+.prose{max-width:680px}
+section{padding:52px 0;border-bottom:1px solid var(--border)}
+section:last-of-type{border-bottom:none}
+.sec-n{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--clay);font-weight:500;margin-bottom:12px}
+h2{font-family:var(--disp);font-weight:300;font-size:30px;letter-spacing:-.02em;line-height:1.15;margin-bottom:16px}
+h3{font-family:var(--disp);font-weight:400;font-size:19px;letter-spacing:-.01em;margin:26px 0 10px}
+h4{font-size:14px;font-weight:600;margin:0 0 6px}
+
+/* hero */
+.hero{padding:68px 0 52px}
+.hero h1{font-family:var(--disp);font-weight:200;font-size:52px;line-height:1.06;letter-spacing:-.028em;margin-bottom:20px}
+.hero .lede{font-size:18px;line-height:1.62;color:var(--ink2);max-width:660px}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;padding:6px 14px;border-radius:999px;background:var(--clay-sub);
+         border:1px solid #F0D9C7;color:var(--clay-deep);font-size:12px;font-weight:600;margin-bottom:24px}
+.cos{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.co{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:var(--surface);
+    border:1px solid var(--border);font-size:13px;font-weight:500;box-shadow:var(--sh1)}
+.co i{width:8px;height:8px;border-radius:2px;display:block;flex:none}
+
+/* cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--sh1);padding:22px}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
+.grid>*{min-width:0}
+.mt{margin-top:18px}
+.stat .v{font-family:var(--disp);font-weight:400;font-size:32px;letter-spacing:-.022em;line-height:1;display:block;margin:8px 0 6px}
+
+/* callout */
+.call{border-left:3px solid var(--clay);background:var(--clay-sub);padding:18px 20px;border-radius:0 10px 10px 0;margin:20px 0}
+.call.g{border-left-color:var(--ok);background:var(--ok-bg)}
+.call.w{border-left-color:var(--warn);background:var(--warn-bg)}
+.call .t{font-family:var(--disp);font-size:17px;font-weight:400;margin-bottom:7px;letter-spacing:-.01em}
+.call p:last-child{margin-bottom:0}
+
+/* phase timeline */
+.phases{display:grid;gap:0;margin-top:26px}
+.phase{display:grid;grid-template-columns:150px 1fr;gap:26px;padding:26px 0;border-top:1px solid var(--border);position:relative}
+.phase:first-child{border-top:none}
+.phase .when{position:relative}
+.phase .ph-n{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--clay);font-weight:500}
+.phase .ph-w{font-family:var(--disp);font-size:20px;letter-spacing:-.012em;margin-top:5px;line-height:1.2}
+.phase .ph-d{font-size:12px;color:var(--muted);margin-top:5px}
+.phase h3{margin-top:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.chip{padding:4px 10px;border-radius:999px;font-size:11.5px;font-weight:500;background:var(--sunken);color:var(--ink2);border:1px solid var(--border)}
+.chip.new{background:var(--clay-sub);color:var(--clay-deep);border-color:#F0D9C7}
+
+/* season bar */
+.seasonbar{margin:30px 0 8px;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface)}
+.sb-row{display:flex;min-width:0}
+.sb-seg{padding:13px 12px;border-right:1px solid var(--border);flex:1;min-width:0}
+.sb-seg:last-child{border-right:none}
+.sb-seg .m{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sb-seg .l{font-size:12px;font-weight:600;margin-top:5px;line-height:1.3}
+.sb-seg.hot{background:var(--dan-bg)}
+.sb-seg.warm{background:var(--warn-bg)}
+.sb-seg.cool{background:var(--info-bg)}
+.sb-seg.calm{background:var(--ok-bg)}
+
+/* table */
+table.t{font-size:13.5px}
+table.t th{text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;
+           color:var(--muted);font-weight:500;padding:10px 13px;border-bottom:1px solid var(--border);white-space:nowrap}
+table.t td{padding:11px 13px;border-bottom:1px solid var(--border);vertical-align:top}
+table.t tr:last-child td{border-bottom:none}
+.scroll{overflow-x:auto}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:600;white-space:nowrap}
+.p-ok{background:var(--ok-bg);color:var(--ok)} .p-w{background:var(--warn-bg);color:var(--warn)}
+.p-n{background:var(--sunken);color:var(--ink2)} .p-c{background:var(--clay-sub);color:var(--clay-deep)}
+
+/* checklist */
+.chk{list-style:none;padding:0;margin:0}
+.chk li{position:relative;padding-left:26px;margin-bottom:10px;font-size:14px}
+.chk li::before{content:"";position:absolute;left:0;top:6px;width:14px;height:14px;border-radius:4px;
+                border:1.5px solid var(--clay);background:var(--clay-sub)}
+.chk.x li::before{border-color:var(--border-strong);background:var(--sunken)}
+
+.foot{padding:44px 0 64px;color:var(--muted);font-size:12.5px;line-height:1.7}
+.foot b{font-family:var(--disp);font-weight:400;color:var(--ink2);font-size:14px}
+.badge{position:fixed;left:16px;bottom:16px;z-index:50;background:var(--surface);border:1px solid var(--border-strong);
+       border-radius:999px;padding:7px 14px;box-shadow:var(--sh2);font-size:11px;color:var(--ink2);max-width:calc(100vw - 32px)}
+
+/* ============ RESPONSIVE — last block, owns every media query ============ */
+@media (max-width:900px){
+  .g4{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(2,1fr)}
+  .hero h1{font-size:38px}
+  .hero{padding:44px 0 36px}
+  .phase{grid-template-columns:1fr;gap:12px}
+  .sb-row{min-width:640px}
+  .seasonbar{overflow-x:auto}
+}
+@media (max-width:620px){
+  body{font-size:14.5px}
+  .wrap,.nav-in{padding:0 16px}
+  .g2,.g3,.g4{grid-template-columns:1fr}
+  .hero h1{font-size:31px}
+  .hero .lede{font-size:16px}
+  h2{font-size:25px}
+  section{padding:38px 0}
+  .card{padding:17px}
+  .scroll table.t{min-width:560px}
+  .badge{font-size:10px;padding:6px 11px;left:10px;bottom:10px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="nav-in">
+  <div class="brand">Telaia</div>
+  <div class="navlinks">
+    <a href="#seen">What we saw</a>
+    <a href="#thesis">The approach</a>
+    <a href="#phases">Phasing</a>
+    <a href="#built">Built vs new</a>
+    <a href="#need">What we need</a>
+    <a href="#risks">Risks</a>
+    <a href="#next">Next</a>
+  </div>
+</div></nav>
+
+<div class="wrap">
+
+<header class="hero">
+  <div class="eyebrow">Scope &amp; approach · prepared for Cameron Gordon</div>
+  <h1>One system that knows a site can involve more than one of your companies.</h1>
+  <p class="lede">You asked for three things: a way to run multiple businesses, confidence that projects are actually moving, and KPIs you can see. This document is what we would build, in what order, and why the order is set by your season rather than ours. It deliberately contains no prices — those come once the scope below is agreed.</p>
+  <div class="cos">
+    <span class="co"><i style="background:var(--c1)"></i>Lanthier Topsoil &amp; Landscaping</span>
+    <span class="co"><i style="background:var(--c2)"></i>Premier Irrigation &amp; Lighting</span>
+    <span class="co"><i style="background:var(--c3)"></i>Ottawa Hydroseeding</span>
+  </div>
+  <p style="margin-top:26px"><a href="https://atelioos.github.io/demos/br-9f4c2a.html" style="font-weight:600;border-bottom:1px solid #E0BFA6;padding-bottom:1px">Open the working demo this refers to →</a>
+  <span class="xs muted" style="margin-left:8px">Sixteen screens, clickable. Sample data throughout.</span></p>
+</header>
+
+<!-- 1 -->
+<section id="seen">
+  <div class="sec-n">01 — What we saw</div>
+  <h2>Three companies that are really one operation.</h2>
+  <div class="prose">
+    <p>Before building anything we looked at how the three businesses actually fit together. Three things stood out, and they shaped everything that follows.</p>
+  </div>
+
+  <div class="grid g3 mt">
+    <div class="card">
+      <div class="ucap">One yard</div>
+      <h4 style="margin-top:9px">4241 Barnsdale Road</h4>
+      <p class="sm muted" style="margin:0">All three companies work out of the same place, share machines and share crews. They are not a portfolio of separate investments — they are one operation with three sets of books.</p>
+    </div>
+    <div class="card">
+      <div class="ucap">One site, three companies</div>
+      <h4 style="margin-top:9px">Grade → seed → irrigate</h4>
+      <p class="sm muted" style="margin:0">On a subdivision, Lanthier grades and supplies topsoil, Ottawa Hydroseeding seeds it, Premier installs irrigation. Same customer, same site, three schedules that only exist in people's heads.</p>
+    </div>
+    <div class="card">
+      <div class="ucap">One clock</div>
+      <h4 style="margin-top:9px">Frost-out to freeze-up</h4>
+      <p class="sm muted" style="margin:0">Roughly late April to mid-November. Everything is compressed into it, and the autumn winterisation round is the tightest part of the whole year.</p>
+    </div>
+  </div>
+
+  <div class="call">
+    <div class="t">The problem is not that you have three dashboards.</div>
+    <p class="sm" style="margin:0">It is that the baton gets dropped between your own companies. A job stalls because a grade certificate is unsigned, so seeding cannot start, so irrigation slips — and nobody is late to a customer, so nobody escalates. That is invisible in three separate systems and obvious in one. The demo you have been through leads with exactly this, because we think it is the single largest recoverable loss in the group.</p>
+  </div>
+</section>
+
+<!-- 2 -->
+<section id="thesis">
+  <div class="sec-n">02 — The approach</div>
+  <h2>Answering the three things you asked for.</h2>
+
+  <div class="grid g3 mt" style="margin-top:6px">
+    <div class="card">
+      <div class="ucap">You asked for</div>
+      <h3 style="margin:8px 0 10px;font-size:18px">Running multiple businesses</h3>
+      <p class="sm ink2" style="margin:0">One workspace, one login, a company switch that re-computes every screen. Each entity keeps its own invoices, its own HST number and its own books — because it has to — and you get a group view on top with the money you charge yourself taken back out.</p>
+    </div>
+    <div class="card">
+      <div class="ucap">You asked for</div>
+      <h3 style="margin:8px 0 10px;font-size:18px">Projects moving forward</h3>
+      <p class="sm ink2" style="margin:0">Every job on one board with a stage and an age. A dedicated view of everything that has stopped, ranked by what the delay is costing. Multi-company sites shown as a chain so it is always clear whose turn it is.</p>
+    </div>
+    <div class="card">
+      <div class="ucap">You asked for</div>
+      <h3 style="margin:8px 0 10px;font-size:18px">Clear KPIs</h3>
+      <p class="sm ink2" style="margin:0">The same six measures for all three companies, weekly, against target — plus the operational numbers each business actually runs on: yards delivered, systems installed, area seeded, germination pass rate, callback rate.</p>
+    </div>
+  </div>
+
+  <div class="prose" style="margin-top:30px">
+    <h3>Two principles we would hold to</h3>
+    <p><b>Nothing is true unless the crew enters it.</b> Job costing, invoicing and the customer portal are all downstream of a foreman tapping a phone in a truck. So the field app gets designed first and kept to five taps and no typing. Every field system that fails, fails here — not in the office.</p>
+    <p><b>We do not replace your accountant.</b> The system runs operations and hands clean numbers to QuickBooks. We do not do your general ledger, we do not run payroll, and we do not file your returns.</p>
+  </div>
+</section>
+
+<!-- 3 -->
+<section id="phases">
+  <div class="sec-n">03 — Phasing</div>
+  <h2>The order is set by your calendar, not ours.</h2>
+  <div class="prose">
+    <p>A landscape and irrigation group cannot absorb a new operating system in July. It can in January. And there are two dates each year that cannot move. We would sequence the build around both.</p>
+  </div>
+
+  <div class="seasonbar"><div class="sb-row">
+    <div class="sb-seg hot"><div class="m">Now – mid Sep</div><div class="l">Peak season. Nobody has time.</div></div>
+    <div class="sb-seg warm"><div class="m">Sep 21 – Nov 15</div><div class="l">Winterisation. ~612 visits, 8 weeks.</div></div>
+    <div class="sb-seg calm"><div class="m">Dec – Feb</div><div class="l">The only real window for change.</div></div>
+    <div class="sb-seg cool"><div class="m">Mar – Apr</div><div class="l">Rehire, recertify, spring start-ups.</div></div>
+    <div class="sb-seg hot"><div class="m">May onward</div><div class="l">Peak again. Must already work.</div></div>
+  </div></div>
+  <p class="xs muted" style="margin-top:8px">Dates are the typical Ottawa season; we would confirm against your own records.</p>
+
+  <div class="phases">
+
+    <div class="phase">
+      <div class="when">
+        <div class="ph-n">Phase 1</div>
+        <div class="ph-w">Before Sep 21</div>
+        <div class="ph-d">Hard deadline — set by freeze-up, not by us</div>
+      </div>
+      <div>
+        <h3>The winterisation campaign</h3>
+        <p class="sm ink2">Your ~612 winterisation agreements become records instead of a spreadsheet. The system generates the work orders, sends customers a link to book their own day, and sequences each truck's route. Crews close jobs on their phones.</p>
+        <p class="sm ink2">We would start here for one reason: it is the only part of the year where being three weeks late costs you a whole season. Booking pace, not truck capacity, is what pushes the last blow-out past the frost — and that is a scheduling problem software genuinely fixes.</p>
+        <div class="chips">
+          <span class="chip new">Recurring contracts engine</span>
+          <span class="chip new">Customer self-booking</span>
+          <span class="chip">Route sequencing</span>
+          <span class="chip">Crew mobile app</span>
+          <span class="chip">Work-order generation</span>
+        </div>
+        <div class="call w" style="margin-top:16px">
+          <div class="t" style="font-size:15px">This phase is only possible if we start soon.</div>
+          <p class="sm" style="margin:0">There are about five weeks until the campaign opens. If a decision lands quickly, this is achievable and you would feel the benefit this autumn. If it does not, we would not pretend otherwise — Phase 1 becomes the spring start-up round in April instead, and everything below shifts one season. We would rather say that now than discover it in October.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="when">
+        <div class="ph-n">Phase 2</div>
+        <div class="ph-w">Dec – Feb</div>
+        <div class="ph-d">The quiet months — when change is actually possible</div>
+      </div>
+      <div>
+        <h3>The core operating layer</h3>
+        <p class="sm ink2">The part you saw first in the demo: every job from all three companies on one board, the stalled view, the cross-company handoff chain, quoting on your own unit rates, and the customer portal where a builder signs a grade certificate and releases the next company on the site.</p>
+        <p class="sm ink2">Invoicing comes in here too — including statutory holdback tracking under the Construction Act, with the 60-day release clock watched automatically. On your builder work that is real money nobody currently goes back for.</p>
+        <div class="chips">
+          <span class="chip">Job board &amp; stages</span>
+          <span class="chip new">Cross-company handoff chain</span>
+          <span class="chip">Quoting on unit rates</span>
+          <span class="chip">Customer portal &amp; e-sign</span>
+          <span class="chip">Invoicing, draws &amp; AR</span>
+          <span class="chip new">Construction Act holdback</span>
+          <span class="chip">Crew &amp; equipment scheduling</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="when">
+        <div class="ph-n">Phase 3</div>
+        <div class="ph-w">Mar – Apr</div>
+        <div class="ph-d">Live before the new season starts</div>
+      </div>
+      <div>
+        <h3>Costing, materials and people</h3>
+        <p class="sm ink2">Estimated versus actual margin on every job, fed by the crew hours and material entries from Phase 1. Purchasing and stock, including Lanthier's screened piles costed properly as produced inventory rather than guessed at year-end.</p>
+        <p class="sm ink2">Timed for April because that is when you re-onboard a seasonal crew and when certifications need to be current. Backflow certification in particular is a regulated requirement — if it lapses, work Premier sells legally stops.</p>
+        <div class="chips">
+          <span class="chip">Job costing, est. vs actual</span>
+          <span class="chip">Purchasing &amp; stock</span>
+          <span class="chip new">Produced inventory costing</span>
+          <span class="chip">Warranty &amp; callback tracking</span>
+          <span class="chip">Training &amp; certification register</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="when">
+        <div class="ph-n">Phase 4</div>
+        <div class="ph-w">After one full season</div>
+        <div class="ph-d">Needs real data to mean anything</div>
+      </div>
+      <div>
+        <h3>The group view</h3>
+        <p class="sm ink2">Consolidated position across the three entities with inter-company charges eliminated, HST kept separate per entity, and internal charge-out rates you can test against market.</p>
+        <p class="sm ink2">Deliberately last. Built on a season of made-up numbers it is a pretty screen; built on a season of real ones it answers the question you cannot currently answer — which of your three companies is actually making money, once you stop charging yourself rates set years ago.</p>
+        <div class="chips">
+          <span class="chip new">Consolidation &amp; eliminations</span>
+          <span class="chip new">Inter-company charge-out</span>
+          <span class="chip">Per-entity HST</span>
+          <span class="chip">Group KPI scorecard</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 4 -->
+<section id="built">
+  <div class="sec-n">04 — Built vs new</div>
+  <h2>Most of this already exists. Some of it does not.</h2>
+  <div class="prose">
+    <p>We are not proposing to invent an operating system for you. Most of what you saw runs today for other clients in other industries — restaurants, equipment service, manufacturing, a coffee-equipment distributor. What is genuinely new is the part that is specific to running three companies at once, and we would rather be straight about which is which.</p>
+  </div>
+
+  <div class="scroll mt">
+    <table class="t">
+      <thead><tr><th>Capability</th><th>Status today</th><th>What it needs for you</th></tr></thead>
+      <tbody>
+        <tr><td><b>Training &amp; certification</b></td><td><span class="pill p-ok">Live with clients</span></td><td>Your course content; backflow and WHMIS renewal rules</td></tr>
+        <tr><td><b>Job board, stages, scheduling</b></td><td><span class="pill p-ok">Live with clients</span></td><td>Your job types, crews and stage names</td></tr>
+        <tr><td><b>Quoting &amp; invoicing</b></td><td><span class="pill p-ok">Live with clients</span></td><td>Your unit rate cards; Ontario HST; progress draws</td></tr>
+        <tr><td><b>Purchasing &amp; stock</b></td><td><span class="pill p-ok">Live with clients</span></td><td>Supplier list and reorder points</td></tr>
+        <tr><td><b>Customer portal</b></td><td><span class="pill p-ok">Live with clients</span></td><td>Builder-specific documents and e-signature</td></tr>
+        <tr><td><b>Field / dispatch &amp; crew app</b></td><td><span class="pill p-w">In build now</span></td><td>Green-industry job types; offline use in dead zones</td></tr>
+        <tr><td><b>Recurring service contracts</b></td><td><span class="pill p-c">New</span></td><td>Built for your winterisation and start-up rounds</td></tr>
+        <tr><td><b>Route sequencing</b></td><td><span class="pill p-w">Partly built</span></td><td>Blow-out day routing across the Ottawa region</td></tr>
+        <tr><td><b>Construction Act holdback</b></td><td><span class="pill p-c">New</span></td><td>Ontario 10% rules and the 60-day release clock</td></tr>
+        <tr><td><b>Produced inventory costing</b></td><td><span class="pill p-c">New</span></td><td>Screening hours and machine time into cost per yd³</td></tr>
+        <tr><td><b>Inter-company &amp; consolidation</b></td><td><span class="pill p-c">New</span></td><td>Three entities, eliminations, internal charge-out rates</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="call g">
+    <div class="t">Why this matters commercially</div>
+    <p class="sm" style="margin:0">The reused two-thirds is why this is a matter of months rather than years, and why the risk sits with us rather than you — those parts are already running in production somewhere. The new third is genuinely new, and we would scope and price it as such rather than hiding it inside a bigger number.</p>
+  </div>
+</section>
+
+<!-- 5 -->
+<section id="need">
+  <div class="sec-n">05 — What we would need</div>
+  <h2>From you, to make this real.</h2>
+
+  <div class="grid g2 mt" style="margin-top:6px">
+    <div class="card">
+      <h4>Data, roughly in this order</h4>
+      <ul class="chk">
+        <li>Your winterisation and start-up contract list — properties, zone counts, last year's notes</li>
+        <li>QuickBooks customer and item exports for each of the three entities</li>
+        <li>Current rate cards: topsoil by product, hydroseed by area, irrigation by zone</li>
+        <li>Crew list with roles, and the equipment list with any service intervals you track</li>
+        <li>A handful of recent quotes and invoices, so we match how you already price</li>
+        <li>Certification records — who holds what, and when it expires</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>People and time</h4>
+      <ul class="chk">
+        <li>You, for about an hour a fortnight — decisions, not demos</li>
+        <li>One person who genuinely knows the operation, roughly two hours a week</li>
+        <li>One foreman willing to be the pilot for the crew app, and to be honest about it</li>
+        <li>Whoever does your books, for two conversations about how data reaches QuickBooks</li>
+      </ul>
+      <h4 style="margin-top:18px">Decisions we would need early</h4>
+      <ul class="chk x">
+        <li>What the group workspace is actually called — "Barnsdale Road" is our placeholder</li>
+        <li>Whether crews clock in per job or per day</li>
+        <li>Who is allowed to see group-level financials</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin-top:34px">Explicitly not in scope</h3>
+  <div class="prose">
+    <p>Being clear about this up front tends to save an argument later. We would not build, and would not charge you for:</p>
+  </div>
+  <div class="grid g4 mt">
+    <div class="card"><h4>General ledger</h4><p class="sm muted" style="margin:0">Keep QuickBooks. We push clean data to it.</p></div>
+    <div class="card"><h4>Payroll</h4><p class="sm muted" style="margin:0">We produce the hours; your payroll provider runs them.</p></div>
+    <div class="card"><h4>Marketing / CRM funnels</h4><p class="sm muted" style="margin:0">Your growth comes from builder relationships, not campaigns.</p></div>
+    <div class="card"><h4>Fleet GPS</h4><p class="sm muted" style="margin:0">Worth having; a separate purchase we can integrate later.</p></div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section id="risks">
+  <div class="sec-n">06 — Risks</div>
+  <h2>What could go wrong, and what we would do about it.</h2>
+
+  <div class="scroll mt">
+    <table class="t">
+      <thead><tr><th style="width:26%">Risk</th><th>How it actually shows up</th><th style="width:34%">What we do about it</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>Crews do not use it</b><br><span class="pill p-w">Highest risk</span></td>
+          <td>The office loves it, the trucks ignore it, and within a month the data is wrong — so the KPIs are wrong, so you stop trusting the whole thing.</td>
+          <td>The field app is designed first, not last. Five taps, no typing, works offline. One crew pilots it for two weeks before anyone else sees it, and if that foreman will not use it we change the app rather than push harder.</td>
+        </tr>
+        <tr>
+          <td><b>The contract data is messier than expected</b></td>
+          <td>The 612 winterisation records turn out to be a spreadsheet with gaps in zone counts and stale addresses. This is normal, not a criticism.</td>
+          <td>We import what exists, flag the gaps, and let crews correct records from the truck as they visit. The list cleans itself over one season instead of needing a data project first.</td>
+        </tr>
+        <tr>
+          <td><b>The season closes on Phase 1</b></td>
+          <td>Decisions take a few weeks, the campaign opens Sep 21, and the window is gone.</td>
+          <td>We say so immediately rather than compressing quality. Phase 1 moves to the spring round and Phase 2 starts in the quiet months as planned — the sequence survives, the calendar shifts.</td>
+        </tr>
+        <tr>
+          <td><b>Three entities, three sets of books</b></td>
+          <td>Consolidation gets treated as a filing rather than a report, or inter-company charges get counted twice.</td>
+          <td>Each entity's books and HST returns stay entirely separate and are never merged. Consolidation is a read-only view. Your accountant sees the model before it is built, not after.</td>
+        </tr>
+        <tr>
+          <td><b>Scope grows quietly</b></td>
+          <td>Every phase gains "just one more thing" and the timeline doubles.</td>
+          <td>Each phase has a written definition of done agreed before it starts. New requests go on a list for the next phase by default, not into the current one.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 7 -->
+<section id="next">
+  <div class="sec-n">07 — Next</div>
+  <h2>What we would suggest doing now.</h2>
+
+  <div class="grid g3 mt" style="margin-top:6px">
+    <div class="card">
+      <div class="ucap">Step one</div>
+      <h3 style="margin:8px 0 9px;font-size:18px">Tell us where the demo is wrong</h3>
+      <p class="sm ink2" style="margin:0 0 10px">Everything in it is invented. The value is in which parts made you wince because they are close to real, and which parts we misread. An hour on a call is worth more than another month of building.</p>
+      <a class="sm" href="https://atelioos.github.io/demos/br-9f4c2a.html" style="font-weight:600">Open the demo →</a>
+    </div>
+    <div class="card">
+      <div class="ucap">Step two</div>
+      <h3 style="margin:8px 0 9px;font-size:18px">Confirm the phase order</h3>
+      <p class="sm ink2" style="margin:0">Particularly whether the winterisation campaign is worth chasing this season or whether you would rather start in the quiet months and aim at spring. That single decision sets everything else.</p>
+    </div>
+    <div class="card">
+      <div class="ucap">Step three</div>
+      <h3 style="margin:8px 0 9px;font-size:18px">Then we price it</h3>
+      <p class="sm ink2" style="margin:0">Once the scope above is agreed, phase by phase, with the build and the ongoing platform fee shown separately. We would price Phase 1 on its own so you can judge us on something small with a hard deadline before committing to the rest.</p>
+    </div>
+  </div>
+
+  <div class="call">
+    <div class="t">A note on why there are no numbers in this document.</div>
+    <p class="sm" style="margin:0">We could put a range in here and it would look more decisive. But the honest position is that Phase 1's scope depends on how your contract data actually looks, and quoting before seeing it would mean either padding the number or revising it later. Neither is a good way to start. Show us the contract list and you will have a price for Phase 1 within a week.</p>
+  </div>
+</section>
+
+<footer class="foot">
+  <b>Telaia</b> — operations software for businesses that are more than one business.<br>
+  Prepared for Cameron Gordon · Lanthier Topsoil &amp; Landscaping, Premier Irrigation &amp; Lighting, Ottawa Hydroseeding · August 2026.<br>
+  This document describes scope and approach only. It is not a quote and does not constitute a contract.
+</footer>
+
+</div>
+
+<div class="badge">Scope &amp; approach · no pricing · August 2026</div>
+</body>
+</html>
