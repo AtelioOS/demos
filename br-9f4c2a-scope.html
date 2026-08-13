@@ -37,13 +37,20 @@ table{border-collapse:collapse;width:100%}
 .sm{font-size:13.5px} .xs{font-size:12px}
 
 /* nav */
-.nav{position:sticky;top:0;z-index:40;background:rgba(251,248,242,.97);border-bottom:1px solid var(--border)}
+.nav{position:sticky;top:0;z-index:40;background:var(--ink);border-bottom:1px solid var(--ink)}
 .nav-in{max-width:1080px;margin:0 auto;padding:0 28px;display:flex;align-items:center;gap:20px;height:60px}
 .brand{font-family:var(--disp);font-size:19px;letter-spacing:-.015em;flex:none}
 .navlinks{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
 .navlinks::-webkit-scrollbar{display:none}
 .navlinks a{padding:6px 0;margin-right:22px;font-size:13px;font-weight:500;color:var(--muted);white-space:nowrap;flex:none;border-bottom:2px solid transparent}
 .navlinks a:hover{color:var(--ink2)}
+/* dark rail echo — these must sit after the base nav rules to win */
+.nav-in{color:#C7BFB3}
+.brand{color:#F0EBE2}
+.navlinks a{color:#9A9188}
+.navlinks a:hover{color:#F0EBE2;border-bottom-color:#4A443C}
+.navmark{width:26px;height:26px;border-radius:6px;background:var(--clay);color:#fff;display:grid;place-items:center;
+         font-family:var(--disp);font-weight:400;font-size:14px;flex:none;margin-right:-8px}
 
 .wrap{max-width:1080px;margin:0 auto;padding:0 28px}
 .prose{max-width:680px}
@@ -58,15 +65,27 @@ h4{font-size:14px;font-weight:600;margin:0 0 6px}
 .hero{padding:68px 0 52px}
 .hero h1{font-family:var(--disp);font-weight:200;font-size:52px;line-height:1.06;letter-spacing:-.028em;margin-bottom:20px}
 .hero .lede{font-size:18px;line-height:1.62;color:var(--ink2);max-width:660px}
-.eyebrow{display:inline-flex;align-items:center;gap:9px;padding:6px 14px;border-radius:999px;background:var(--clay-sub);
-         border:1px solid #F0D9C7;color:var(--clay-deep);font-size:12px;font-weight:600;margin-bottom:24px}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;padding:6px 13px;border-radius:0;background:var(--ink);
+         border:none;color:#F0EBE2;font-size:11px;font-weight:600;margin-bottom:24px;
+         font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase}
 .cos{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
-.co{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:var(--surface);
-    border:1px solid var(--border);font-size:13px;font-weight:500;box-shadow:var(--sh1)}
+.co{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:0;background:var(--surface);
+    border:1px solid var(--border);font-size:13px;font-weight:500}
 .co i{width:8px;height:8px;border-radius:2px;display:block;flex:none}
 
+
+/* instrument cluster — the readout row from the product, in a document */
+.inst{display:flex;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:34px 0 0;flex-wrap:wrap}
+.inst .g{padding:13px 20px;border-right:1px solid var(--border);flex:1;min-width:158px}
+.inst .g:last-child{border-right:none}
+.inst .g .l{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.inst .g .v{font-family:var(--disp);font-weight:400;font-size:25px;letter-spacing:-.024em;line-height:1;margin-top:7px}
+.inst .g .v small{font-family:var(--ui);font-size:12px;color:var(--muted);letter-spacing:0}
+.inst .g .n{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.4}
+
 /* cards */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--sh1);padding:22px}
+.card{background:var(--surface);border:1px solid var(--border);border-left:2px solid var(--ink);
+       border-radius:0;box-shadow:none;padding:20px}
 .grid{display:grid;gap:16px}
 .g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
 .grid>*{min-width:0}
@@ -74,7 +93,7 @@ h4{font-size:14px;font-weight:600;margin:0 0 6px}
 .stat .v{font-family:var(--disp);font-weight:400;font-size:32px;letter-spacing:-.022em;line-height:1;display:block;margin:8px 0 6px}
 
 /* callout */
-.call{border-left:3px solid var(--clay);background:var(--clay-sub);padding:18px 20px;border-radius:0 10px 10px 0;margin:20px 0}
+.call{border-left:3px solid var(--clay);background:var(--clay-sub);padding:18px 20px;border-radius:0;margin:20px 0}
 .call.g{border-left-color:var(--ok);background:var(--ok-bg)}
 .call.w{border-left-color:var(--warn);background:var(--warn-bg)}
 .call .t{font-family:var(--disp);font-size:17px;font-weight:400;margin-bottom:7px;letter-spacing:-.01em}
@@ -90,11 +109,11 @@ h4{font-size:14px;font-weight:600;margin:0 0 6px}
 .phase .ph-d{font-size:12px;color:var(--muted);margin-top:5px}
 .phase h3{margin-top:0}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
-.chip{padding:4px 10px;border-radius:999px;font-size:11.5px;font-weight:500;background:var(--sunken);color:var(--ink2);border:1px solid var(--border)}
+.chip{padding:4px 10px;border-radius:0;font-size:11.5px;font-weight:500;background:var(--sunken);color:var(--ink2);border:1px solid var(--border)}
 .chip.new{background:var(--clay-sub);color:var(--clay-deep);border-color:#F0D9C7}
 
 /* season bar */
-.seasonbar{margin:30px 0 8px;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface)}
+.seasonbar{margin:30px 0 8px;border:1px solid var(--border);border-radius:0;overflow:hidden;background:var(--surface)}
 .sb-row{display:flex;min-width:0}
 .sb-seg{padding:13px 12px;border-right:1px solid var(--border);flex:1;min-width:0}
 .sb-seg:last-child{border-right:none}
@@ -112,21 +131,22 @@ table.t th{text-align:left;font-family:var(--mono);font-size:10px;letter-spacing
 table.t td{padding:11px 13px;border-bottom:1px solid var(--border);vertical-align:top}
 table.t tr:last-child td{border-bottom:none}
 .scroll{overflow-x:auto}
-.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:600;white-space:nowrap}
+.pill{display:inline-block;padding:2px 8px;border-radius:0;font-size:10.5px;font-weight:600;white-space:nowrap}
 .p-ok{background:var(--ok-bg);color:var(--ok)} .p-w{background:var(--warn-bg);color:var(--warn)}
 .p-n{background:var(--sunken);color:var(--ink2)} .p-c{background:var(--clay-sub);color:var(--clay-deep)}
 
 /* checklist */
 .chk{list-style:none;padding:0;margin:0}
 .chk li{position:relative;padding-left:26px;margin-bottom:10px;font-size:14px}
-.chk li::before{content:"";position:absolute;left:0;top:6px;width:14px;height:14px;border-radius:4px;
+.chk li::before{content:"";position:absolute;left:0;top:6px;width:13px;height:13px;border-radius:0;
                 border:1.5px solid var(--clay);background:var(--clay-sub)}
 .chk.x li::before{border-color:var(--border-strong);background:var(--sunken)}
 
 .foot{padding:44px 0 64px;color:var(--muted);font-size:12.5px;line-height:1.7}
 .foot b{font-family:var(--disp);font-weight:400;color:var(--ink2);font-size:14px}
-.badge{position:fixed;left:16px;bottom:16px;z-index:50;background:var(--surface);border:1px solid var(--border-strong);
-       border-radius:999px;padding:7px 14px;box-shadow:var(--sh2);font-size:11px;color:var(--ink2);max-width:calc(100vw - 32px)}
+.badge{position:fixed;left:0;bottom:0;z-index:50;background:var(--ink);color:#C7BFB3;border:none;
+       border-radius:0;padding:7px 14px;font-size:10.5px;max-width:100vw;
+       font-family:var(--mono);letter-spacing:.06em}
 
 /* ============ RESPONSIVE — last block, owns every media query ============ */
 @media (max-width:900px){
@@ -155,7 +175,7 @@ table.t tr:last-child td{border-bottom:none}
 <body>
 
 <nav class="nav"><div class="nav-in">
-  <div class="brand">Telaia</div>
+  <div class="navmark">T</div><div class="brand">Telaia</div>
   <div class="navlinks">
     <a href="#seen">What we saw</a>
     <a href="#thesis">The approach</a>
@@ -177,6 +197,13 @@ table.t tr:last-child td{border-bottom:none}
     <span class="co"><i style="background:var(--c1)"></i>Lanthier Topsoil &amp; Landscaping</span>
     <span class="co"><i style="background:var(--c2)"></i>Premier Irrigation &amp; Lighting</span>
     <span class="co"><i style="background:var(--c3)"></i>Ottawa Hydroseeding</span>
+  </div>
+  <div class="inst">
+    <div class="g"><div class="l">Phases</div><div class="v">4</div><div class="n">sequenced by your season</div></div>
+    <div class="g"><div class="l">Already built</div><div class="v">7<small> of 11</small></div><div class="n">running for other clients today</div></div>
+    <div class="g"><div class="l">Genuinely new</div><div class="v">3<small> of 11</small></div><div class="n">the multi-company layer</div></div>
+    <div class="g"><div class="l">First hard date</div><div class="v">Sep 21</div><div class="n">winterisation opens</div></div>
+    <div class="g"><div class="l">Prices in here</div><div class="v">None</div><div class="n">by design — see the last section</div></div>
   </div>
   <p style="margin-top:26px"><a href="https://atelioos.github.io/demos/br-9f4c2a.html" style="font-weight:600;border-bottom:1px solid #E0BFA6;padding-bottom:1px">Open the working demo this refers to →</a>
   <span class="xs muted" style="margin-left:8px">Sixteen screens, clickable. Sample data throughout.</span></p>

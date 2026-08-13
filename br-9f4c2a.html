@@ -405,116 +405,278 @@ table.led td.elim{color:var(--danger); font-style:italic}
 .prow:last-child{border-bottom:none}
 
 /* ============================================================
+   DIRECTION B — THE WALL
+   A working surface, not a document. Fixed-viewport shell:
+   icon rail · context bar with an instrument cluster · body ·
+   permanently docked inspector. No page titles, no tile rows.
+   ============================================================ */
+.wall{display:grid;grid-template-columns:54px minmax(0,1fr) 324px;height:100vh;overflow:hidden;background:var(--sunken)}
+
+/* --- icon rail --- */
+.rail{background:var(--ink);display:flex;flex-direction:column;align-items:center;padding:11px 0;gap:3px;overflow-y:auto;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.rail .lg{width:30px;height:30px;border-radius:8px;background:var(--accent);color:#fff;display:grid;place-items:center;
+          font-family:var(--disp);font-weight:400;font-size:16px;margin-bottom:13px;flex:none}
+.rail .ic{width:38px;height:38px;border-radius:9px;display:grid;place-items:center;color:#8F877C;font-size:15px;
+          flex:none;position:relative;transition:.12s}
+.rail .ic:hover{background:rgba(255,255,255,.07);color:#C7BFB3}
+.rail .ic.on{background:rgba(255,255,255,.11);color:#F0EBE2}
+.rail .ic .bd{position:absolute;top:5px;right:5px;min-width:6px;height:6px;border-radius:99px;background:var(--danger)}
+.rail .sp{flex:1;min-height:8px}
+.rail .who{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;
+           font-size:10.5px;font-weight:600;flex:none;margin-top:6px}
+.tipwrap{position:relative}
+.tip{position:absolute;left:46px;top:50%;transform:translateY(-50%);background:var(--ink);color:#F0EBE2;
+     padding:5px 10px;border-radius:6px;font-size:11.5px;white-space:nowrap;pointer-events:none;opacity:0;
+     transition:opacity .12s;z-index:70;box-shadow:var(--sh-2)}
+.tipwrap:hover .tip{opacity:1}
+
+/* --- main region --- */
+.wmain{display:flex;flex-direction:column;min-width:0;background:var(--canvas);overflow:hidden}
+.ctx{display:flex;border-bottom:1px solid var(--border);flex:none;min-width:0;align-items:stretch}
+.crumb{padding:9px 16px;border-right:1px solid var(--border);flex:none;display:flex;flex-direction:column;justify-content:center}
+.crumb .t{font-size:13px;font-weight:600;letter-spacing:-.005em;white-space:nowrap}
+.crumb .s{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;color:var(--ink-muted);margin-top:2px;white-space:nowrap}
+.inst{display:flex;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
+.inst::-webkit-scrollbar{display:none}
+.inst .g{padding:8px 15px;border-right:1px solid var(--border);flex:none;display:flex;flex-direction:column;justify-content:center}
+.inst .g .l{font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-muted)}
+.inst .g .v{font-family:var(--disp);font-weight:400;font-size:17px;letter-spacing:-.018em;line-height:1.15;margin-top:2px;white-space:nowrap}
+.inst .g .v small{font-family:var(--ui);font-size:11px;color:var(--ink-muted);letter-spacing:0}
+.inst .g .v.bad{color:var(--danger)} .inst .g .v.good{color:var(--ok)} .inst .g .v.warn{color:var(--warn)}
+
+/* company switch strip */
+.cosrow{display:flex;border-bottom:1px solid var(--border);background:var(--sunken);flex:none;overflow-x:auto;scrollbar-width:none}
+.cosrow::-webkit-scrollbar{display:none}
+.cosw{padding:7px 14px;font-size:11.5px;font-weight:600;border-right:1px solid var(--border);flex:none;
+      display:flex;align-items:center;gap:7px;color:var(--ink-muted);white-space:nowrap;transition:.12s}
+.cosw i{width:7px;height:7px;border-radius:2px;display:block;flex:none}
+.cosw:hover{color:var(--ink-2)}
+.cosw.on{background:var(--canvas);color:var(--ink);box-shadow:inset 0 -2px 0 var(--ink)}
+.cosw .mt{font-family:var(--mono);font-size:9.5px;color:var(--ink-muted);font-weight:400}
+
+/* sub-nav within a group */
+.wsub{display:flex;border-bottom:1px solid var(--border);flex:none;overflow-x:auto;scrollbar-width:none;background:var(--canvas)}
+.wsub::-webkit-scrollbar{display:none}
+.wsub button{padding:8px 14px;font-size:11.5px;font-weight:500;color:var(--ink-muted);white-space:nowrap;flex:none;
+             border-bottom:2px solid transparent;transition:.12s}
+.wsub button:hover{color:var(--ink-2)}
+.wsub button.on{color:var(--accent);border-bottom-color:var(--accent)}
+.wsub button .bd{display:inline-block;margin-left:6px;padding:0 5px;border-radius:99px;background:var(--danger-bg);
+                 color:var(--danger);font-size:9.5px;font-weight:700}
+
+/* --- scrolling body --- */
+.wbody{flex:1;min-height:0;overflow-y:auto;min-width:0}
+.wbody.fixed{overflow:hidden;display:flex;flex-direction:column}
+.screen{display:none}
+.screen.on{display:block;animation:fade .18s ease}
+.wbody.fixed .screen.on{display:flex;flex-direction:column;flex:1;min-height:0}
+
+/* --- board --- */
+.wboard{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--border);flex:1;min-height:0}
+.wcol{background:var(--canvas);display:flex;flex-direction:column;min-width:0;min-height:0}
+.wcol-h{padding:9px 11px;background:var(--sunken);border-bottom:1px solid var(--border);flex:none;
+        display:flex;justify-content:space-between;align-items:center;gap:8px}
+.wcol-h .t{font-size:11px;font-weight:600}
+.wcol-h .c{font-family:var(--mono);font-size:10px;color:var(--ink-muted)}
+.wcol-b{flex:1;overflow-y:auto;padding:9px;display:flex;flex-direction:column;gap:7px;min-height:0}
+.wcard{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:9px 10px;border-left:3px solid var(--border-strong);
+       box-shadow:var(--sh-1);cursor:pointer;font-size:11.5px;text-align:left;width:100%;display:block;transition:.12s}
+.wcard:hover{box-shadow:var(--sh-2)}
+.wcard.sel{outline:2px solid var(--ink);outline-offset:1px}
+.wcard .id{font-family:var(--mono);font-size:9.5px;color:var(--ink-muted);letter-spacing:.03em}
+.wcard .t{font-weight:600;line-height:1.3;margin:3px 0}
+.wcard .m{color:var(--ink-muted);font-size:10.5px;line-height:1.35}
+.wcard .f{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:7px}
+.wcard .v{font-family:var(--disp);font-weight:400;font-size:13.5px;letter-spacing:-.012em}
+.wcard .warn{color:var(--danger);font-size:10.5px;margin-top:5px;line-height:1.3}
+
+/* --- queue rows (triage, stalled, lists) --- */
+.qrow{display:flex;gap:12px;align-items:flex-start;padding:11px 16px;border-bottom:1px solid var(--border);
+      cursor:pointer;transition:background .12s;width:100%;text-align:left;background:var(--canvas)}
+.qrow:hover{background:var(--accent-subtle)}
+.qrow.sel{background:var(--accent-subtle);box-shadow:inset 3px 0 0 var(--accent)}
+.qrow .qt{font-size:13px;font-weight:600;line-height:1.35}
+.qrow .qm{font-size:11.5px;color:var(--ink-muted);margin-top:3px;line-height:1.45}
+.qrow .qv{font-family:var(--disp);font-weight:400;font-size:16px;letter-spacing:-.015em;white-space:nowrap;text-align:right}
+.qrow.gone{opacity:0;transform:translateX(16px);height:0;padding:0;border-width:0;overflow:hidden;transition:.25s}
+
+/* --- section blocks inside the body --- */
+.wsec{border-bottom:1px solid var(--border)}
+.wsec:last-child{border-bottom:none}
+.wsec-h{padding:9px 16px;background:var(--sunken);border-bottom:1px solid var(--border);
+        display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:3}
+.wsec-h .t{font-size:11.5px;font-weight:600;letter-spacing:-.003em}
+.wsec-h .m{font-family:var(--mono);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-muted)}
+.wsec-b{padding:14px 16px}
+.wsec-b.flush{padding:0}
+.wsec-note{padding:11px 16px;font-size:11.5px;color:var(--ink-muted);line-height:1.55;background:var(--canvas);border-top:1px solid var(--border)}
+
+/* full-bleed data table, no container */
+table.wt{width:100%;font-size:12.5px}
+table.wt th{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);
+            font-weight:500;padding:9px 12px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;background:var(--canvas)}
+table.wt td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+table.wt tbody tr:last-child td{border-bottom:none}
+table.wt tbody tr.clk{cursor:pointer}
+table.wt tbody tr.clk:hover td{background:var(--accent-subtle)}
+table.wt tbody tr.sel td{background:var(--accent-subtle)}
+table.wt th.r,table.wt td.r{text-align:right}
+table.wt td.v{font-family:var(--disp);font-weight:400;font-size:14px;letter-spacing:-.014em}
+table.wt tr.grp td{background:var(--sunken);font-family:var(--mono);font-size:9px;letter-spacing:.1em;
+                   text-transform:uppercase;color:var(--ink-2);font-weight:500;padding:7px 12px}
+table.wt tr.tot td{border-top:1.5px solid var(--border-strong);font-weight:600}
+table.wt td.elim{color:var(--danger);font-style:italic}
+
+/* --- inspector: permanently docked, never empty --- */
+.insp{background:var(--canvas);border-left:1px solid var(--border);display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.insp-h{padding:13px 16px;border-bottom:1px solid var(--border);flex:none}
+.insp-h .id{font-family:var(--mono);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-muted)}
+.insp-h .t{font-family:var(--disp);font-weight:400;font-size:17.5px;letter-spacing:-.015em;margin-top:5px;line-height:1.2}
+.insp-h .s{font-size:11.5px;color:var(--ink-muted);margin-top:4px;line-height:1.4}
+.insp-b{padding:14px 16px 20px;overflow-y:auto;flex:1;min-height:0;font-size:12px}
+.insp-f{padding:10px 16px;border-top:1px solid var(--border);flex:none;font-size:10px;color:var(--ink-muted);line-height:1.5;background:var(--sunken)}
+.ikv{display:grid;grid-template-columns:88px minmax(0,1fr);gap:7px 10px;font-size:11.5px;margin-bottom:4px}
+.ikv dt{font-family:var(--mono);font-size:9.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-muted);padding-top:1px}
+.ikv dd{margin:0;font-weight:500}
+.isec{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);
+      margin:18px 0 9px;padding-top:13px;border-top:1px solid var(--border);font-weight:500}
+.isec:first-child{margin-top:0;padding-top:0;border-top:none}
+.ip{font-size:11.5px;line-height:1.6;color:var(--ink-2)}
+.ibig{font-family:var(--disp);font-weight:400;font-size:30px;letter-spacing:-.024em;line-height:1;margin:2px 0 5px}
+.iact{display:flex;gap:6px;flex-wrap:wrap;margin-top:16px}
+.istack{display:flex;flex-direction:column;gap:5px}
+.istep{padding:8px 10px;border-radius:6px;font-size:11px;line-height:1.4}
+.istep b{display:block;font-weight:600;margin-bottom:2px}
+.istep.done{background:var(--ok-bg)} .istep.now{background:var(--warn-bg)} .istep.next{background:var(--sunken)}
+
+/* --- misc reused in the wall --- */
+.wgrid{display:grid;gap:12px;padding:14px 16px}
+.wgrid.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.wgrid.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.wgrid>*{min-width:0}
+.wbanner{display:flex;gap:12px;align-items:flex-start;padding:12px 16px;border-bottom:1px solid var(--border);
+         background:var(--danger-bg)}
+.wbanner.w{background:var(--warn-bg)} .wbanner.i{background:var(--info-bg)} .wbanner.a{background:var(--accent-subtle)}
+.wbanner .bt{font-size:12.5px;font-weight:600;line-height:1.35}
+.wbanner .bd{font-size:11.5px;color:var(--ink-2);margin-top:4px;line-height:1.5}
+
+
+/* ---- fold the old page-header + tile-row formula into the Wall ----
+   The H1 duplicated the breadcrumb and the tile row duplicated the
+   instrument cluster, so both go. The lede copy survives as one line. */
+.screen > .ph{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+              margin:0;padding:10px 16px;border-bottom:1px solid var(--border);background:var(--canvas);flex:none}
+.screen > .ph h1{display:none}
+.screen > .ph .sub{font-size:12px;color:var(--ink-2);margin:0;max-width:88ch;line-height:1.5}
+.screen > .grid.g4{display:none}          /* numbers now live in the context bar */
+.screen > .grid.g6{padding:14px 16px;margin:0}
+.screen > .grid.g3,.screen > .grid.g2{padding:14px 16px;margin:0}
+.screen > .split7,.screen > .split5,.screen > .split{padding:14px 16px;margin:0;gap:14px}
+.screen > .mt,.screen > .mt-lg{margin-top:0}
+.screen > .banner{border-radius:0;border-left:none;border-right:none;margin:0;padding:12px 16px;border-top:none}
+.screen > .strip{padding:11px 16px;margin:0;border-bottom:1px solid var(--border);background:var(--canvas)}
+
+/* direct-child cards become full-bleed sections of the surface */
+.screen > .card{border-radius:0;border-left:none;border-right:none;border-top:none;box-shadow:none;margin:0;background:var(--canvas)}
+.screen > .card > .card-h{background:var(--sunken);padding:9px 16px;border-bottom:1px solid var(--border)}
+.screen > .card > .card-h h3{font-family:var(--ui);font-size:11.5px;font-weight:600;letter-spacing:0}
+.screen > .card > .card-b{padding:14px 16px}
+.screen > .card > .scroll > table.dt th{background:var(--canvas)}
+.screen > .card > .scroll > table.dt th,.screen > .card > .scroll > table.dt td{padding-left:16px}
+.screen > .card > .scroll > table.dt th:not(:first-child),
+.screen > .card > .scroll > table.dt td:not(:first-child){padding-left:12px}
+/* cards nested in grids keep their shape but lose the float */
+.screen .grid .card,.screen .split7 .card,.screen .split5 .card,.screen .split .card{box-shadow:none}
+
+/* the job board becomes the full-height wall */
+.screen > .board{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--border);
+                 flex:1;min-height:0;margin:0}
+.screen > .board > .bcol{background:var(--canvas);border-radius:0;padding:0;display:flex;flex-direction:column;min-width:0;min-height:0}
+.screen > .board > .bcol > .bcol-h{padding:9px 11px;background:var(--sunken);border-bottom:1px solid var(--border);flex:none}
+.screen > .board > .bcol > .bcol-b{flex:1;overflow-y:auto;padding:9px;max-height:none;min-height:0}
+.jc.sel{outline:2px solid var(--ink);outline-offset:1px}
+tr.clk.sel td{background:var(--accent-subtle)}
+
+/* ============================================================
    RESPONSIVE — injected LAST, owns every media query in this file
    ============================================================ */
-@media (max-width:1180px){
-  .g6{grid-template-columns:repeat(3,1fr)}
-  .g5{grid-template-columns:repeat(3,1fr)}
-  .board{grid-template-columns:repeat(3,minmax(200px,1fr))}
+@media (max-width:1320px){
+  .wall{grid-template-columns:54px minmax(0,1fr) 292px}
+  .wgrid.g3{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
-@media (max-width:1000px){
-  .app{grid-template-columns:1fr}
-  .side{
-    position:sticky; top:0; height:auto; flex-direction:row; align-items:center; gap:10px;
-    border-right:none; border-bottom:1px solid var(--border); padding:9px 14px;
-    background:var(--sunken); backdrop-filter:none; z-index:50;
-  }
-  .brandbox{padding:0; border-bottom:none; flex:1; min-width:0}
-  .brandbox .bs{display:none}
-  .rail{
-    position:fixed; left:0; right:0; top:57px; bottom:0; background:var(--canvas);
-    padding:16px; overflow-y:auto; display:none; z-index:49; border-top:1px solid var(--border);
-  }
-  .rail.open{display:block}
-  .rail-foot{display:none}
-  .hamb{
-    display:grid; place-items:center; width:38px; height:38px; border-radius:var(--r-md);
-    border:1px solid var(--border-strong); background:var(--surface); flex:none; font-size:16px;
-  }
-  .top{padding:0 14px; gap:10px; height:54px; top:57px}
-  .subbar{position:static; padding:0 14px}
-  .stab{padding:10px 3px; margin-right:16px}
-  .phone{width:100%; max-width:330px}
-  .freeze{padding:5px 10px}
-  .freeze .fw{font-size:15px}
-  .who{display:none}
-  .wrap{padding:16px 14px}
+@media (max-width:1100px){
+  /* legacy component grids still used inside sections */
+  .g6,.g5{grid-template-columns:repeat(3,1fr)}
+  .g4,.g3{grid-template-columns:repeat(2,1fr)}
   .split,.split7,.split5{grid-template-columns:1fr}
-  .g4{grid-template-columns:repeat(2,1fr)}
-  .g3{grid-template-columns:repeat(2,1fr)}
-  .board{grid-template-columns:repeat(2,minmax(190px,1fr))}
-  .ph h1{font-size:24px}
-  .drawer{width:100%}
+  .screen > .board{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .screen > .board > .bcol > .bcol-b{overflow:visible;max-height:none}
+  .wall{grid-template-columns:1fr;height:auto;min-height:100vh;overflow:visible}
+  .rail{flex-direction:row;align-items:center;padding:7px 10px;gap:4px;overflow-x:auto;position:sticky;top:0;z-index:45}
+  .rail .lg{margin-bottom:0;margin-right:7px}
+  .rail .sp{flex:1;min-height:0}
+  .tip{display:none}
+  .wmain{overflow:visible}
+  .wbody,.wbody.fixed{overflow:visible;max-height:none;display:block}
+  .wbody.fixed .screen.on{display:block}
+  .wboard{grid-template-columns:repeat(2,minmax(0,1fr));min-height:0}
+  .wcol-b{max-height:none;overflow:visible}
+  .insp{border-left:none;border-top:1px solid var(--border);overflow:visible}
+  .insp-b{overflow:visible}
+  .wsec-h{position:static}
 }
-@media (max-width:640px){
+@media (max-width:760px){
   .g6,.g5,.g4,.g3{grid-template-columns:repeat(2,1fr)}
   .g2{grid-template-columns:1fr}
   .g5>*:nth-child(5):last-child,.g3>*:nth-child(3):last-child{grid-column:1/-1}
-  .board{grid-template-columns:1fr}
-  .bcol-b{max-height:none}
-  .ph h1{font-size:22px}
   .stat .sv{font-size:25px}
-  .kv{grid-template-columns:100px 1fr}
-  .dr-h,.dr-b{padding-left:16px; padding-right:16px}
-  .chain{flex-direction:column}
-  .chain .cl{border-right:none; border-bottom:1px solid var(--border)}
-  .chain .cl:last-child{border-bottom:none}
-  .demobadge{font-size:10px; padding:6px 11px; left:10px; bottom:10px}
-  .foot{padding:22px 14px 70px}
   table.dt th,table.dt td{padding:8px 10px}
   .scroll table.dt{min-width:660px}
-  .qline{grid-template-columns:1fr 66px 74px 84px 24px; gap:5px}
+  .screen > .board{grid-template-columns:1fr}
+  .screen > .ph,.screen > .card > .card-h,.screen > .card > .card-b,
+  .screen > .banner,.screen > .strip{padding-left:12px;padding-right:12px}
+  .screen > .split7,.screen > .split5,.screen > .split,.screen > .grid.g6,
+  .screen > .grid.g3,.screen > .grid.g2{padding:12px}
+  .wboard{grid-template-columns:1fr}
+  .wgrid.g2,.wgrid.g3{grid-template-columns:1fr}
+  .crumb{padding:8px 12px}
+  .inst .g{padding:7px 12px}
+  .inst .g .v{font-size:15px}
+  .wsec-b{padding:12px}
+  .qrow{padding:10px 12px;gap:9px}
+  .scroll table.wt{min-width:600px}
+  .drawer{width:100%}
+  .demobadge{font-size:10px;padding:6px 11px;left:10px;bottom:10px}
+  .phone{width:100%;max-width:330px}
+  .qline{grid-template-columns:1fr 66px 74px 84px 24px;gap:5px}
   .phone-b{height:480px}
   .certs{min-width:520px}
+  .kv{grid-template-columns:100px 1fr}
+  .chain{flex-direction:column}
+  .chain .cl{border-right:none;border-bottom:1px solid var(--border)}
+  .chain .cl:last-child{border-bottom:none}
 }
 </style>
 </head>
 <body>
 <svg class="grain" xmlns="http://www.w3.org/2000/svg"><filter id="gr"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3"/></filter><rect width="100%" height="100%" filter="url(#gr)"/></svg>
 
-<div class="app">
-  <!-- ============ SIDE RAIL ============ -->
-  <aside class="side">
-    <div class="brandbox">
-      <div class="bn">Barnsdale Road</div>
-      <div class="bs">Lanthier Topsoil &amp; Landscaping<br>Premier Irrigation &amp; Lighting<br>Ottawa Hydroseeding</div>
+<div class="wall">
+
+  <!-- icon rail -->
+  <nav class="rail" id="rail"></nav>
+
+  <!-- working surface -->
+  <div class="wmain">
+    <div class="ctx">
+      <div class="crumb"><div class="t" id="crumb-t">—</div><div class="s" id="crumb-s">—</div></div>
+      <div class="inst" id="inst"></div>
     </div>
-    <button class="hamb" id="hamb" aria-label="Menu">☰</button>
-    <nav class="rail" id="rail">
-      <div class="rail-h ucap">Company view</div>
-      <div id="colist"></div>
-      <div class="rail-h ucap" style="margin-top:16px">Season</div>
-      <div style="padding:0 10px">
-        <div class="xs muted" style="line-height:1.6" id="seasonbox"></div>
-      </div>
-    </nav>
-    <div class="rail-foot">
-      <b>Telaia</b><br>Operations, interlaced.
-    </div>
-  </aside>
+    <div class="cosrow" id="coswitch"></div>
+    <div class="wsub" id="subtabs"></div>
 
-  <!-- ============ MAIN ============ -->
-  <div class="main">
-    <header class="top">
-      <div class="tabs" id="tabs"></div>
-      <div class="freeze" title="Average first hard freeze in the Ottawa area">
-        <div>
-          <div class="fw" id="fwk">—</div>
-          <div class="fl">weeks to freeze&#8209;up</div>
-        </div>
-      </div>
-      <div class="who">
-        <div style="text-align:right">
-          <div style="font-size:12.5px;font-weight:600;line-height:1.2">Cameron Gordon</div>
-          <div class="xs muted">Owner &amp; GM</div>
-        </div>
-        <div class="av">CG</div>
-      </div>
-    </header>
-
-    <div class="subbar"><div class="subtabs" id="subtabs"></div></div>
-
-    <div class="wrap">
+    <div class="wbody" id="wbody">
       <section class="screen on" id="s-brief"></section>
       <section class="screen" id="s-board"></section>
       <section class="screen" id="s-stall"></section>
@@ -532,14 +694,24 @@ table.led td.elim{color:var(--danger); font-style:italic}
       <section class="screen" id="s-acct"></section>
       <section class="screen" id="s-academy"></section>
     </div>
-
-    <footer class="foot">
-      <b>Barnsdale Road</b> is a working-name placeholder for the group workspace — the three companies share the yard at 4241 Barnsdale Rd, Richmond ON. Change it to whatever you call the group.<br>
-      Built on Telaia · <span class="muted">One workspace, one login, three companies. Prepared for Cameron Gordon, August 2026.</span>
-    </footer>
   </div>
+
+  <!-- inspector: docked, never empty -->
+  <aside class="insp">
+    <div class="insp-h" id="insp-h"></div>
+    <div class="insp-b" id="insp-b"></div>
+    <div class="insp-f">
+      <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--warn);margin-right:5px"></span>
+      <b style="font-weight:700;color:var(--ink-2)">Demonstration data.</b> Company names are Cameron&rsquo;s real
+      businesses; every job, client, crew and dollar figure is invented for this walkthrough.<br>
+      <b style="font-family:var(--disp);font-weight:400;font-size:12px;color:var(--ink-2)">Barnsdale Road</b>
+      is a placeholder for the group workspace — the three companies share the yard at 4241 Barnsdale Rd, Richmond ON.
+      Built on Telaia for Cameron Gordon, August 2026.
+    </div>
+  </aside>
 </div>
 
+<!-- drawer kept for editing tasks the 324px inspector is too narrow for (quote line items) -->
 <div class="scrim" id="scrim"></div>
 <aside class="drawer" id="drawer">
   <div class="dr-h">
@@ -550,9 +722,6 @@ table.led td.elim{color:var(--danger); font-style:italic}
 </aside>
 
 <div class="toast" id="toast"></div>
-<div class="demobadge">
-  <i></i><span><b>Demonstration data.</b> Company names are Cameron&rsquo;s real businesses; every job, client, crew and dollar figure below is invented for this walkthrough.</span>
-</div>
 <script>
 /* ==========================================================
    Barnsdale Road Group — Telaia demo
@@ -1013,55 +1182,24 @@ function renderBrief(){
     return '<div class="stat"><span class="sl">'+t.l+'</span><span class="sv">'+t.v+'</span><div class="sd">'+t.d+"</div></div>"
   }).join("")+"</div>";
 
-  /* needs you */
-  html+='<div class="split7 mt-lg"><div class="card"><div class="card-h"><h3>Needs you</h3>'+
-    '<span class="ucap">'+needs.length+" open</span></div><div class=\"card-b\">";
-  if(!needs.length) html+='<div class="empty">Nothing waiting on you. Everything else has an owner.</div>';
+  /* needs you — a triage queue on the surface, not a card inside a card */
+  html+='<div class="wsec"><div class="wsec-h"><span class="t">Waiting on you</span>'+
+    '<span class="m">'+needs.length+" open · decisions only you can make</span></div>";
+  if(!needs.length) html+='<div class="wsec-b"><div class="empty">Nothing waiting on you. Everything else has an owner.</div></div>';
   needs.forEach(function(n){
     var c=CO[n.co];
-    html+='<div class="ny" id="ny-'+n.id+'"><div class="nyi" style="background:'+c.tint+';color:'+c.hex+'">'+n.ic+"</div>"+
-      '<div style="min-width:0;flex:1"><div class="jrow"><div class="nyt">'+n.t+"</div></div>"+
-      '<div class="nyd">'+n.d+"</div><div class=\"nya\">"+coChip(n.co)+
-      n.a.map(function(a,i){return '<button class="btn sm '+(a[1]==="ghost"?"ghost":a[1]==="dan"?"dan":"")+'" data-need="'+n.id+'" data-act="'+i+'">'+a[0]+"</button>"}).join("")+
+    html+='<div class="qrow" id="ny-'+n.id+'" style="cursor:default">'+
+      '<div class="nyi" style="background:'+c.tint+';color:'+c.hex+';flex:none">'+n.ic+"</div>"+
+      '<div style="flex:1;min-width:0"><div class="qt">'+n.t+'</div><div class="qm">'+n.d+"</div>"+
+      '<div class="nya">'+coChip(n.co)+
+      n.a.map(function(a,i){return '<button class="btn sm '+(a[1]==="ghost"?"ghost":a[1]==="dan"?"dan":"")+
+        '" data-need="'+n.id+'" data-act="'+i+'">'+a[0]+"</button>"}).join("")+
       "</div></div></div>";
   });
-  html+="</div></div>";
+  html+="</div>";
 
-  /* week ahead — right column of the split holds two stacked cards */
-  var wk=weekLoad(0);
-  html+='<div><div class="card"><div class="card-h"><h3>The week ahead</h3><span class="ucap">crew-days booked</span></div><div class="card-b">';
-  html+='<div style="display:flex;gap:6px;align-items:flex-end;height:130px">';
-  var maxL=Math.max.apply(null,wk.map(function(d){return d.tot}))||1;
-  wk.forEach(function(d){
-    html+='<div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:0;height:100%">'+
-      '<div class="xs muted" style="text-align:center;margin-bottom:4px">'+d.tot+"</div>";
-    ["lan","pre","hyd"].forEach(function(k){
-      if(!S.co||S.co==="all"||S.co===k){
-        var hgt=d[k]/maxL*82;
-        if(hgt>0.5) html+='<div style="height:'+hgt.toFixed(1)+'px;background:'+CO[k].hex+';border-radius:2px 2px 0 0;margin-bottom:1px"></div>';
-      }
-    });
-    html+='<div class="xs muted" style="text-align:center;margin-top:6px;border-top:1px solid var(--border);padding-top:5px">'+d.lbl+"</div></div>";
-  });
-  html+="</div>"+legend()+"</div></div>";
-
-  /* where the work sits — fills the right column and answers "is it moving?" */
-  var byStage=STAGES.map(function(s){
-    var g=J.filter(function(j){return j.stage===s.id});
-    return {t:s.t,n:g.length,v:sum(g,function(j){return j.value}),
-            stuck:g.filter(function(j){return j.stall&&!S.resolved[j.id]}).length};
-  });
-  var mx=Math.max.apply(null,byStage.map(function(b){return b.v}))||1;
-  html+='<div class="card mt"><div class="card-h"><h3>Where the work sits</h3>'+
-    '<span class="ucap">'+moving+" moving · "+stalled.length+" stuck</span></div><div class=\"card-b\">";
-  byStage.forEach(function(b){
-    html+='<div style="margin-bottom:11px"><div class="jrow"><span class="sm" style="font-weight:600">'+b.t+
-      ' <span class="muted" style="font-weight:400">'+b.n+'</span></span>'+
-      '<span class="sm">'+$k(b.v)+(b.stuck?' <span class="pill p-dan">'+b.stuck+' stuck</span>':"")+'</span></div>'+
-      '<div class="bar" style="margin-top:5px"><i style="width:'+(b.v/mx*100).toFixed(0)+'%;background:var(--accent)"></i></div></div>';
-  });
-  html+='<div class="xs muted" style="border-top:1px solid var(--border);padding-top:10px">Bars are value, not job count — a column full of small jobs matters less than one stuck subdivision.</div>';
-  html+="</div></div></div></div>";
+  /* week ahead + where the work sits, side by side under the queue */
+  html+='<div class="split7">';
 
   /* weather — this is an outdoor business in Ottawa */
   var atRisk=wxRisk();
@@ -1474,14 +1612,18 @@ function weekStart(off){
 /* ==========================================================
    SCREEN — ACCOUNTS
    ========================================================== */
-function renderAcct(){
-  var list=ACCTS.map(function(a){
+/* one source for the account roll-up, so the screen and the context bar cannot disagree */
+function acctRows(){
+  return ACCTS.map(function(a){
     var rev=COS.reduce(function(t,c){return t+((S.co==="all"||S.co===c.id)?a.rev[c.id]:0)},0);
     var wr=COS.filter(function(c){return a.rev[c.id]>0});
     var gm=rev?COS.reduce(function(t,c){return t+(((S.co==="all"||S.co===c.id)?a.rev[c.id]*a.gm[c.id]:0))},0)/rev:0;
     var ar=a.ar.cur+a.ar.d30+a.ar.d60+a.ar.d90, old=a.ar.d60+a.ar.d90;
     return {a:a,rev:rev,wr:wr,gm:gm,ar:ar,old:old};
   }).filter(function(r){return r.rev>0}).sort(function(x,y){return y.rev-x.rev});
+}
+function renderAcct(){
+  var list=acctRows();
 
   var totRev=sum(list,function(r){return r.rev});
   var all3=list.filter(function(r){return r.wr.length===3}).length;
@@ -1556,66 +1698,13 @@ function renderAcct(){
    DRAWER
    ========================================================== */
 function openJob(id){
-  var j=byId[id]; if(!j) return;
-  var c=CO[j.co], p=j.prog?progById[j.prog]:null;
-  var st=STAGES.filter(function(s){return s.id===j.stage})[0];
-  var stalled=j.stall&&!S.resolved[j.id];
-  document.getElementById("dr-title").innerHTML=
-    '<div class="idm">'+j.id+' · '+c.short+'</div>'+
-    '<h2 class="disp" style="font-size:22px;margin-top:6px">'+j.type+'</h2>'+
-    '<div class="sm muted" style="margin-top:5px">'+j.site+' · '+j.client+'</div>';
-
-  var b='';
-  if(stalled){
-    b+='<div class="banner'+(j.stall==="handoff"?"":" w")+'" style="margin-bottom:16px"><div style="flex:1">'+
-      '<div class="bt">'+stallLabel(j.stall)+' — '+j.dis+' days</div>'+
-      '<div class="bd">'+esc(j.waiting||"")+'</div></div></div>';
-  }
-  b+='<div class="grid g3" style="gap:10px">'+
-    '<div class="stat"><span class="sl">Value</span><span class="sv" style="font-size:22px">'+$k(j.value)+'</span></div>'+
-    '<div class="stat"><span class="sl">Margin</span><span class="sv" style="font-size:22px">'+j.gm+'%</span></div>'+
-    '<div class="stat"><span class="sl">Crew-days</span><span class="sv" style="font-size:22px">'+j.crewDays+'</span></div></div>';
-
-  if(p){
-    b+='<div class="sec-t">One site, '+p.legs.length+' of your companies</div><div class="chain">';
-    p.legs.forEach(function(lid){
-      var L=byId[lid], cur=lid===j.id, dn=L.stage==="invoicing"||L.stage==="progress";
-      b+='<div class="cl '+(cur?"cur":dn?"dn":"")+'"><div class="cs">'+CO[L.co].short+'</div>'+
-        '<div class="cj">'+L.type.replace(/ —.*/,"")+'</div>'+
-        '<div class="cd">'+L.id+' · '+STAGES.filter(function(s){return s.id===L.stage})[0].t+'</div></div>';
-    });
-    b+='</div><div class="xs muted" style="margin-top:8px">'+p.site+' · '+p.client+
-      ' · total '+$k(sum(p.legs,function(id){return byId[id].value}))+' across the group</div>';
-  }
-
-  b+='<div class="sec-t">Detail</div><dl class="kv">'+
-    '<dt>Stage</dt><dd>'+st.t+' · '+j.dis+' days</dd>'+
-    '<dt>Crew</dt><dd>'+(j.crew?crewOf(j.crew).nm+' — '+crewOf(j.crew).fore:'<span class="muted">not assigned</span>')+'</dd>'+
-    '<dt>On site</dt><dd>'+fD(dOff(j.start))+'</dd>'+
-    '<dt>Due</dt><dd>'+fD(dOff(j.due))+'</dd>'+
-    '<dt>Last touched</dt><dd>'+j.touch+' days ago</dd>'+
-    '<dt>Client</dt><dd>'+j.client+'</dd></dl>';
-
-  if(j.note) b+='<div class="sec-t">Note</div><p class="sm ink2" style="line-height:1.6">'+j.note+'</p>';
-
-  b+='<div class="sec-t">Progress</div><div class="tl">';
-  STAGES.forEach(function(s,i){
-    var cur=s.id===j.stage, idx=STAGES.map(function(x){return x.id}).indexOf(j.stage);
-    b+='<div class="ti '+(i<idx?"done":cur?"now":"")+'"><div class="tt">'+s.t+'</div>'+
-      '<div class="td">'+(i<idx?"cleared":cur?"here now, "+j.dis+" days":s.d)+'</div></div>';
+  /* The Wall does not slide a drawer over the work — it swaps the docked inspector. */
+  S.sel=id; renderInsp(); markSel();
+}
+function markSel(){
+  document.querySelectorAll("[data-job]").forEach(function(el){
+    el.classList.toggle("sel", el.getAttribute("data-job")===S.sel);
   });
-  b+='</div>';
-
-  b+='<div style="display:flex;gap:8px;margin-top:22px;flex-wrap:wrap">'+
-    (j.stage!=="invoicing"?'<button class="btn" data-adv="'+j.id+'">Advance to '+
-      STAGES[Math.min(4,STAGES.map(function(x){return x.id}).indexOf(j.stage)+1)].t+'</button>':
-      '<button class="btn" data-close="'+j.id+'">Mark invoiced &amp; close</button>')+
-    (stalled?'<button class="btn ghost" data-unstick="'+j.id+'">Clear the blocker</button>':'')+
-    '<button class="btn ghost" data-toast="A photo request would go to '+(j.crew?crewOf(j.crew).fore:"the crew")+' on their phone.">Request site photos</button>'+
-    '</div>';
-  document.getElementById("dr-body").innerHTML=b;
-  document.getElementById("drawer").classList.add("on");
-  document.getElementById("scrim").classList.add("on");
 }
 function closeDrawer(){
   document.getElementById("drawer").classList.remove("on");
@@ -1640,44 +1729,248 @@ function groupOf(tab){
   for(var i=0;i<GROUPS.length;i++) if(GROUPS[i].s.some(function(x){return x[0]===tab})) return GROUPS[i];
   return GROUPS[0];
 }
-function paintTabs(){
+
+/* ==========================================================
+   THE WALL — chrome
+   Icon rail (groups) · context bar with an instrument cluster
+   (replaces the tile row that used to open every screen) ·
+   company strip · sub-nav · docked inspector.
+   ========================================================== */
+var RAILICON={today:"◧",work:"▤",money:"$",field:"◱",team:"☰"};
+
+/* what the context bar reads on each screen */
+var INSTR={
+  brief:function(){ var st=stalled(); return [
+    ["Booked wk",$k(metAll("rev","wk")),metAll("rev","wk")>=periodTarget("wk")?"good":"warn"],
+    ["Stuck",$k(sum(st,function(j){return j.value})),st.length?"bad":""],
+    ["Needs you",openNeeds().length,openNeeds().length?"bad":"good"],
+    ["Freeze-up",wksFreeze+"w",wksFreeze<8?"warn":""],
+    ["Season",seasonPct+"%",""]]},
+  board:function(){ var J=jobs(); return [
+    ["Open value",$k(sum(J,function(j){return j.value})),""],
+    ["Jobs",J.length,""],
+    ["At risk",stalled().length,stalled().length?"bad":""],
+    ["Chained sites",PROG.filter(function(p){return p.legs.some(function(id){return inCo(byId[id])})}).length,""],
+    ["Backlog",$k(sum(activeCos(),function(c){return BACKLOG[c.id]})),""]]},
+  stall:function(){ var st=stalled(); return [
+    ["Not moving",$k(sum(st,function(j){return j.value})),"bad"],
+    ["Jobs",st.length,""],
+    ["Longest",(st.length?Math.max.apply(null,st.map(function(j){return j.dis})):0)+"d",""],
+    ["Own handoffs",st.filter(function(j){return j.stall==="handoff"}).length,"warn"]]},
+  quotes:function(){ var q=openQuotes(); return [
+    ["Out for decision",$k(sum(q,qSub)),""],
+    ["Quotes",q.length,""],
+    ["Going stale",q.filter(function(x){return x.status==="expiring"}).length,"bad"],
+    ["Win rate",Math.round(met("wonq")/(met("wonq")+met("lostq"))*100)+"%",""]]},
+  contracts:function(){ var t=CONTRACT_TYPES.filter(inCo); return [
+    ["Agreements",sum(t,function(x){return x.count}).toLocaleString("en-CA"),""],
+    ["Recurring",$k(sum(t,function(x){return x.count*x.avg})),""],
+    ["Work orders",CAMPAIGN.generated?"612":"0",CAMPAIGN.generated?"good":"bad"],
+    ["Renewals due","47","warn"]]},
+  warranty:function(){ var c=CLAIMS.filter(inCo); return [
+    ["Cost of rework",$k(sum(c,function(x){return x.cost})),"bad"],
+    ["Claims",c.length,""],
+    ["Open",c.filter(function(x){return x.st!=="closed"}).length,"warn"],
+    ["Callback rate","6.4%","bad"]]},
+  score:function(){ return [
+    ["Revenue",$k(met("rev")),met("rev")>=periodTarget()?"good":"warn"],
+    ["Target",$k(periodTarget()),""],
+    ["Gross margin",gmBlend().toFixed(1)+"%",gmBlend()>=33?"good":"warn"],
+    ["Jobs done",met("done"),""],
+    ["Per crew-day",$f(Math.round(met("rev")/met("cd")/10)*10),""]]},
+  invoices:function(){ var iv=INVOICES.filter(inCo),un=uninvoiced(),
+      hb=hbList().filter(function(x){return !x.released}); return [
+    ["Receivable",$k(sum(iv,function(i){return i.amount})),""],
+    ["Over 60",$k(sum(iv.filter(function(i){return i.bucket==="d60"||i.bucket==="d90"}),function(i){return i.amount})),"bad"],
+    ["Uninvoiced",$k(sum(un,function(j){return j.value})),"warn"],
+    ["Holdback",$k(sum(hb,function(x){return x.amount})),""],
+    ["Releasable",$k(sum(hb.filter(function(x){return x.releasable}),function(x){return x.amount})),"good"]]},
+  purch:function(){ var p=POS.filter(inCo),m=MATS.filter(inCo); return [
+    ["On order",$k(sum(p.filter(function(x){return x.st!=="received"}),function(x){return x.val})),""],
+    ["Late",p.filter(function(x){return x.st==="late"}).length,"bad"],
+    ["Below reorder",m.filter(function(x){return x.on<x.rop}).length,"warn"],
+    ["Topsoil on ground",PILES.reduce(function(t,x){return t+x.on},0).toLocaleString("en-CA")+" yd³",""]]},
+  costing:function(){ var l=COSTING.filter(inCo),v=sum(l,function(x){return x.val}),
+      e=sum(l,function(x){return x.estTot}),a=sum(l,function(x){return x.actTot}); return [
+    ["Contract value",$k(v),""],
+    ["Planned margin",((v-e)/v*100).toFixed(1)+"%",""],
+    ["Real margin",((v-a)/v*100).toFixed(1)+"%",a>e?"bad":"good"],
+    ["Overrun",$k(a-e),a>e?"bad":"good"]]},
+  group:function(){ var C=consolidated(); return [
+    ["Group revenue",$k(sum(COS,function(c){return M[c.id].std.rev})),""],
+    ["Inter-company",$k(C.elim),"warn"],
+    ["Operating profit",$k(COS.reduce(function(t,c){return t+C.rows[c.id].gp-C.rows[c.id].oh},0)),""],
+    ["HST owing",$k(HSTQ.filter(inCo).reduce(function(t,x){return t+x.collected-x.itc},0)),""]]},
+  crew:function(){ var c=CREWS.filter(inCo),k=KIT.filter(inCo); return [
+    ["Crews",c.length,""],["Field staff",sum(c,function(x){return x.size}),""],
+    ["Machines",k.length,""],
+    ["Conflicts",CONFLICT.resolved?0:1,CONFLICT.resolved?"good":"bad"],
+    ["Service due",k.filter(function(x){return x.svc>=90}).length,"warn"]]},
+  crewapp:function(){ return [
+    ["Crew","Grade A",""],["On the clock",CREWAPP.clockedIn?"6h 12m":"—",CREWAPP.clockedIn?"good":""],
+    ["Material",(CREWAPP.loads*14)+" yd³",""],["Photos",CREWAPP.photos,""],
+    ["Signed",CREWAPP.signed?"yes":"no",CREWAPP.signed?"good":"warn"]]},
+  portal:function(){ return [
+    ["Viewing as","Ridgemoor Homes",""],
+    ["Awaiting signature",(PORTAL.gradeSigned?0:1)+(PORTAL.coApproved?0:1),
+      ((PORTAL.gradeSigned?0:1)+(PORTAL.coApproved?0:1))?"bad":"good"],
+    ["Their sites","3",""],["Held up",PORTAL.gradeSigned?"—":"$96k",PORTAL.gradeSigned?"good":"bad"]]},
+  acct:function(){ var l=acctRows(); return [
+    ["Season revenue",$k(sum(l,function(r){return r.rev})),""],
+    ["Accounts",l.length,""],
+    ["Use all three",l.filter(function(r){return r.wr.length===3}).length,""],
+    ["Over 60",$k(sum(l,function(r){return r.old})),"bad"]]},
+  academy:function(){ var st=STAFF.filter(inCo),miss=0,exp=0;
+    st.forEach(function(s){CERTKEYS.forEach(function(c){if(s.c[c.k]==="no")miss++;if(s.c[c.k]==="exp")exp++})});
+    return [["People",st.length,""],["Seasonal",st.filter(function(s){return s.seasonal}).length,""],
+      ["Certs missing",miss,"bad"],["Expiring 60d",exp,"warn"],["Onboarding","86%",""]]}
+};
+var CRUMB={
+  brief:["Today","THE MORNING READ"], board:["Job board","ALL OPEN WORK"], stall:["Stalled","RANKED BY COST OF DELAY"],
+  quotes:["Quotes","OUT FOR DECISION"], contracts:["Contracts","RECURRING SERVICE"], warranty:["Warranty","CLAIMS & ROOT CAUSE"],
+  score:["Scorecard","THE SAME SIX MEASURES"], invoices:["Invoices & AR","EARNED, NOT COLLECTED"],
+  purch:["Purchasing","MATERIALS & PRODUCED STOCK"], costing:["Job costing","QUOTED vs ACTUAL"],
+  group:["Group P&L","THREE ENTITIES, ONE VIEW"], crew:["Crew board","ONE CALENDAR, THREE COMPANIES"],
+  crewapp:["Crew app","WHAT LIVES IN A TRUCK"], portal:["Customer portal","WHAT YOUR BUILDER SEES"],
+  acct:["Accounts","ACROSS ALL THREE"], academy:["Academy","A WORKFORCE THAT ARRIVES IN APRIL"]
+};
+/* shared selectors used by the instrument cluster */
+function stalled(){ return jobs().filter(function(j){return j.stall&&!S.resolved[j.id]}) }
+function openNeeds(){ return NEEDS.filter(inCo).filter(function(n){return !S.resolved[n.id]}) }
+function openQuotes(){ return QUOTES.filter(inCo).filter(function(q){return !S.done[q.job]&&byId[q.job].stage==="quoted"}) }
+
+function paintChrome(){
   var g=groupOf(S.tab);
-  document.getElementById("tabs").innerHTML=GROUPS.map(function(x){
-    return '<button class="tab '+(g.id===x.id?"on":"")+'" data-grp="'+x.id+'">'+x.t+'</button>'}).join("");
+  document.getElementById("rail").innerHTML=
+    '<div class="lg">T</div>'+
+    GROUPS.map(function(x){
+      var bad=x.s.some(function(s){return BADGE[s[0]]});
+      return '<div class="tipwrap"><button class="ic '+(g.id===x.id?"on":"")+'" data-grp="'+x.id+'">'+
+        RAILICON[x.id]+(bad?'<span class="bd"></span>':"")+'</button><span class="tip">'+x.t+'</span></div>';
+    }).join("")+
+    '<div class="sp"></div><div class="who">CG</div>';
+
+  var cb=CRUMB[S.tab]||["",""];
+  document.getElementById("crumb-t").textContent=cb[0];
+  document.getElementById("crumb-s").textContent=cb[1];
+  document.getElementById("inst").innerHTML=((INSTR[S.tab]||INSTR.brief)()).map(function(x){
+    return '<div class="g"><div class="l">'+x[0]+'</div><div class="v '+(x[2]||"")+'">'+x[1]+"</div></div>";
+  }).join("");
+
+  var open=JOBS.filter(function(j){return !S.done[j.id]});
+  document.getElementById("coswitch").innerHTML=
+    '<button class="cosw '+(S.co==="all"?"on":"")+'" data-co="all"><i style="background:linear-gradient(135deg,'+
+    COS[0].hex+' 33%,'+COS[1].hex+' 33% 66%,'+COS[2].hex+' 66%)"></i>All three <span class="mt">'+open.length+"</span></button>"+
+    COS.map(function(c){
+      return '<button class="cosw '+(S.co===c.id?"on":"")+'" data-co="'+c.id+'"><i style="background:'+c.hex+
+        '"></i>'+c.short+' <span class="mt">'+open.filter(function(j){return j.co===c.id}).length+"</span></button>";
+    }).join("");
+
   document.getElementById("subtabs").innerHTML=g.s.map(function(x){
     var b=BADGE[x[0]];
-    return '<button class="stab '+(S.tab===x[0]?"on":"")+'" data-tab="'+x[0]+'">'+x[1]+
-      (b?'<span class="bdg">'+b+'</span>':"")+'</button>'}).join("");
+    return '<button class="'+(S.tab===x[0]?"on":"")+'" data-tab="'+x[0]+'">'+x[1]+
+      (b?'<span class="bd">'+b+"</span>":"")+"</button>";
+  }).join("");
+  document.getElementById("wbody").classList.toggle("fixed",S.tab==="board");
 }
-function paintRail(){
-  var open=JOBS.filter(function(j){return !S.done[j.id]});
-  var html='<button class="co '+(S.co==="all"?"on":"")+'" data-co="all">'+
-    '<div class="cn"><span class="dot" style="background:linear-gradient(135deg,'+COS[0].hex+' 33%,'+COS[1].hex+' 33% 66%,'+COS[2].hex+' 66%)"></span>All three</div>'+
-    '<div class="cm">'+open.length+' open · '+$k(sum(COS,function(c){return M[c.id].std.rev}))+' season</div></button>';
-  COS.forEach(function(c){
-    var n=open.filter(function(j){return j.co===c.id}).length;
-    html+='<button class="co '+(S.co===c.id?"on":"")+'" data-co="'+c.id+'">'+
-      '<div class="cn"><span class="dot" style="background:'+c.hex+'"></span>'+c.short+'</div>'+
-      '<div class="cm">'+n+' open · '+$k(M[c.id].std.rev)+' season</div></button>';
-  });
-  document.getElementById("colist").innerHTML=html;
-  document.getElementById("seasonbox").innerHTML=
-    'Season '+fD(SEAS_START)+' → '+fD(FREEZE)+'<br><b style="color:var(--ink)">'+seasonPct+'%</b> elapsed · '+
-    wksFreeze+' weeks of ground left.<br><span style="color:var(--ink-2)">Winterisation opens '+fD(WINT_START)+'.</span>';
+function paintTabs(){ paintChrome() }
+
+/* ---------- the docked inspector ---------- */
+function ins(o){
+  document.getElementById("insp-h").innerHTML=
+    '<div class="id">'+o.id+"</div><div class=\"t\">"+o.t+"</div>"+(o.s?'<div class="s">'+o.s+"</div>":"");
+  document.getElementById("insp-b").innerHTML=o.body;
 }
+function ikv(rows){ return '<dl class="ikv">'+rows.map(function(r){return "<dt>"+r[0]+"</dt><dd>"+r[1]+"</dd>"}).join("")+"</dl>" }
+function renderInsp(){
+  var j=S.sel&&byId[S.sel];
+  if(j&&!S.done[j.id]) return insJob(j);
+  (INSPDEF[S.tab]||INSPDEF._)();
+}
+function insJob(j){
+  var c=CO[j.co], p=j.prog?progById[j.prog]:null, st=STAGES.filter(function(s){return s.id===j.stage})[0];
+  var stuck=j.stall&&!S.resolved[j.id];
+  var b="";
+  if(stuck) b+='<div class="wbanner'+(j.stall==="handoff"?"":" w")+'" style="margin:-14px -16px 14px;border-bottom:none">'+
+    '<div><div class="bt">'+stallLabel(j.stall)+" · "+j.dis+' days</div><div class="bd">'+esc(j.waiting||"")+"</div></div></div>";
+  b+=ikv([["Value",$f(j.value)],["Margin",j.gm+"%"],["Crew-days",j.crewDays],
+          ["Stage",st.t+" · "+j.dis+"d"],["Crew",j.crew?crewOf(j.crew).fore:'<span class="muted">unassigned</span>'],
+          ["On site",fD(dOff(j.start))],["Client",j.client]]);
+  if(p){
+    b+='<div class="isec">One site, '+p.legs.length+' of your companies</div><div class="istack">';
+    p.legs.forEach(function(id){
+      var L=byId[id], cur=id===j.id, dn=L.stage==="invoicing"||L.stage==="progress";
+      b+='<div class="istep '+(cur?"now":dn?"done":"next")+'"><b>'+CO[L.co].short+"</b>"+
+         L.type.replace(/ —.*/,"")+" · "+STAGES.filter(function(s){return s.id===L.stage})[0].t+"</div>";
+    });
+    b+="</div>";
+  }
+  if(j.note) b+='<div class="isec">Note</div><p class="ip">'+j.note+"</p>";
+  b+='<div class="iact">'+
+    (j.stage!=="invoicing"?'<button class="btn sm" data-adv="'+j.id+'">Advance</button>':
+      '<button class="btn sm" data-close="'+j.id+'">Invoice &amp; close</button>')+
+    (stuck?'<button class="btn sm ghost" data-unstick="'+j.id+'">Clear blocker</button>':"")+
+    '<button class="btn sm ghost" data-toast="A photo request would go to the crew on their phone.">Photos</button></div>';
+  ins({id:j.id+" · "+c.short.toUpperCase(),t:j.type,s:j.site+" · "+j.client,body:b});
+}
+/* every screen has a default inspector — it is never blank */
+var INSPDEF={
+  _:function(){ ins({id:"NOTHING SELECTED",t:"Pick anything on the left",
+      s:"The inspector always shows one thing about the work.",
+      body:'<p class="ip">Click a job, a row or a card and its detail lands here. The board never moves underneath you.</p>'}) },
+  brief:function(){ var pj=wintProjection();
+    ins({id:"CAMPAIGN · PREMIER",t:"Winterisation "+YR,s:fD(WINT_START)+" – "+fD(FREEZE),
+      body:'<div class="isec">Booked</div><div class="ibig">'+WINT.booked+
+        '<small style="font-family:var(--ui);font-size:14px;color:var(--ink-muted)"> / '+WINT.total+'</small></div>'+
+        '<div class="bar"><i style="width:'+Math.round(WINT.booked/WINT.total*100)+'%;background:'+CO.pre.hex+'"></i></div>'+
+        ikv([["Pace","~"+WINT.paceWk+"/week"],["Rig capacity",pj.cap+"/week"],["Required",WINT.needWk+"/week"],
+             ["Projected",fD(pj.end)+(pj.over>0?" · +"+pj.over+"d":"")]])+
+        '<div class="isec">The constraint</div><p class="ip">Trucks are not the limit. You cannot blow out a property nobody has booked — bookings feed about '+
+        pj.effective+' a week against '+pj.cap+' of capacity.</p>'+
+        (pj.over>0?'<div class="isec">Exposure</div><p class="ip">~'+pj.late+
+          ' properties done after the ground freezes. Roughly '+$f(pj.exposure)+' of split lines and callbacks.</p>':"")+
+        '<div class="iact"><button class="btn sm" id="w-book">Open booking</button>'+
+        '<button class="btn sm ghost" id="w-crew">'+(WINT.extraCrew?"Release":"Add")+' crew</button></div>'}) },
+  group:function(){ var mkt=consolidatedAt(true), sub=Math.round((M.hyd.std.gm-mkt.hyd)/100*M.hyd.std.rev);
+    ins({id:"GROUP · FINDING",t:"Lanthier subsidises Hydroseeding",s:"About "+$f(sub)+" a season",
+      body:'<p class="ip">Hydroseeding buys '+$f(IC.filter(function(x){return x.to==="hyd"}).reduce(function(t,x){return t+icAmount(x,false)},0))+
+        ' of screening, skid steer, float and labour from Lanthier every season — at internal rates last set in '+(YR-3)+
+        ' and now 30–40% below market.</p>'+
+        '<div class="isec">Restated at market</div>'+
+        ikv([["Hydroseeding",M.hyd.std.gm.toFixed(1)+"% → "+mkt.hyd.toFixed(1)+"%"],
+             ["Lanthier",M.lan.std.gm.toFixed(1)+"% → "+mkt.lan.toFixed(1)+"%"],
+             ["Premier",M.pre.std.gm.toFixed(1)+"% → "+mkt.pre.toFixed(1)+"%"]])+
+        '<p class="ip">The gap between your companies is <i>wider</i> than the books show, not narrower.</p>'+
+        '<div class="iact"><button class="btn sm'+(S_MARKET?" ghost":"")+'" id="rate-legacy">Current</button>'+
+        '<button class="btn sm'+(S_MARKET?"":" ghost")+'" id="rate-market">At market</button></div>'}) },
+  portal:function(){ ins({id:"PORTAL · RIDGEMOOR HOMES",t:"Two documents, six days",
+      s:"Neither of your companies can move",
+      body:'<p class="ip">A paper certificate in a truck and a change order in somebody’s inbox. LT-1041 has waited six days for a signature, which is holding OH-3157 off the site entirely.</p>'+
+        '<div class="isec">Watch this</div><p class="ip">Signing on the left clears an internal handoff between two of your own companies, releases a subdivision of hydroseeding and unlocks a progress draw. Nobody phones anybody.</p>'}) },
+  crewapp:function(){ ins({id:"FIELD · ADOPTION",t:"The hardest user in the business",
+      s:"A foreman with wet gloves in a truck cab",
+      body:'<p class="ip">Nothing on the Scorecard, Job costing or the Customer portal is true unless Marc, Devon, Jordan and Curtis tap these buttons.</p>'+
+        '<p class="ip" style="margin-top:10px">That is why it is five taps and no typing, and why it works offline in a dead zone. Every field system that has failed, failed here — not in the office.</p>'}) }
+};
+
 function paint(){
-  recount(); paintTabs(); paintRail();
-  document.getElementById("fwk").textContent=wksFreeze;
+  recount(); paintChrome();
   TABS.forEach(function(t){
     var el=document.getElementById("s-"+t[0]);
     el.classList.toggle("on",S.tab===t[0]);
     if(S.tab===t[0]) el.innerHTML=R[t[0]]();
   });
-  window.scrollTo({top:0,behavior:"instant"});
+  renderInsp();
+  var wb=document.getElementById("wbody"); if(wb) wb.scrollTop=0;
 }
-function repaint(){ recount(); paintTabs(); var el=document.getElementById("s-"+S.tab); el.innerHTML=R[S.tab](); }
+function repaint(){
+  recount(); paintChrome();
+  var el=document.getElementById("s-"+S.tab); el.innerHTML=R[S.tab]();
+  renderInsp();
+}
 function crossfade(fn){
-  var w=document.querySelector(".wrap");
+  var w=document.getElementById("wbody");
+  if(!w){ fn(); return }
   w.classList.add("fading");
   setTimeout(function(){ fn(); w.classList.remove("fading") },110);
 }
@@ -1686,16 +1979,14 @@ function crossfade(fn){
    EVENTS
    ========================================================== */
 document.addEventListener("click",function(e){
-  var t=e.target.closest("[data-tab],[data-grp],[data-co],[data-job],[data-p],[data-bv],[data-sf],[data-w],[data-need],[data-unstick],[data-adv],[data-close],[data-acct],[data-toast],#hamb,#dr-x,#scrim,#fixit,#w-book,#w-crew");
+  var t=e.target.closest("[data-tab],[data-grp],[data-co],[data-job],[data-p],[data-bv],[data-sf],[data-w],[data-need],[data-unstick],[data-adv],[data-close],[data-acct],[data-toast],#dr-x,#scrim,#fixit,#w-book,#w-crew");
   if(!t) return;
 
-  if(t.id==="hamb"){ var r=document.getElementById("rail"); r.classList.toggle("open");
-    document.body.style.overflow=r.classList.contains("open")?"hidden":""; return }
   if(t.id==="dr-x"||t.id==="scrim"){ closeDrawer(); return }
 
-  if(t.dataset.tab){ S.tab=t.dataset.tab; closeNav(); crossfade(paint); return }
-  if(t.dataset.grp){ S.tab=groupOf2(t.dataset.grp).s[0][0]; closeNav(); crossfade(paint); return }
-  if(t.dataset.co){ S.co=t.dataset.co; S.acctOpen=null; closeNav(); crossfade(paint); return }
+  if(t.dataset.tab){ S.tab=t.dataset.tab; S.sel=null; closeNav(); crossfade(paint); return }
+  if(t.dataset.grp){ S.tab=groupOf2(t.dataset.grp).s[0][0]; S.sel=null; closeNav(); crossfade(paint); return }
+  if(t.dataset.co){ S.co=t.dataset.co; S.acctOpen=null; S.sel=null; closeNav(); crossfade(paint); return }
   if(t.dataset.job){ openJob(t.dataset.job); return }
   if(t.dataset.p){ S.period=t.dataset.p; repaint(); return }
   if(t.dataset.bv){ S.bview=t.dataset.bv; repaint(); return }
@@ -1765,7 +2056,7 @@ document.addEventListener("click",function(e){
     return;
   }
 });
-function closeNav(){ var r=document.getElementById("rail"); if(r){r.classList.remove("open"); document.body.style.overflow=""} }
+function closeNav(){ /* no sidebar in the Wall shell */ }
 function groupOf2(id){ for(var i=0;i<GROUPS.length;i++) if(GROUPS[i].id===id) return GROUPS[i]; return GROUPS[0] }
 document.addEventListener("keydown",function(e){ if(e.key==="Escape"){closeDrawer();closeNav()} });
 /* ==========================================================
