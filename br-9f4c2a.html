@@ -638,6 +638,43 @@ table.wt td.elim{color:var(--danger);font-style:italic}
 .spark7 i{flex:1;background:var(--accent);border-radius:1px;min-height:2px;display:block;opacity:.85}
 .spark7 i.today{background:var(--clay-sub,#AB5C2C);opacity:1}
 
+
+/* ---- guided tour ---- */
+.tourscrim{position:fixed;inset:0;background:rgba(33,29,24,.45);z-index:90;opacity:0;pointer-events:none;transition:opacity .2s}
+.tourscrim.on{opacity:1;pointer-events:auto}
+.tourcard{position:fixed;left:50%;top:50%;transform:translate(-50%,-48%) scale(.98);width:min(560px,calc(100vw - 32px));
+  background:var(--canvas);border:1px solid var(--border-strong);border-radius:var(--r-lg);box-shadow:var(--sh-3);
+  z-index:91;opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;overflow:hidden}
+.tourcard.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+.tourcard .th{padding:20px 22px 16px;border-bottom:1px solid var(--border)}
+.tourcard .th .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent)}
+.tourcard .th h3{font-family:var(--disp);font-weight:300;font-size:25px;letter-spacing:-.022em;margin-top:9px;line-height:1.14}
+.tourcard .th p{font-size:13px;color:var(--ink-2);margin-top:9px;line-height:1.55}
+.tourcard .tl2{padding:6px 0}
+.tstop{display:flex;gap:13px;align-items:flex-start;padding:11px 22px;border-bottom:1px solid var(--border);
+  width:100%;text-align:left;transition:background .12s}
+.tstop:last-of-type{border-bottom:none}
+.tstop:hover{background:var(--accent-subtle)}
+.tstop .n{width:22px;height:22px;border-radius:50%;background:var(--ink);color:#F0EBE2;flex:none;
+  display:grid;place-items:center;font-family:var(--mono);font-size:10px;margin-top:1px}
+.tstop .t{display:block;font-size:13px;font-weight:600;line-height:1.35}
+.tstop .d{display:block;font-size:11.5px;color:var(--ink-muted);margin-top:3px;line-height:1.45}
+.tourcard .tf{padding:14px 22px;border-top:1px solid var(--border);background:var(--sunken);
+  display:flex;gap:9px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+
+.tourbar{position:fixed;left:0;right:0;bottom:0;z-index:88;background:var(--ink);color:#F0EBE2;
+  display:flex;align-items:center;gap:16px;padding:11px 18px;box-shadow:0 -6px 18px rgba(45,35,25,.16);
+  transform:translateY(110%);transition:transform .24s cubic-bezier(.2,.8,.2,1)}
+.tourbar.on{transform:none}
+.tourbar .step{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#8F877C;flex:none}
+.tourbar .body{flex:1;min-width:0}
+.tourbar .body .t{display:block;font-size:13px;font-weight:600;line-height:1.35}
+.tourbar .body .d{display:block;font-size:11.5px;color:#C7BFB3;margin-top:3px;line-height:1.45}
+.tourbar .acts{display:flex;gap:7px;flex:none}
+.tbtn{padding:6px 13px;border-radius:999px;font-size:12px;font-weight:600;background:var(--accent);color:#fff;white-space:nowrap}
+.tbtn.g{background:transparent;color:#C7BFB3;border:1px solid #4A443C}
+.tbtn.g:hover{color:#F0EBE2}
+
 /* ---- fold the old page-header + tile-row formula into the Wall ----
    The H1 duplicated the breadcrumb and the tile row duplicated the
    instrument cluster, so both go. The lede copy survives as one line. */
@@ -711,6 +748,12 @@ tr.clk.sel td{background:var(--accent-subtle)}
   .wsec-h{position:static}
 }
 @media (max-width:760px){
+  .tourbar{flex-wrap:wrap;gap:9px;padding:10px 12px}
+  .tourbar .step{width:100%}
+  .tourbar .acts{width:100%;justify-content:flex-end}
+  .tourcard .th{padding:16px}
+  .tstop{padding:10px 16px}
+  .tourcard .tf{padding:12px 16px}
   .inst .g{min-width:96px}
   .cosw{min-width:104px;padding:7px 11px}
   .dayrow{grid-template-columns:1fr 62px 58px;gap:8px}
@@ -812,6 +855,10 @@ tr.clk.sel td{background:var(--accent-subtle)}
   </div>
   <div class="dr-b" id="dr-body"></div>
 </aside>
+
+<div class="tourscrim" id="tourscrim"></div>
+<div class="tourcard" id="tourcard"></div>
+<div class="tourbar" id="tourbar"></div>
 
 <div class="toast" id="toast"></div>
 <script>
@@ -1951,6 +1998,9 @@ function paintChrome(){
         (bad?'<span class="bd"></span>':"")+'</button><span class="tip">'+x.t+'</span></div>';
     }).join("")+
     '<div class="sp"></div>'+
+    '<div class="tipwrap"><button class="ic" id="tour-open">'+
+      '<span class="gl">?</span><span class="lbl">Start here</span></button>'+
+      '<span class="tip">Start here — a guided tour</span></div>'+
     '<div class="tipwrap"><button class="ic railtog" id="railtog">'+
       '<span class="gl">'+(S.railOpen?"\u00AB":"\u00BB")+'</span>'+
       '<span class="lbl">Collapse</span></button>'+
@@ -2091,7 +2141,7 @@ function crossfade(fn){
    EVENTS
    ========================================================== */
 document.addEventListener("click",function(e){
-  var t=e.target.closest("[data-tab],[data-grp],[data-co],[data-job],[data-p],[data-bv],[data-sf],[data-w],[data-need],[data-unstick],[data-adv],[data-close],[data-acct],[data-toast],#dr-x,#scrim,#fixit,#w-book,#w-crew,#railtog");
+  var t=e.target.closest("[data-tab],[data-grp],[data-co],[data-job],[data-p],[data-bv],[data-sf],[data-w],[data-need],[data-unstick],[data-adv],[data-close],[data-acct],[data-toast],#dr-x,#scrim,#fixit,#w-book,#w-crew,#railtog,#tour-open");
   if(!t) return;
 
   if(t.id==="dr-x"||t.id==="scrim"){ closeDrawer(); return }
@@ -4014,9 +4064,81 @@ document.addEventListener("click",function(e){
       '<div class="iact"><button class="btn sm ghost" data-toast="The daily odometer prompt would go to '+
       v.driver+' at clock-out.">Prompt the driver</button></div>'});
 });
+
+/* ==========================================================
+   GUIDED TOUR — four minutes, in the order that lands
+   ========================================================== */
+var TOUR=[
+ {tab:"brief",co:"all",t:"The winterisation campaign",
+  d:"Scroll to Winterisation 2026 and press <b>Open booking to customers</b>. Watch the projected finish move off the far side of freeze-up.",
+  why:"612 blow-outs in eight weeks is his hardest logistics problem, and the constraint is booking pace, not trucks."},
+ {tab:"portal",co:"all",t:"A customer clearing your own logjam",
+  d:"Sign the grade certificate as Ridgemoor&rsquo;s superintendent, then open <b>Work → Job board</b>. The six-day stall on LT-1041 is gone and the hydroseeding is released.",
+  why:"This is the moment that only exists because he owns all three companies."},
+ {tab:"invoices",co:"all",t:"Money he has already earned",
+  d:"Look at <b>Holdback releasable now</b>, then press Release on any row that is past the 60-day clock.",
+  why:"Statutory holdback nobody goes back for. The least glamorous feature here and probably the fastest to pay for itself."},
+ {tab:"acct",co:"all",t:"Work he is not quoting",
+  d:"Read the banner. Expand any single-company account to see which of his businesses is missing from a site he is already standing on.",
+  why:"A revenue argument, not a software argument — the strongest line in the whole demo."},
+ {tab:"vehicles",co:"all",t:"The number nobody has",
+  d:"Look at <b>Unassigned</b> in the top bar, then open any vehicle for the cost per kilometre behind it.",
+  why:"Kilometres are how equipment cost reaches a job. It also fixes the inter-company charge-out."}
+];
+var TOURSTATE={open:false,step:-1,seen:false};
+
+function paintTour(){
+  var sc=document.getElementById("tourscrim"), cd=document.getElementById("tourcard"), bar=document.getElementById("tourbar");
+  var showCard=TOURSTATE.open&&TOURSTATE.step<0;
+  sc.classList.toggle("on",showCard); cd.classList.toggle("on",showCard);
+  if(!showCard) cd.innerHTML="";          /* never leave hidden buttons in the DOM */
+  if(showCard){
+    cd.innerHTML='<div class="th"><div class="k">Start here</div>'+
+      '<h3>Five things worth clicking, in this order.</h3>'+
+      '<p>Nineteen screens is a lot to land in cold. These are the five that make the point, and roughly four minutes end to end.</p></div>'+
+      '<div class="tl2">'+TOUR.map(function(s,i){
+        return '<button class="tstop" data-tourgo="'+i+'"><span class="n">'+(i+1)+'</span>'+
+          '<span><span class="t">'+s.t+'</span><span class="d">'+s.why+'</span></span></button>';
+      }).join("")+'</div>'+
+      '<div class="tf"><span class="xs muted">You can reopen this any time from <b>Start here</b> in the menu.</span>'+
+      '<span style="display:flex;gap:8px"><button class="btn sm ghost" id="tour-skip">Explore on my own</button>'+
+      '<button class="btn sm" data-tourgo="0">Start the tour</button></span></div>';
+  }
+  var onBar=TOURSTATE.open&&TOURSTATE.step>=0;
+  bar.classList.toggle("on",onBar);
+  if(!onBar) bar.innerHTML="";
+  if(onBar){
+    var s=TOUR[TOURSTATE.step];
+    bar.innerHTML='<span class="step">Stop '+(TOURSTATE.step+1)+' of '+TOUR.length+'</span>'+
+      '<span class="body"><span class="t">'+s.t+'</span><span class="d">'+s.d+'</span></span>'+
+      '<span class="acts">'+
+      (TOURSTATE.step>0?'<button class="tbtn g" data-tourgo="'+(TOURSTATE.step-1)+'">Back</button>':"")+
+      (TOURSTATE.step<TOUR.length-1
+        ? '<button class="tbtn" data-tourgo="'+(TOURSTATE.step+1)+'">Next</button>'
+        : '<button class="tbtn" id="tour-end">Finish</button>')+
+      '<button class="tbtn g" id="tour-end">Close</button></span>';
+  }
+}
+function tourGo(i){
+  TOURSTATE.open=true; TOURSTATE.step=i; TOURSTATE.seen=true;
+  var s=TOUR[i];
+  if(s.co) S.co=s.co;
+  S.tab=s.tab; S.sel=null;
+  paint(); paintTour();
+  var wb=document.getElementById("wbody"); if(wb) wb.scrollTop=0;
+}
+document.addEventListener("click",function(e){
+  var t=e.target.closest("[data-tourgo],#tour-skip,#tour-end,#tour-open");
+  if(!t) return;
+  if(t.id==="tour-open"){ TOURSTATE.open=true; TOURSTATE.step=-1; paintTour(); return }
+  if(t.id==="tour-skip"||t.id==="tour-end"){ TOURSTATE.open=false; TOURSTATE.step=-1; TOURSTATE.seen=true; paintTour(); return }
+  if(t.dataset.tourgo!==undefined){ tourGo(+t.dataset.tourgo); return }
+});
+document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&TOURSTATE.open){ TOURSTATE.open=false;TOURSTATE.step=-1;paintTour() } });
 /* ---------- boot ---------- */
 recount();
 paint();
+TOURSTATE.open=true; TOURSTATE.step=-1; paintTour();
 })();
 </script>
 </body>
