@@ -411,15 +411,27 @@ table.led td.elim{color:var(--danger); font-style:italic}
    icon rail · context bar with an instrument cluster · body ·
    permanently docked inspector. No page titles, no tile rows.
    ============================================================ */
-.wall{display:grid;grid-template-columns:54px minmax(0,1fr) 324px;height:100vh;overflow:hidden;background:var(--sunken)}
+.wall{display:grid;grid-template-columns:54px minmax(0,1fr) 324px;height:100vh;overflow:hidden;background:var(--sunken);
+      transition:grid-template-columns .18s cubic-bezier(.2,.8,.2,1)}
+.wall.rail-open{grid-template-columns:198px minmax(0,1fr) 324px}
 
 /* --- icon rail --- */
-.rail{background:var(--ink);display:flex;flex-direction:column;align-items:center;padding:11px 0;gap:3px;overflow-y:auto;scrollbar-width:none}
+.rail{background:var(--ink);display:flex;flex-direction:column;align-items:center;padding:11px 0;gap:3px;overflow:visible;position:relative;z-index:46}
 .rail::-webkit-scrollbar{display:none}
 .rail .lg{width:30px;height:30px;border-radius:8px;background:var(--accent);color:#fff;display:grid;place-items:center;
           font-family:var(--disp);font-weight:400;font-size:16px;margin-bottom:13px;flex:none}
-.rail .ic{width:38px;height:38px;border-radius:9px;display:grid;place-items:center;color:#8F877C;font-size:15px;
-          flex:none;position:relative;transition:.12s}
+.rail .ic{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+          color:#8F877C;font-size:15px;flex:none;position:relative;transition:background .12s,color .12s}
+.rail .ic .gl{width:18px;text-align:center;flex:none;line-height:1}
+.rail .ic .lbl{display:none;font-size:12.5px;font-weight:500;white-space:nowrap;font-family:var(--ui)}
+.rail-open .rail{align-items:stretch;padding:11px 9px}
+.rail-open .rail .lg{align-self:flex-start;margin-left:3px}
+.rail-open .tipwrap{justify-content:stretch}
+.rail-open .rail .ic{width:100%;justify-content:flex-start;gap:12px;padding:0 11px}
+.rail-open .rail .ic .lbl{display:block}
+.rail-open .tip{display:none}
+.rail-open .rail .who{align-self:flex-start;margin-left:3px}
+.railtog{margin-top:4px;border-top:1px solid rgba(255,255,255,.09);border-radius:0 !important;padding-top:4px !important}
 .rail .ic:hover{background:rgba(255,255,255,.07);color:#C7BFB3}
 .rail .ic.on{background:rgba(255,255,255,.11);color:#F0EBE2}
 .rail .ic .bd{position:absolute;top:5px;right:5px;min-width:6px;height:6px;border-radius:99px;background:var(--danger)}
@@ -427,9 +439,14 @@ table.led td.elim{color:var(--danger); font-style:italic}
 .rail .who{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;
            font-size:10.5px;font-weight:600;flex:none;margin-top:6px}
 .tipwrap{position:relative}
-.tip{position:absolute;left:46px;top:50%;transform:translateY(-50%);background:var(--ink);color:#F0EBE2;
-     padding:5px 10px;border-radius:6px;font-size:11.5px;white-space:nowrap;pointer-events:none;opacity:0;
-     transition:opacity .12s;z-index:70;box-shadow:var(--sh-2)}
+.tip{position:absolute;left:calc(100% + 9px);top:50%;transform:translateY(-50%) translateX(-4px);
+     background:var(--ink);color:#F0EBE2;padding:6px 11px;border-radius:6px;font-size:11.5px;font-weight:500;
+     white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .13s,transform .13s;z-index:80;
+     box-shadow:var(--sh-3)}
+.tip::before{content:"";position:absolute;left:-4px;top:50%;transform:translateY(-50%) rotate(45deg);
+     width:8px;height:8px;background:var(--ink)}
+.tipwrap:hover .tip,.tipwrap:focus-within .tip{opacity:1;transform:translateY(-50%) translateX(0)}
+.tipwrap{width:100%;display:flex;justify-content:center}
 .tipwrap:hover .tip{opacity:1}
 
 /* --- main region --- */
@@ -666,6 +683,12 @@ tr.clk.sel td{background:var(--accent-subtle)}
 }
 @media (max-width:1100px){
   .cos-season{display:none}
+  .wall.rail-open{grid-template-columns:1fr}
+  .rail-open .rail{align-items:center;padding:7px 10px}
+  .rail-open .rail .ic{width:38px;justify-content:center;padding:0}
+  .rail-open .rail .ic .lbl{display:none}
+  .rail-open .rail .lg,.rail-open .rail .who{align-self:center;margin-left:0}
+  .railtog{display:none}
   .dayrow{grid-template-columns:120px 1fr 60px 56px 56px;gap:8px;padding-left:12px;padding-right:12px}
   /* legacy component grids still used inside sections */
   .g6,.g5{grid-template-columns:repeat(3,1fr)}
@@ -1143,7 +1166,7 @@ function wintProjection(){
 /* ==========================================================
    STATE + HELPERS
    ========================================================== */
-var S={co:"all",tab:"brief",period:"std",bview:"board",stallFilter:"all",week:0,resolved:{},done:{},acctOpen:null};
+var S={co:"all",tab:"brief",period:"std",bview:"board",stallFilter:"all",week:0,resolved:{},done:{},acctOpen:null,railOpen:true};
 
 function inCo(x){return S.co==="all"||x.co===S.co}
 function jobs(){return JOBS.filter(inCo).filter(function(j){return !S.done[j.id]})}
@@ -1924,9 +1947,16 @@ function paintChrome(){
     GROUPS.map(function(x){
       var bad=x.s.some(function(s){return BADGE[s[0]]});
       return '<div class="tipwrap"><button class="ic '+(g.id===x.id?"on":"")+'" data-grp="'+x.id+'">'+
-        RAILICON[x.id]+(bad?'<span class="bd"></span>':"")+'</button><span class="tip">'+x.t+'</span></div>';
+        '<span class="gl">'+RAILICON[x.id]+'</span><span class="lbl">'+x.t+'</span>'+
+        (bad?'<span class="bd"></span>':"")+'</button><span class="tip">'+x.t+'</span></div>';
     }).join("")+
-    '<div class="sp"></div><div class="who">CG</div>';
+    '<div class="sp"></div>'+
+    '<div class="tipwrap"><button class="ic railtog" id="railtog">'+
+      '<span class="gl">'+(S.railOpen?"\u00AB":"\u00BB")+'</span>'+
+      '<span class="lbl">Collapse</span></button>'+
+      '<span class="tip">'+(S.railOpen?"Collapse":"Expand the menu")+'</span></div>'+
+    '<div class="who">CG</div>';
+  document.querySelector(".wall").classList.toggle("rail-open",!!S.railOpen);
 
   var cb=CRUMB[S.tab]||["",""];
   document.getElementById("crumb-t").textContent=cb[0];
@@ -2061,12 +2091,13 @@ function crossfade(fn){
    EVENTS
    ========================================================== */
 document.addEventListener("click",function(e){
-  var t=e.target.closest("[data-tab],[data-grp],[data-co],[data-job],[data-p],[data-bv],[data-sf],[data-w],[data-need],[data-unstick],[data-adv],[data-close],[data-acct],[data-toast],#dr-x,#scrim,#fixit,#w-book,#w-crew");
+  var t=e.target.closest("[data-tab],[data-grp],[data-co],[data-job],[data-p],[data-bv],[data-sf],[data-w],[data-need],[data-unstick],[data-adv],[data-close],[data-acct],[data-toast],#dr-x,#scrim,#fixit,#w-book,#w-crew,#railtog");
   if(!t) return;
 
   if(t.id==="dr-x"||t.id==="scrim"){ closeDrawer(); return }
 
   if(t.dataset.tab){ S.tab=t.dataset.tab; S.sel=null; closeNav(); crossfade(paint); return }
+  if(t.id==="railtog"){ S.railOpen=!S.railOpen; paintChrome(); return }
   if(t.dataset.grp){ S.tab=groupOf2(t.dataset.grp).s[0][0]; S.sel=null; closeNav(); crossfade(paint); return }
   if(t.dataset.co){ S.co=t.dataset.co; S.acctOpen=null; S.sel=null; closeNav(); crossfade(paint); return }
   if(t.dataset.job){ openJob(t.dataset.job); return }
