@@ -336,6 +336,9 @@ li{margin-bottom:5px}
 .ph .price .amt{font-family:var(--f-disp);font-weight:600;font-size:25px;letter-spacing:-.02em;line-height:1}
 .ph .price .cap{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.08em;
   text-transform:uppercase;color:var(--ink-muted);margin-top:5px}
+.ph .price .mk{display:inline-block;font-family:var(--f-mono);font-size:9.5px;letter-spacing:.09em;
+  text-transform:uppercase;background:var(--accent-subtle);color:var(--accent);padding:4px 9px}
+.ph.opt .price .mk{background:var(--sunken);color:var(--ink-muted);box-shadow:inset 0 0 0 1px var(--border-strong)}
 .ph .bd{padding:14px 18px}
 .ph .bd p{font-size:12.8px;margin:0 0 9px}
 .ph .bd ul{font-size:12.5px;margin:0;padding-left:17px}
@@ -399,122 +402,85 @@ footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--border-strong
 <main>
 <div class="hero">
   <div class="kick">Sistema de operación</div>
-  <h1>Se paga por fase, y cada fase sirve sola.</h1>
-  <p class="sub">No hay un precio único por un sistema completo que aparece dentro de un año. Hay un
-  descubrimiento corto que se paga y se acredita, un núcleo que entra a producción en dos o tres meses, y
-  fases posteriores que sólo se contratan si las primeras funcionaron. Si al terminar la fase 1 Vencom
-  decide parar, se queda con lo que ya está corriendo.</p>
+  <h1>Dos números. Las fases explican qué compra cada uno.</h1>
+  <p class="sub">Uno es la construcción del sistema, y depende de hasta dónde se lleve el alcance.
+  El otro es lo que cuesta tenerlo corriendo cada mes. Nada más. Las fases de abajo dicen qué entra
+  en cada tramo, y la fase 0 —dos semanas dentro de la operación real— es la que convierte los dos
+  rangos en cifras exactas.</p>
   <div class="cluster">
-    <div class="ins"><span class="k">Para empezar</span><span class="v">$35,000</span></div>
-    <div class="ins"><span class="k">Para estar en producción</span><span class="v">$185,000</span></div>
-    <div class="ins"><span class="k">Suscripción desde</span><span class="v">$11,000</span></div>
-    <div class="ins"><span class="k">Alcance completo</span><span class="v">$570,000</span></div>
+    <div class="ins"><span class="k">Construcción</span><span class="v">$25,000 – $38,000 USD</span></div>
+    <div class="ins"><span class="k">Suscripción mensual</span><span class="v">$1,200 – $1,500 USD</span></div>
+    <div class="ins"><span class="k">Módulos</span><span class="v">10</span></div>
+    <div class="ins"><span class="k">Fases</span><span class="v">6</span></div>
   </div>
 </div>
 
 <section>
-<h2>Cómo está armado el precio</h2>
-<div class="blk">
-<p>Tres componentes, y ninguno depende de los otros dos para tener sentido.</p>
-<p><b>Uno.</b> El <b>descubrimiento</b> de dos semanas, $35,000, que se acredita completo contra la
-implementación si Vencom decide seguir dentro de los 60 días siguientes. Si decide no seguir, se queda con
-el mapa de procesos y el inventario de datos, que sirven aunque el sistema lo construya alguien más.</p>
-<p><b>Dos.</b> La <b>implementación por fases</b>. Cada fase se cotiza y se acepta por separado, y cada una
-entrega algo que se usa en producción. No hay una fase que sólo produzca documentos.</p>
-<p><b>Tres.</b> La <b>suscripción mensual</b>, que empieza cuando la fase 1 entra a producción y no antes.
-Cubre la operación del sistema, las actualizaciones y el mantenimiento de los parámetros normativos.</p>
+<h2>Lo que cuesta</h2>
+<div class="opts">
+  <div class="opt-c pick">
+    <span class="tag">Una sola vez</span>
+    <h4>Construcción del sistema</h4>
+    <div class="big">$25,000 – $38,000 USD</div>
+    <p class="fine">Lo que mueve el número es el alcance, no el tiempo.</p>
+    <ul>
+      <li><b>$25,000 USD</b> — el núcleo: fases 0, 1 y 2. El sistema ya sustituye trabajo real
+      y se puede parar ahí.</li>
+      <li><b>$38,000 USD</b> — el alcance completo: las seis fases, incluidos FPL®, actuaría,
+      In House, talento y el portal del cliente.</li>
+      <li>Cualquier punto intermedio es válido: las fases 3, 4 y 5 se deciden una por una.</li>
+    </ul>
+  </div>
+  <div class="opt-c">
+    <span class="tag">Cada mes</span>
+    <h4>Suscripción</h4>
+    <div class="big">$1,200 – $1,500 USD</div>
+    <p class="fine">Plana. No cambia con el número de trabajadores ni con los módulos activados.</p>
+    <ul>
+      <li>Servidores, respaldos y disponibilidad</li>
+      <li><b>Mantenimiento de los parámetros normativos</b>: UMA, salario mínimo, ISN por estado,
+      cuota CEAV, topes de previsión social, calendario de la reforma de jornada</li>
+      <li>Actualizaciones de producto y soporte en horario hábil</li>
+      <li>El monto exacto dentro del rango depende del volumen de datos, y se fija al cerrar la fase 0</li>
+    </ul>
+  </div>
+</div>
+
+<div class="blk accent">
+<p><b>La suscripción puede desaparecer.</b> El módulo de prospección lo opera Telaia y se remunera por
+comisión sobre los clientes nuevos que le consigue a Vencom. <b>Mientras esa comisión esté corriendo,
+no se cobra la suscripción mensual.</b> Cobrar las dos cosas al mismo tiempo no tendría sentido:
+si el sistema ya está generando ingreso para ambas partes, se paga solo.</p>
 </div>
 </section>
 
 <section>
 <h2>Las fases, y qué trae cada una</h2>
-<p>Las fases 1 y 2 son el núcleo: es el mínimo con el que el sistema sustituye trabajo real. Las fases 3 a 5
-son opcionales y se deciden después, con el alcance ya cerrado.</p>
-<div class="ph"><div class="hd"><div><div class="no">Fase 0</div><h4>Descubrimiento</h4><div class="dur">2 semanas</div></div><div class="price"><div class="amt">$35,000</div><div class="cap">incluida y acreditable</div></div></div><div class="bd"><p>Dos semanas dentro de la operación real: acompañar un cierre completo, ver dónde vive hoy cada dato y qué se resuelve en Excel, en correo y de memoria. Es la única fase que se puede comprar sola.</p><ul><li>Mapa de procesos por línea de negocio</li><li>Inventario de datos y de dónde sale cada uno</li><li>Lista priorizada de lo que duele, con costo estimado de cada falla</li><li>Alcance cerrado y precio en firme de las fases siguientes</li></ul></div></div><div class="ph"><div class="hd"><div><div class="no">Fase 1</div><h4>Cartera, nómina e IMSS</h4><div class="dur">4–6 semanas</div></div><div class="price"><div class="amt">$115,000</div><div class="cap">el motor recurrente</div></div></div><div class="bd"><p>Primero lo que corre todos los periodos y lo que tiene el plazo legal más corto, porque ahí está el pico de fin de mes y ahí está el riesgo. Al terminar esta fase el sistema ya se usa en producción.</p><ul><li>Expediente de cliente, registros patronales y calendarios de pago</li><li>Corridas por etapas: incidencias → cálculo → revisión → timbrado → dispersión → cierre</li><li>Reloj de timbrado: fecha de pago más tres días hábiles</li><li>Movimientos afiliatorios con el plazo de cinco días hábiles desde el hecho</li><li>Conciliación SUA ↔ EMA con cola de diferencias por cliente y por renglón</li><li>Parámetros con vigencia: UMA, salario mínimo, ISN por estado, cuota CEAV</li></ul></div></div><div class="ph"><div class="hd"><div><div class="no">Fase 2</div><h4>Obligaciones y REPSE</h4><div class="dur">3–4 semanas</div></div><div class="price"><div class="amt">$70,000</div><div class="cap">el expediente</div></div></div><div class="bd"><p>El calendario por cliente y por jurisdicción, y el expediente que se entrega cuando alguien pregunta. Registra qué se debía y qué se hizo; no opina sobre estructuras.</p><ul><li>Calendario de obligaciones con responsable, evidencia y acuse</li><li>Vigencia del registro REPSE con la ventana de renovación a la vista</li><li>ISN por estado con las tasas vigentes de cada periodo</li><li>ICSOE y SISUB generadas por contrato de servicio</li><li>Bóveda de opiniones de cumplimiento con su fecha de caducidad</li></ul></div></div><div class="ph opt"><div class="hd"><div><div class="no">Fase 3</div><h4>FPL®, préstamos y seguros</h4><div class="dur">4–5 semanas</div></div><div class="price"><div class="amt">$150,000</div><div class="cap">estimado</div></div></div><div class="bd"><p>Las reglas que hoy dependen de que alguien las recuerde, aplicadas por el sistema antes de autorizar, no descubiertas al cierre del ejercicio.</p><ul><li>Submayores del fondo con paridad, periodicidad y control de retiros</li><li>El intento que rompe una regla queda registrado, con la alternativa ofrecida</li><li>Préstamos dentro de la corrida y cruce automático contra finiquito</li><li>Censo contra aseguradora y seguimiento de siniestros</li></ul></div></div><div class="ph opt"><div class="hd"><div><div class="no">Fase 4</div><h4>Actuaría, In House y Talento</h4><div class="dur">3 semanas</div></div><div class="price"><div class="amt">$110,000</div><div class="cap">estimado</div></div></div><div class="bd"><p>Las tres líneas que hoy viven fuera de cualquier sistema y se coordinan por correo.</p><ul><li>Pipeline de estudios actuariales con el censo como compuerta</li><li>Asignaciones de implants, ausencias y relevo, visibles desde el corporativo</li><li>Requisiciones de talento con reloj de garantía por colocación</li></ul></div></div><div class="ph opt"><div class="hd"><div><div class="no">Fase 5</div><h4>Prospección y portal</h4><div class="dur">3 semanas</div></div><div class="price"><div class="amt">$125,000</div><div class="cap">estimado</div></div></div><div class="bd"><p>Traer clientes con el mismo perfil que ya se atiende bien, y abrir al cliente lo que hoy se manda por correo.</p><ul><li>Descubrimiento por código SCIAN y estrato de personal ocupado</li><li>Contacto en frío conforme a la LFPDPPP, con aviso de privacidad y derechos ARCO</li><li>Entregas al equipo comercial y medición hasta el contrato, no hasta el clic</li><li>Portal del cliente y autoservicio del trabajador</li></ul></div></div>
-<div class="blk warn">
-<p><b>Sobre las fases 3, 4 y 5.</b> Los precios están marcados como estimados a propósito. Se confirman en
-firme al terminar la fase 0, cuando ya sabemos qué reglas existen de verdad y cuáles se descubrieron en el
-camino. Preferimos ese orden a cotizar hoy un número que después haya que corregir hacia arriba.</p>
-<p>El esquema comercial del módulo de prospección de la fase 5 se acuerda por separado, porque no se cobra
-como las demás.</p>
+<p>El orden no es arbitrario: primero lo recurrente y lo que tiene plazo legal corto, porque ahí está el
+riesgo y el pico de trabajo. Cada fase entrega algo que se usa en producción — ninguna produce sólo
+documentos. Las tres primeras son el núcleo; las tres últimas se deciden después, con el alcance ya cerrado.</p>
+<div class="ph"><div class="hd"><div><div class="no">Fase 0</div><h4>Descubrimiento</h4><div class="dur">2 semanas</div></div><div class="price"><span class="mk">Núcleo</span></div></div><div class="bd"><p>Dos semanas dentro de la operación real: acompañar un cierre completo, ver dónde vive hoy cada dato y qué se resuelve en Excel, en correo y de memoria. Es la única fase que se puede comprar sola.</p><ul><li>Mapa de procesos por línea de negocio</li><li>Inventario de datos y de dónde sale cada uno</li><li>Lista priorizada de lo que duele, con costo estimado de cada falla</li><li>Alcance cerrado y precio en firme de las fases siguientes</li></ul></div></div><div class="ph"><div class="hd"><div><div class="no">Fase 1</div><h4>Cartera, nómina e IMSS</h4><div class="dur">4–6 semanas</div></div><div class="price"><span class="mk">Núcleo</span></div></div><div class="bd"><p>Primero lo que corre todos los periodos y lo que tiene el plazo legal más corto, porque ahí está el pico de fin de mes y ahí está el riesgo. Al terminar esta fase el sistema ya se usa en producción.</p><ul><li>Expediente de cliente, registros patronales y calendarios de pago</li><li>Corridas por etapas: incidencias → cálculo → revisión → timbrado → dispersión → cierre</li><li>Reloj de timbrado: fecha de pago más tres días hábiles</li><li>Movimientos afiliatorios con el plazo de cinco días hábiles desde el hecho</li><li>Conciliación SUA ↔ EMA con cola de diferencias por cliente y por renglón</li><li>Parámetros con vigencia: UMA, salario mínimo, ISN por estado, cuota CEAV</li></ul></div></div><div class="ph"><div class="hd"><div><div class="no">Fase 2</div><h4>Obligaciones y REPSE</h4><div class="dur">3–4 semanas</div></div><div class="price"><span class="mk">Núcleo</span></div></div><div class="bd"><p>El calendario por cliente y por jurisdicción, y el expediente que se entrega cuando alguien pregunta. Registra qué se debía y qué se hizo; no opina sobre estructuras.</p><ul><li>Calendario de obligaciones con responsable, evidencia y acuse</li><li>Vigencia del registro REPSE con la ventana de renovación a la vista</li><li>ISN por estado con las tasas vigentes de cada periodo</li><li>ICSOE y SISUB generadas por contrato de servicio</li><li>Bóveda de opiniones de cumplimiento con su fecha de caducidad</li></ul></div></div><div class="ph opt"><div class="hd"><div><div class="no">Fase 3</div><h4>FPL®, préstamos y seguros</h4><div class="dur">4–5 semanas</div></div><div class="price"><span class="mk">Alcance completo</span></div></div><div class="bd"><p>Las reglas que hoy dependen de que alguien las recuerde, aplicadas por el sistema antes de autorizar, no descubiertas al cierre del ejercicio.</p><ul><li>Submayores del fondo con paridad, periodicidad y control de retiros</li><li>El intento que rompe una regla queda registrado, con la alternativa ofrecida</li><li>Préstamos dentro de la corrida y cruce automático contra finiquito</li><li>Censo contra aseguradora y seguimiento de siniestros</li></ul></div></div><div class="ph opt"><div class="hd"><div><div class="no">Fase 4</div><h4>Actuaría, In House y Talento</h4><div class="dur">3 semanas</div></div><div class="price"><span class="mk">Alcance completo</span></div></div><div class="bd"><p>Las tres líneas que hoy viven fuera de cualquier sistema y se coordinan por correo.</p><ul><li>Pipeline de estudios actuariales con el censo como compuerta</li><li>Asignaciones de implants, ausencias y relevo, visibles desde el corporativo</li><li>Requisiciones de talento con reloj de garantía por colocación</li></ul></div></div><div class="ph opt"><div class="hd"><div><div class="no">Fase 5</div><h4>Prospección y portal</h4><div class="dur">3 semanas</div></div><div class="price"><span class="mk">Alcance completo</span></div></div><div class="bd"><p>Traer clientes con el mismo perfil que ya se atiende bien, y abrir al cliente lo que hoy se manda por correo.</p><ul><li>Descubrimiento por código SCIAN y estrato de personal ocupado</li><li>Contacto en frío conforme a la LFPDPPP, con aviso de privacidad y derechos ARCO</li><li>Entregas al equipo comercial y medición hasta el contrato, no hasta el clic</li><li>Portal del cliente y autoservicio del trabajador</li></ul></div></div>
+</section>
+
+<section>
+<h2>Prospección: un modelo distinto</h2>
+<div class="blk">
+<p>La prospección no se cobra como el resto del sistema, y <b>no la opera Vencom</b>. La opera Telaia:
+busca empresas con el mismo perfil que los clientes que Vencom ya atiende bien, las contacta conforme a
+la LFPDPPP y entrega al equipo comercial de Vencom sólo las que califican.</p>
+<p>Vencom ve todo lo que ese motor hace —qué empresas encontró, a quién le escribió, qué contestaron,
+qué se entregó y en qué terminó— desde el mismo sistema, en una vista de <b>sólo lectura</b>. El registro
+completo queda auditable; la operación corre por cuenta de Telaia.</p>
+<p>La remuneración es por <b>comisión sobre la nómina administrada de cada cliente nuevo</b> que entre por
+esa vía, en los términos que se acuerden en el contrato. Y mientras haya comisión, no hay suscripción.</p>
 </div>
-</section>
-
-<section>
-<h2>Suscripción mensual</h2>
-<p>Por banda de trabajadores administrados, no por trabajador. El importe no cambia de un mes a otro por
-movimientos de plantilla dentro de la misma banda, y <b>no sube al activar más módulos</b>: las fases 3 a 5
-se pagan una vez y no modifican el mensual.</p>
-<table class="doc">
-<thead><tr><th>Banda</th><th class="num">Suscripción</th></tr></thead>
-<tbody><tr><td>Hasta 1,500 trabajadores</td><td class="num">$11,000 / mes</td></tr><tr><td>De 1,501 a 4,000</td><td class="num">$21,000 / mes</td></tr><tr><td>De 4,001 a 8,000</td><td class="num">$34,000 / mes</td></tr><tr><td>Más de 8,000</td><td class="num">Cotización</td></tr></tbody>
-</table>
-
-<h3>Qué cubre</h3>
-<ul>
-  <li>Operación del sistema, respaldos y disponibilidad</li>
-  <li><b>Mantenimiento de los parámetros normativos</b> con su vigencia: UMA, salario mínimo, ISN por estado,
-  cuota CEAV, topes de previsión social y el calendario de la reforma de jornada</li>
-  <li>Actualizaciones de producto, sin cargo por versión</li>
-  <li>Soporte en horario hábil, con tiempo de respuesta comprometido en el contrato</li>
-  <li>Cambios menores de configuración: catálogos, plantillas, usuarios, reportes existentes</li>
-</ul>
-<p>Lo que no cubre son desarrollos nuevos, integraciones adicionales y módulos que no estén contratados.
-Esos se cotizan aparte y sólo con orden escrita.</p>
-</section>
-
-<section>
-<h2>Dos formas de pagar la implementación</h2>
-<p>El alcance es idéntico en las dos. Cambia únicamente cuándo sale el dinero.</p>
-<div class="opts">
-  <div class="opt-c pick">
-    <span class="tag">Opción A · de contado</span>
-    <h4>Pago por avance</h4>
-    <div class="big">$185,000</div>
-    <p class="fine">Menos $35,000 ya pagados en la fase 0 = <b>$150,000</b> restantes.</p>
-    <ul>
-      <li>40% al iniciar la fase 1 — $60,000</li>
-      <li>30% al iniciar la fase 2 — $45,000</li>
-      <li>30% contra aceptación — $45,000</li>
-      <li>Sin plazo forzoso: la suscripción es mes a mes</li>
-    </ul>
-  </div>
-  <div class="opt-c">
-    <span class="tag">Opción B · sin inversión inicial</span>
-    <h4>Implementación diferida</h4>
-    <div class="big">$7,500 / mes</div>
-    <p class="fine">Durante 24 meses, además de la suscripción. Total $180,000.</p>
-    <ul>
-      <li>Cero de implementación al arrancar</li>
-      <li>Plazo forzoso de 24 meses</li>
-      <li>Cuesta $30,000 más que la opción A, por el diferimiento</li>
-      <li>Al mes 24 el cargo desaparece y queda sólo la suscripción</li>
-    </ul>
-  </div>
-</div>
-</section>
-
-<section>
-<h2>Resumen de inversión</h2>
-<p>Tres escenarios. El primero es real: se puede parar ahí.</p>
-<table class="doc">
-<thead><tr><th>Escenario</th><th>Qué incluye</th><th class="num">Una sola vez</th><th class="num">Mensual*</th></tr></thead>
-<tbody>
-<tr><td>Sólo descubrimiento</td><td>Fase 0</td><td class="num">$35,000</td><td class="num">—</td></tr>
-<tr><td>Núcleo en producción</td><td>Fases 0, 1 y 2</td><td class="num">$185,000</td><td class="num">$21,000</td></tr>
-<tr class="tot"><td>Alcance completo</td><td>Fases 0 a 5</td><td class="num">$570,000</td><td class="num">$21,000</td></tr>
-</tbody>
-</table>
-<p class="fine" style="font-size:11.5px;color:var(--ink-muted)">* Mensual mostrado en la banda de 1,501 a
-4,000 trabajadores, a manera de referencia. La banda definitiva se fija al cerrar la fase 0, cuando ya está
-contado el padrón administrado.</p>
 </section>
 
 <section>
 <h2>Condiciones comerciales</h2>
 <table class="doc wrap">
 <tbody>
-<tr><td style="width:210px"><b>Moneda e impuestos</b></td><td>Todas las cifras están en pesos mexicanos y son <b>antes de IVA</b>. El IVA por importación de servicios lo autodetermina y acredita Vencom en el mismo periodo, sin costo neto.</td></tr><tr><td style="width:210px"><b>Retención de ISR</b></td><td>Los importes son <b>antes de retenciones</b>. Vencom retiene el ISR que corresponda. Con la constancia de residencia fiscal vigente emitida por la autoridad canadiense aplica la tasa del <b>10%</b> del Convenio México–Canadá; sin ella, la tasa general. La constancia se entrega <b>antes de la primera factura</b>.</td></tr><tr><td style="width:210px"><b>Conceptos separados</b></td><td>El desarrollo y la suscripción se facturan como conceptos distintos, porque tienen tratamiento fiscal distinto. No se emiten facturas por importe global.</td></tr><tr><td style="width:210px"><b>Datos de facturación</b></td><td>La factura se emite desde Canadá e incluye el <b>RFC de Grupo Vencom</b>, conforme a la regla 2.7.1.14 de la RMF, para que el gasto sea deducible. Se solicitan los datos al firmar.</td></tr><tr><td style="width:210px"><b>Forma de pago</b></td><td>Suscripción: mensual y por adelantado, dentro de los primeros cinco días del mes. Implementación: según el calendario de la opción elegida. Transferencia internacional.</td></tr><tr><td style="width:210px"><b>Vigencia de la cotización</b></td><td>30 días naturales a partir de la fecha de este documento. Los precios de las fases 3 a 5 son estimados y se confirman en firme al cerrar la fase 0.</td></tr><tr><td style="width:210px"><b>Ajuste anual</b></td><td>La suscripción se ajusta una vez al año, en el aniversario del contrato, conforme al <b>INPC</b> publicado por el INEGI. No hay otros ajustes durante el año.</td></tr><tr><td style="width:210px"><b>Suspensión</b></td><td>El servicio puede suspenderse por falta de pago mayor a 30 días, con aviso previo por escrito de 10 días. La información de Vencom no se elimina durante la suspensión.</td></tr><tr><td style="width:210px"><b>Datos y licencia</b></td><td>La información es de Grupo Vencom. La licencia de uso del sistema está vigente mientras lo esté el contrato; al terminar, los datos se entregan en formato abierto sin costo.</td></tr>
+<tr><td style="width:210px"><b>Moneda</b></td><td>Todas las cifras están en <b>dólares estadounidenses</b> y son antes de IVA. El IVA por importación de servicios lo autodetermina y acredita Vencom en el mismo periodo, sin costo neto.</td></tr><tr><td style="width:210px"><b>Retención de ISR</b></td><td>Los importes son <b>antes de retenciones</b>. Vencom retiene el ISR que corresponda. Con la constancia de residencia fiscal vigente de la autoridad canadiense aplica la tasa del <b>10%</b> del Convenio México–Canadá; sin ella, la tasa general. La constancia se entrega antes de la primera factura.</td></tr><tr><td style="width:210px"><b>Conceptos separados</b></td><td>El desarrollo y la suscripción se facturan como conceptos distintos, porque tienen tratamiento fiscal distinto. No se emiten facturas por importe global.</td></tr><tr><td style="width:210px"><b>Datos de facturación</b></td><td>La factura se emite desde Canadá e incluye el <b>RFC de Grupo Vencom</b>, conforme a la regla 2.7.1.14 de la RMF, para que el gasto sea deducible. Se solicitan los datos al firmar.</td></tr><tr><td style="width:210px"><b>Calendario de pagos</b></td><td>El calendario de la construcción se acuerda al cerrar el alcance. La suscripción es mensual y por adelantado, y empieza cuando el sistema entra a producción — no antes.</td></tr><tr><td style="width:210px"><b>Vigencia</b></td><td>Esta propuesta es válida 30 días naturales. El rango de construcción y el monto exacto de la suscripción se confirman en firme al terminar la fase 0.</td></tr><tr><td style="width:210px"><b>Suspensión</b></td><td>El servicio puede suspenderse por falta de pago mayor a 30 días, con aviso previo por escrito de 10 días. La información de Vencom no se elimina durante la suspensión.</td></tr><tr><td style="width:210px"><b>Datos y licencia</b></td><td>La información es de Grupo Vencom. La licencia de uso está vigente mientras lo esté el contrato; al terminar, los datos se entregan en formato abierto y sin costo.</td></tr>
 </tbody>
 </table>
 
@@ -526,8 +492,8 @@ contado el padrón administrado.</p>
 <h2>Siguiente paso</h2>
 <div class="blk accent">
 <p>Recorrer la demostración con las personas que hacen el cierre, no sólo con la dirección. Si las pantallas
-de <b>Hoy</b>, <b>IMSS · conciliación</b> y <b>FPL® · fondo de ahorro</b> describen bien su semana, el alcance
-se sostiene y la fase 0 se puede firmar. Si no, se corrige el alcance antes de empezar y este documento cambia.</p>
+de <b>Hoy</b>, <b>Cartera · CRM</b> y <b>FPL® · fondo de ahorro</b> describen bien su semana, el alcance se
+sostiene. Si no, se corrige antes de empezar y este documento cambia.</p>
 <p><a href="https://atelioos.github.io/demos/gv-459746.html" style="font-weight:600">Abrir la demostración →</a>
 &nbsp;·&nbsp;
 <a href="https://atelioos.github.io/demos/gv-459746-scope.html" style="font-weight:600">Alcance y enfoque →</a></p>
@@ -536,8 +502,8 @@ se sostiene y la fase 0 se puede firmar. Si no, se corrige el alcance antes de e
 </section>
 
 <footer>
-Propuesta económica preparada para Grupo Vencom. Cifras en pesos mexicanos, antes de IVA, vigentes 30 días
-naturales. Las fases 3 a 5 son estimadas y se confirman al cerrar la fase 0. Las referencias normativas y
+Propuesta económica preparada para Grupo Vencom. Cifras en dólares estadounidenses, antes de IVA, vigentes
+30 días naturales. Los rangos se confirman en firme al cerrar la fase 0. Las referencias normativas y
 fiscales se incluyen como contexto operativo y <b>no constituyen asesoría legal ni fiscal</b>.
 </footer>
 </main>
