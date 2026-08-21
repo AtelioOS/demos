@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AUDA OS — Demo interactivo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --graphite:#14171B;--graphite-2:#1C2026;--graphite-3:#252A31;--graphite-4:#2F353D;
+    --concrete:#F3F0E9;--concrete-2:#EAE6DC;--card:#FFFFFF;
+    --steel:#8A93A0;--steel-2:#5B646F;--steel-3:#39414A;
+    --ochre:#E6971F;--ochre-soft:#F2B54B;--ochre-deep:#C97F12;
+    --blueprint:#2E6FA7;--blueprint-soft:#6FA6D4;
+    --ok:#3E9E6E;--ok-soft:#7ED0A3;--warn:#D9822B;--danger:#C6553B;
+    --hair:rgba(255,255,255,.08);--hair-d:rgba(20,23,27,.09);
+    --shadow:0 18px 44px -22px rgba(20,23,27,.42);
+    --shadow-lg:0 30px 70px -30px rgba(20,23,27,.55);
+    --r:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;color:var(--graphite);background:var(--concrete);-webkit-font-smoothing:antialiased;line-height:1.5}
+  h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;font-weight:600;letter-spacing:-.01em;line-height:1.14}
+  .mono{font-family:'IBM Plex Mono',monospace}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}
+  input,select{font-family:inherit}
+  ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:rgba(20,23,27,.15);border-radius:6px}
+
+  /* ===== SPLASH ===== */
+  #splash{position:fixed;inset:0;z-index:200;background:radial-gradient(1000px 500px at 78% 10%,rgba(46,111,167,.22),transparent 60%),radial-gradient(760px 460px at 8% 100%,rgba(230,151,31,.18),transparent 60%),var(--graphite);display:flex;align-items:center;justify-content:center;transition:opacity .6s ease,visibility .6s}
+  #splash::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--hair) 1px,transparent 1px),linear-gradient(90deg,var(--hair) 1px,transparent 1px);background-size:52px 52px;-webkit-mask-image:radial-gradient(circle at 60% 40%,#000,transparent 72%);mask-image:radial-gradient(circle at 60% 40%,#000,transparent 72%);opacity:.55}
+  #splash.hide{opacity:0;visibility:hidden}
+  .splash-in{position:relative;text-align:center;padding:20px;animation:rise .7s ease}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .splash-logo{width:82px;height:82px;border-radius:22px;background:linear-gradient(135deg,var(--ochre),var(--ochre-deep));display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk';font-weight:700;color:#14171B;font-size:42px;margin:0 auto 26px;box-shadow:0 20px 50px -16px rgba(230,151,31,.75)}
+  .splash-in h1{color:#fff;font-size:clamp(34px,6vw,52px)}
+  .splash-in h1 .a{color:var(--ochre-soft)}
+  .splash-in p{color:#AEB6C0;font-size:17px;margin-top:14px;max-width:44ch;margin-inline:auto}
+  .enter{margin-top:32px;display:inline-flex;align-items:center;gap:10px;background:var(--ochre);color:#14171B;font-weight:600;font-size:16px;padding:15px 28px;border-radius:12px;box-shadow:0 14px 34px -14px rgba(230,151,31,.85);transition:transform .15s,box-shadow .2s}
+  .enter:hover{transform:translateY(-2px);box-shadow:0 20px 44px -14px rgba(230,151,31,1)}
+  .splash-meta{margin-top:30px;font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--steel)}
+
+  /* ===== SHELL ===== */
+  .app{display:grid;grid-template-columns:256px 1fr;min-height:100vh}
+  @media(max-width:900px){.app{grid-template-columns:1fr}}
+  .side{background:linear-gradient(185deg,#181C21,var(--graphite));color:#fff;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;border-right:1px solid var(--hair)}
+  @media(max-width:900px){.side{position:relative;height:auto}}
+  .brand{display:flex;align-items:center;gap:12px;padding:22px 20px 18px}
+  .brand .logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--ochre),var(--ochre-deep));display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk';font-weight:700;color:#14171B;font-size:18px;box-shadow:0 8px 20px -8px rgba(230,151,31,.7)}
+  .brand .nm b{display:block;font-family:'Space Grotesk';font-weight:600;font-size:16px;letter-spacing:.02em}
+  .brand .nm span{font-size:11px;color:var(--steel);font-family:'IBM Plex Mono'}
+  .nav{padding:8px 12px;flex-grow:1;overflow-y:auto}
+  .nav .grp{font-family:'IBM Plex Mono';font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--steel);padding:16px 12px 8px}
+  .nav a{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:11px;color:#C7CDD4;text-decoration:none;font-size:14px;font-weight:500;margin-bottom:2px;transition:background .16s,color .16s,transform .1s;border:1px solid transparent;position:relative}
+  .nav a .ic{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+  .nav a:hover{background:rgba(255,255,255,.05);color:#fff}
+  .nav a.active{background:linear-gradient(100deg,rgba(230,151,31,.20),rgba(230,151,31,.06));color:#fff;border-color:rgba(230,151,31,.4);box-shadow:inset 0 0 0 1px rgba(230,151,31,.06)}
+  .nav a.active::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:3px;border-radius:3px;background:var(--ochre);box-shadow:0 0 12px var(--ochre)}
+  .nav a.soon{opacity:.4;cursor:not-allowed}
+  .nav a.soon .tag{margin-left:auto;font-family:'IBM Plex Mono';font-size:8.5px;letter-spacing:.1em;background:var(--graphite-3);padding:2px 6px;border-radius:5px;color:var(--steel)}
+  .side .mini-obra{margin:12px;padding:14px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--hair)}
+  .side .mini-obra .k{font-family:'IBM Plex Mono';font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--steel)}
+  .side .mini-obra .nm{font-family:'Space Grotesk';font-weight:600;font-size:14px;color:#fff;margin:5px 0 9px}
+  .side .mini-obra .track{height:6px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden}
+  .side .mini-obra .track span{display:block;height:100%;width:62%;border-radius:4px;background:linear-gradient(90deg,var(--ochre),var(--ochre-soft))}
+  .side .mini-obra .pct{font-size:11px;color:var(--steel);margin-top:6px;font-family:'IBM Plex Mono'}
+  .side .foot{padding:12px 18px;border-top:1px solid var(--hair);font-size:11px;color:var(--steel);font-family:'IBM Plex Mono'}
+  .side .foot b{color:var(--ochre-soft);font-weight:500}
+
+  .main{display:flex;flex-direction:column;min-width:0}
+  .topbar{height:66px;background:rgba(243,240,233,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--hair-d);display:flex;align-items:center;justify-content:space-between;padding:0 30px;position:sticky;top:0;z-index:30}
+  .topbar .crumb{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--steel-2);font-family:'IBM Plex Mono'}
+  .topbar .crumb b{color:var(--graphite);font-weight:600;font-family:'Space Grotesk';font-size:15px}
+  .topbar .right{display:flex;align-items:center;gap:12px}
+  .search{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--hair-d);border-radius:10px;padding:8px 12px;color:var(--steel);font-size:13px;width:190px}
+  .search input{border:none;background:none;outline:none;font-size:13px;width:100%;color:var(--graphite)}
+  @media(max-width:680px){.search{display:none}}
+  .obra-sel{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--hair-d);border-radius:10px;padding:7px 12px;font-size:13px;font-weight:500}
+  .obra-sel select{border:none;background:none;font-size:13px;font-weight:600;color:var(--graphite);outline:none;cursor:pointer}
+  .bell{width:38px;height:38px;border-radius:10px;background:var(--card);border:1px solid var(--hair-d);display:flex;align-items:center;justify-content:center;font-size:16px;position:relative}
+  .bell::after{content:"";position:absolute;top:9px;right:10px;width:7px;height:7px;border-radius:50%;background:var(--danger);border:2px solid var(--card)}
+  .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--blueprint),#244f78);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:13px;font-family:'Space Grotesk'}
+  .view{padding:28px 30px 60px;max-width:1140px;width:100%}
+  @media(max-width:560px){.view{padding:20px 16px 50px}.topbar{padding:0 16px}}
+  .view.show{animation:fadein .4s ease}
+  @keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .hidden{display:none!important}
+
+  /* section banner */
+  .banner{position:relative;overflow:hidden;border-radius:20px;padding:30px 32px;margin-bottom:26px;color:#fff;background:linear-gradient(120deg,var(--graphite),#1E2A38)}
+  .banner::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--hair) 1px,transparent 1px),linear-gradient(90deg,var(--hair) 1px,transparent 1px);background-size:40px 40px;-webkit-mask-image:radial-gradient(circle at 88% 20%,#000,transparent 70%);mask-image:radial-gradient(circle at 88% 20%,#000,transparent 70%);opacity:.6}
+  .banner::after{content:"";position:absolute;right:-60px;top:-70px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(230,151,31,.34),transparent 70%)}
+  .banner .in{position:relative}
+  .banner .eyebrow{font-family:'IBM Plex Mono';font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ochre-soft);margin-bottom:10px}
+  .banner h1{font-size:27px;color:#fff}
+  .banner p{color:#B9C1CA;margin-top:8px;font-size:15px;max-width:60ch}
+  .banner .lede-b{font-weight:600;color:#fff}
+
+  /* KPI */
+  .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+  @media(max-width:900px){.kpi-row{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:460px){.kpi-row{grid-template-columns:1fr}}
+  .kpi{background:var(--card);border:1px solid var(--hair-d);border-radius:var(--r);padding:20px;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s}
+  .kpi:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+  .kpi .top{display:flex;align-items:center;justify-content:space-between}
+  .kpi .ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;background:var(--concrete);border:1px solid var(--hair-d)}
+  .kpi .trend{font-family:'IBM Plex Mono';font-size:10.5px;font-weight:600;padding:3px 7px;border-radius:6px}
+  .kpi .trend.up{background:#E4F1EA;color:var(--ok)}.kpi .trend.down{background:#F8E7E2;color:var(--danger)}.kpi .trend.flat{background:var(--concrete-2);color:var(--steel-2)}
+  .kpi .k{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--steel-2);margin-top:14px}
+  .kpi .v{font-family:'Space Grotesk';font-weight:700;font-size:27px;margin-top:6px;letter-spacing:-.02em}
+  .kpi .sub{font-size:12px;color:var(--steel);margin-top:3px}
+  .kpi.accent{background:linear-gradient(150deg,var(--graphite),#20272F);color:#fff;border:none}
+  .kpi.accent .ic{background:rgba(230,151,31,.16);border:none}
+  .kpi.accent .k{color:var(--steel)}.kpi.accent .sub{color:var(--steel)}
+  .kpi.accent::after{content:"";position:absolute;right:-30px;bottom:-40px;width:130px;height:130px;border-radius:50%;background:radial-gradient(circle,rgba(230,151,31,.25),transparent 70%)}
+
+  .card{background:var(--card);border:1px solid var(--hair-d);border-radius:var(--r);padding:24px;margin-bottom:20px}
+  .card h3{font-size:17px;margin-bottom:4px;display:flex;align-items:center;gap:9px}
+  .card .card-sub{font-size:13px;color:var(--steel-2);margin-bottom:18px}
+  .two-col{display:grid;grid-template-columns:1.4fr 1fr;gap:20px}
+  @media(max-width:820px){.two-col{grid-template-columns:1fr}}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{text-align:left;font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--steel-2);font-weight:500;padding:10px;border-bottom:1px solid var(--hair-d)}
+  td{padding:13px 10px;border-bottom:1px solid var(--hair-d)}
+  tr:last-child td{border-bottom:none}
+  tbody tr{transition:background .14s}tbody tr:hover{background:rgba(230,151,31,.04)}
+  td.num,th.num{text-align:right;font-family:'IBM Plex Mono'}
+  .tag-gremio{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;padding:4px 9px;border-radius:7px;background:var(--concrete-2);color:var(--steel-3)}
+  .tag-gremio .d{width:7px;height:7px;border-radius:50%}
+  .pos{color:var(--ok);font-weight:600}.neg{color:var(--danger);font-weight:600}
+  .chip-status{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.06em;padding:3px 8px;border-radius:6px;text-transform:uppercase;font-weight:600}
+  .st-activa{background:#E4F1EA;color:var(--ok)}.st-cotiz{background:#FBF0DC;color:var(--warn)}.st-cierre{background:#E4EEF6;color:var(--blueprint)}
+
+  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--ochre);color:#14171B;font-weight:600;font-size:14px;padding:11px 18px;border-radius:10px;transition:transform .12s,box-shadow .15s}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 12px 24px -12px rgba(230,151,31,.9)}
+  .btn.ghost{background:var(--card);border:1px solid var(--hair-d);color:var(--graphite)}
+  .btn.dark{background:var(--graphite);color:#fff}
+  .btn.sm{padding:8px 13px;font-size:13px}
+
+  /* AI */
+  .ai-wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+  @media(max-width:900px){.ai-wrap{grid-template-columns:1fr}}
+  .ai-panel{background:linear-gradient(185deg,#1A1F25,var(--graphite));border-radius:20px;overflow:hidden;box-shadow:var(--shadow-lg);border:1px solid var(--hair)}
+  .ai-head{padding:18px 22px;border-bottom:1px solid var(--hair);display:flex;align-items:center;gap:12px}
+  .ai-head .bot{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,var(--ochre),var(--ochre-deep));display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 8px 18px -8px rgba(230,151,31,.7)}
+  .ai-head .t b{color:#fff;font-family:'Space Grotesk';font-size:15px;display:block}
+  .ai-head .t span{color:var(--ochre-soft);font-size:11px;font-family:'IBM Plex Mono'}
+  .ai-head .live{margin-left:auto;display:flex;align-items:center;gap:6px;font-family:'IBM Plex Mono';font-size:10px;color:var(--ok-soft)}
+  .ai-head .live .d{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok);animation:pulse 1.6s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .ai-body{padding:20px 22px;max-height:560px;overflow-y:auto}
+  .bubble{margin-bottom:16px}
+  .bubble .who{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ochre-soft);margin-bottom:6px}
+  .bubble .msg{background:var(--graphite-2);border:1px solid var(--hair);color:#E7ECF1;padding:12px 14px;border-radius:12px;border-top-left-radius:3px;font-size:14px;line-height:1.5}
+  .q-field{margin-top:12px}
+  .q-field label{display:block;font-size:12.5px;color:#AEB6C0;margin-bottom:8px;font-weight:500}
+  .opts{display:flex;flex-wrap:wrap;gap:8px}
+  .opt{background:var(--graphite-3);border:1px solid var(--hair);color:#D6DBE1;padding:9px 14px;border-radius:9px;font-size:13px;font-weight:500;transition:all .13s}
+  .opt:hover{border-color:var(--ochre);transform:translateY(-1px)}
+  .opt.sel{background:var(--ochre);color:#14171B;border-color:var(--ochre)}
+  .q-field input[type=range]{width:100%;accent-color:var(--ochre)}
+  .q-field .rangeval{font-family:'Space Grotesk';font-weight:700;color:#fff;font-size:22px;margin-top:6px}
+  .q-field .rangeval small{color:var(--steel);font-weight:500;font-size:12px;font-family:'Inter'}
+  .num-inp{display:flex;align-items:center;gap:10px}
+  .num-inp button{width:34px;height:34px;border-radius:8px;background:var(--graphite-3);border:1px solid var(--hair);color:#fff;font-size:17px;font-weight:600}
+  .num-inp .val{font-family:'Space Grotesk';font-weight:700;font-size:20px;color:#fff;min-width:28px;text-align:center}
+  .ai-foot{padding:16px 22px;border-top:1px solid var(--hair);display:flex;gap:10px;align-items:center}
+  .ai-foot .hint{font-size:11.5px;color:var(--steel);flex-grow:1;font-family:'IBM Plex Mono'}
+
+  .prop{background:var(--card);border:1px solid var(--hair-d);border-radius:20px;box-shadow:var(--shadow-lg);overflow:hidden;position:sticky;top:88px}
+  .prop .ph{padding:20px 24px;border-bottom:1px solid var(--hair-d);display:flex;justify-content:space-between;align-items:flex-start;background:linear-gradient(180deg,#fff,var(--concrete))}
+  .prop .ph .l{display:flex;gap:12px;align-items:center}
+  .prop .ph .plogo{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--ochre),var(--ochre-deep));display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk';font-weight:700;color:#14171B;font-size:18px}
+  .prop .ph .l .k{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--steel-2)}
+  .prop .ph .l h3{font-size:18px;margin-top:3px}
+  .prop .ph .l p{font-size:12px;color:var(--steel-2);margin-top:1px}
+  .prop .ph .stamp{font-family:'IBM Plex Mono';font-size:10px;color:var(--ochre-deep);border:1px solid rgba(230,151,31,.4);background:rgba(230,151,31,.08);padding:5px 9px;border-radius:7px;text-align:center;line-height:1.4}
+  .prop .pb{padding:12px 24px}
+  .prop-empty{padding:66px 24px;text-align:center;color:var(--steel-2)}
+  .prop-empty .big{font-size:44px;margin-bottom:14px;opacity:.4}
+  .prop-empty p{font-size:14px;max-width:32ch;margin:0 auto}
+  .li{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--hair-d);font-size:13.5px}
+  .li:last-of-type{border-bottom:none}
+  .li .desc{color:var(--steel-3)}
+  .li .desc small{display:block;color:var(--steel);font-size:11px;font-family:'IBM Plex Mono';margin-top:1px}
+  .li .amt{font-family:'IBM Plex Mono';font-weight:500}
+  .sec-lbl{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--blueprint);padding:16px 0 4px;font-weight:600}
+  .totals{background:var(--concrete);margin:12px -24px 0;padding:16px 24px;border-top:1px solid var(--hair-d)}
+  .totrow{display:flex;justify-content:space-between;font-size:13.5px;padding:5px 0;color:var(--steel-3)}
+  .totrow.grand{font-family:'Space Grotesk';font-weight:700;font-size:21px;color:var(--graphite);border-top:1px solid var(--hair-d);margin-top:8px;padding-top:12px}
+  .totrow .m{font-family:'IBM Plex Mono'}
+  .totrow.net{color:var(--ok);font-weight:600}
+  .grow{animation:grow .4s ease}
+  @keyframes grow{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .filters .f{background:var(--card);border:1px solid var(--hair-d);padding:7px 13px;border-radius:9px;font-size:13px;font-weight:500;color:var(--steel-2);transition:all .13s}
+  .filters .f:hover{border-color:var(--ochre)}
+  .filters .f.active{background:var(--graphite);color:#fff;border-color:var(--graphite)}
+
+  .fin-visual{display:flex;flex-direction:column;gap:14px;margin-top:6px}
+  .bar-row{display:flex;flex-direction:column;gap:5px}
+  .bar-row .lbl{display:flex;justify-content:space-between;font-size:13px}
+  .bar-row .lbl b{font-family:'IBM Plex Mono';font-weight:500}
+  .bar{height:12px;border-radius:6px;background:var(--concrete-2);overflow:hidden}
+  .bar span{display:block;height:100%;border-radius:6px;transition:width .5s ease}
+  .add-pay{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;align-items:center}
+  .add-pay select,.add-pay input{border:1px solid var(--hair-d);border-radius:8px;padding:9px 11px;font-size:13px;background:var(--card)}
+  .add-pay input{width:120px}
+  .note{font-size:12px;color:var(--steel);margin-top:10px;font-family:'IBM Plex Mono'}
+  .plantilla-tip{background:rgba(46,111,167,.07);border:1px solid rgba(46,111,167,.18);border-radius:12px;padding:14px 16px;font-size:13px;color:var(--steel-3);margin-bottom:18px}
+  .plantilla-tip b{color:var(--blueprint)}
+  .editable{border:1px dashed transparent;border-radius:6px;padding:2px 6px;transition:border-color .15s}
+  .editable:hover{border-color:var(--ochre)}
+  .brand{text-decoration:none;color:inherit}
+  /* enriched modules */
+  .disp{display:flex;flex-direction:column;gap:12px}
+  .disp-card{background:var(--card);border:1px solid var(--hair-d);border-radius:14px;padding:18px 20px}
+  .disp-card .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+  .disp-card h4{font-size:16px;display:flex;align-items:center}
+  .crew{display:flex;flex-wrap:wrap;gap:8px}
+  .crew .m{display:flex;align-items:center;gap:8px;background:var(--concrete);border:1px solid var(--hair-d);border-radius:9px;padding:8px 12px;font-size:13px;font-weight:500}
+  .crew .m .st{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .checkin{font-family:'IBM Plex Mono';font-size:11px;color:var(--steel-2)}
+  .kanban{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+  .kcol{background:var(--card);border:1px solid var(--hair-d);border-radius:14px;padding:14px;min-height:170px}
+  .kcol .kh{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--steel-2);display:flex;justify-content:space-between;margin-bottom:12px}
+  .kcol .kh b{color:var(--graphite)}
+  .kcard{background:var(--concrete);border:1px solid var(--hair-d);border-radius:10px;padding:12px;margin-bottom:10px;transition:transform .12s,box-shadow .12s}
+  .kcard:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+  .kcard h4{font-size:13.5px;margin-bottom:3px}
+  .kcard .meta{font-size:11.5px;color:var(--steel-2);font-family:'IBM Plex Mono'}
+  .kcard .val{font-family:'IBM Plex Mono';font-weight:600;font-size:12.5px;color:var(--ochre-deep);margin-top:6px}
+  @media(max-width:900px){
+    .side{flex-direction:column}
+    .side .nav{display:flex;flex-direction:row;overflow-x:auto;gap:6px;padding:10px 12px;-ms-overflow-style:none;scrollbar-width:none}
+    .side .nav::-webkit-scrollbar{display:none}
+    .side .nav .grp{display:none}
+    .side .nav a{white-space:nowrap;margin-bottom:0;flex-shrink:0;padding:9px 12px}
+    .side .nav a.active::before{display:none}
+    .side .mini-obra,.side .foot{display:none}
+    .brand{padding:14px 16px 6px}
+    .banner{padding:22px}.banner h1{font-size:22px}
+    .ai-wrap{gap:14px}.prop{position:static}
+    .kanban{grid-template-columns:1fr}
+    .kpi .v{font-size:24px}
+    .obras-grid{grid-template-columns:1fr}
+    .two-col{grid-template-columns:1fr!important}
+  }
+  /* obras grid */
+  .obras-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .obra-card{background:var(--card);border:1px solid var(--hair-d);border-radius:var(--r);padding:20px;transition:transform .16s,box-shadow .16s,border-color .16s}
+  .obra-card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:rgba(230,151,31,.4)}
+  .oc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+  .oc-top h3{font-size:17px}
+  .oc-bar{height:8px;border-radius:5px;background:var(--concrete-2);overflow:hidden}
+  .oc-bar span{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--ochre),var(--ochre-soft))}
+  .oc-pct{font-size:11px;color:var(--steel);margin-top:6px}
+  .oc-nums{display:flex;gap:24px;margin-top:14px}
+  .oc-nums .k{font-family:'IBM Plex Mono';font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--steel-2)}
+  .oc-nums .v{font-family:'Space Grotesk';font-weight:700;font-size:17px;margin-top:3px}
+  /* P&L modelo financiero */
+  .pl-sec{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--blueprint);font-weight:600;padding:16px 0 6px;display:flex;align-items:center;gap:8px}
+  .edit-hint{font-family:'IBM Plex Mono';font-size:9px;background:rgba(230,151,31,.14);color:var(--ochre-deep);padding:2px 7px;border-radius:5px;letter-spacing:.04em}
+  .pl-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:13.5px;color:var(--steel-3);border-bottom:1px solid var(--hair-d)}
+  .pl-row .m{font-family:'IBM Plex Mono';font-weight:500}
+  .pl-row.tot{font-weight:600;color:var(--graphite)}
+  .pl-row.tot .m{color:var(--graphite)}
+  .pl-row.grand{background:var(--concrete);margin:10px -24px -24px;padding:16px 24px;border-radius:0 0 var(--r) var(--r);font-family:'Space Grotesk';font-weight:700;font-size:18px;color:var(--graphite);border-bottom:none}
+  .pl-row.grand .m{font-family:'IBM Plex Mono';font-size:18px}
+  .pl-row small{font-weight:500;font-size:11px}
+  .opex-inp{width:104px;text-align:right;border:1px solid var(--hair-d);border-radius:7px;padding:5px 8px;font-family:'IBM Plex Mono';font-size:13px;background:var(--card)}
+  .opex-inp:focus{outline:none;border-color:var(--ochre)}
+  .pl-row .m .pk{color:var(--steel);margin-right:3px}
+  .fm-note{font-size:13px;color:var(--steel-3);padding:11px 0;border-bottom:1px solid var(--hair-d);line-height:1.5}
+  .fm-note:last-child{border-bottom:none}
+  .fm-note b{color:var(--graphite);font-family:'Space Grotesk';font-weight:600}
+  /* add supplier */
+  .add-sup-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .add-sup-row input,.add-sup-row select{border:1px solid var(--hair-d);border-radius:9px;padding:10px 12px;font-size:13.5px;background:var(--card)}
+  .add-sup-row input{flex:1;min-width:160px}
+  .obra-sel-row{border:1px solid var(--hair-d);border-radius:8px;padding:6px 10px;font-size:13px;background:var(--concrete);color:var(--graphite);cursor:pointer}
+  .obra-sel-row:focus{outline:none;border-color:var(--ochre)}
+
+  /* ===== PRESUPUESTO Y FACTOR ===== */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .two-col.wide{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)}
+  .kpi.warnk{background:linear-gradient(150deg,#FBF1E4,#F7E9D6);border-color:rgba(217,130,43,.35)}
+  .notebox{background:var(--card);border:1px solid var(--hair-d);border-left:3px solid var(--ochre);
+    border-radius:var(--r);padding:18px 22px;font-size:13.5px;color:var(--steel-3);line-height:1.65;margin-bottom:20px}
+  .notebox b{color:var(--graphite);font-weight:600}
+
+  /* cascada */
+  .cas-row{display:grid;grid-template-columns:190px minmax(0,1fr) 118px 84px;gap:14px;align-items:center;
+    padding:9px 0;border-bottom:1px solid var(--hair-d);font-size:13.5px}
+  .cas-row:last-child{border-bottom:none}
+  .cas-n{color:var(--steel-3)}
+  .cas-bar{height:9px;background:var(--concrete-2);border-radius:5px;overflow:hidden}
+  .cas-bar i{display:block;height:100%;border-radius:5px}
+  .cas-bar i.cd{background:var(--graphite-4)} .cas-bar i.io{background:var(--blueprint-soft)}
+  .cas-bar i.iof{background:var(--blueprint)} .cas-bar i.fin{background:var(--warn)}
+  .cas-bar i.ut{background:var(--ok)} .cas-bar i.pv{background:var(--ochre)}
+  .cas-v{font-family:'IBM Plex Mono';font-weight:600;text-align:right}
+  .cas-p{font-family:'IBM Plex Mono';font-size:11.5px;color:var(--steel);text-align:right}
+  .cas-row.tot{background:var(--concrete);margin:8px -24px 0;padding:14px 24px;font-weight:700;
+    grid-template-columns:190px minmax(0,1fr) 118px 84px}
+  .cas-row.tot .cas-n{color:var(--graphite)}
+  .cas-row.iva{margin:0 -24px -24px;padding:12px 24px;background:var(--concrete);color:var(--steel-2);
+    border-radius:0 0 var(--r) var(--r)}
+
+  /* volumen / financiamiento */
+  .vol,.fin-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .vol-i,.fin-i{background:var(--concrete);border:1px solid var(--hair-d);border-radius:12px;padding:15px 16px}
+  .fin-i.hi{background:linear-gradient(150deg,var(--graphite),#20272F);border:none;color:#fff}
+  .fin-i.hi .vol-k{color:var(--steel)} .fin-i.hi .vol-d{color:#AEB6C0}
+  .vol-k{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--steel-2)}
+  .vol-v{font-family:'Space Grotesk';font-weight:700;font-size:24px;margin-top:5px;letter-spacing:-.02em}
+  .vol-v small{font-size:13px;font-weight:500;color:var(--steel)}
+  .fin-i.hi .vol-v small{color:var(--steel)}
+  .vol-d{font-size:11.5px;color:var(--steel);margin-top:6px;line-height:1.5}
+  .stepper{display:inline-flex;gap:5px;align-items:center;margin-top:9px}
+  .stepper b{font-family:'Space Grotesk';font-weight:700;font-size:15px;min-width:26px;text-align:center}
+  .stepper button{width:24px;height:24px;border-radius:7px;border:1px solid var(--hair-d);background:var(--card);
+    font-size:14px;line-height:1;color:var(--steel-2)}
+  .stepper button:hover{background:var(--concrete-2);color:var(--graphite)}
+
+  /* construcción del factor */
+  .bld{border:1px solid var(--hair-d);border-radius:12px;overflow:hidden}
+  .bld-r{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;
+    border-bottom:1px solid var(--hair-d);font-size:13.5px}
+  .bld-r:last-child{border-bottom:none}
+  .bld-r .bn{color:var(--steel-3)}
+  .bld-r .bv{font-family:'IBM Plex Mono';font-weight:600}
+  .bld-r .bv.io{color:var(--blueprint-soft)} .bld-r .bv.iof{color:var(--blueprint)}
+  .bld-r .bv.fin{color:var(--warn)} .bld-r .bv.ut{color:var(--ok)}
+  .bld-r.tot{background:var(--graphite);color:#fff}
+  .bld-r.tot .bn{color:#fff;font-weight:600} .bld-r.tot .bv{color:var(--ochre-soft);font-size:19px}
+  .ut-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:16px;padding-top:16px;
+    border-top:1px solid var(--hair-d)}
+  .ut-row .vol-d{flex:1;min-width:260px;margin-top:0}
+
+  /* partidas */
+  .niv{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  .niv-b{padding:7px 14px;border-radius:9px;border:1px solid var(--hair-d);background:var(--card);
+    font-size:13px;font-weight:500;color:var(--steel-2)}
+  .niv-b.on{background:var(--graphite);color:#fff;border-color:var(--graphite)}
+  .niv-d{font-size:11.5px;color:var(--steel);flex:1;min-width:180px}
+  .par{display:grid;grid-template-columns:minmax(0,1fr) 132px 106px;gap:12px;align-items:center;
+    padding:10px 0;border-bottom:1px solid var(--hair-d)}
+  .par:last-child{border-bottom:none}
+  .par.on .par-n b{color:var(--graphite)}
+  .par-n b{display:block;font-size:13.5px;font-weight:600;color:var(--steel-2)}
+  .par-u{font-family:'IBM Plex Mono';font-size:11px;color:var(--steel)}
+  .par-q{display:flex;align-items:center;gap:7px}
+  .par-q .stepper{margin-top:0}
+  .par-uu{font-family:'IBM Plex Mono';font-size:11px;color:var(--steel)}
+  .par-v{font-family:'IBM Plex Mono';font-weight:600;text-align:right;font-size:13.5px}
+
+  /* integración */
+  .int-r{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:12px 0;
+    border-bottom:1px solid var(--hair-d)}
+  .int-n b{display:block;font-size:13.5px;font-weight:600}
+  .int-n span{display:block;font-size:11.5px;color:var(--steel);margin-top:2px;line-height:1.5}
+  .int-v{font-family:'IBM Plex Mono';font-weight:600;font-size:14px;white-space:nowrap}
+  .int-r.iof{background:rgba(46,111,167,.05);margin:0 -24px;padding:12px 24px}
+  .int-r.fin{background:rgba(217,130,43,.07);margin:0 -24px;padding:12px 24px}
+  .int-r.tot{background:var(--concrete);margin:6px -24px 0;padding:14px 24px;border-bottom:none}
+  .int-r.tot .int-v{font-size:17px}
+  .int-r.iva{margin:0 -24px;padding:10px 24px;background:var(--concrete);color:var(--steel-2);border-bottom:none}
+  .int-r.grand{background:var(--graphite);color:#fff;margin:0 -24px -24px;padding:16px 24px;
+    border-radius:0 0 var(--r) var(--r);border-bottom:none}
+  .int-r.grand .int-v{color:var(--ochre-soft);font-size:20px}
+
+  /* comparación */
+  .cmp{border:1px solid var(--hair-d);border-radius:12px;padding:16px 18px}
+  .cmp.bad{background:#FBEDE9;border-color:rgba(198,85,59,.3)}
+  .cmp-l{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--steel-2)}
+  .cmp-row{display:flex;align-items:center;gap:22px;margin-top:9px;flex-wrap:wrap}
+  .cmp-v{font-family:'Space Grotesk';font-weight:700;font-size:22px;color:var(--steel-2)}
+  .cmp-v.strong{color:var(--graphite)}
+  .cmp-d{font-size:11.5px;color:var(--steel);margin-top:2px}
+  .cmp-a{color:var(--steel);font-size:17px}
+  .cmp-n{font-size:12.5px;color:var(--steel-3);margin-top:12px;line-height:1.65}
+  .cmp-n b{color:var(--graphite);font-weight:600}
+  .in-act{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:16px}
+
+  /* banner + tabla real */
+  .ban{background:#FBF1E4;border:1px solid rgba(217,130,43,.3);border-radius:var(--r);padding:18px 22px;margin-bottom:20px}
+  .ban.ok{background:#E9F3EE;border-color:rgba(62,158,110,.3)}
+  .ban-t{font-family:'Space Grotesk';font-weight:600;font-size:16px;line-height:1.35}
+  .ban-d{font-size:13px;color:var(--steel-3);margin-top:7px;line-height:1.65}
+  .tbl-wrap{overflow-x:auto}
+  table.tbl{width:100%;border-collapse:collapse;min-width:720px}
+  table.tbl th{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--steel-2);text-align:left;padding:9px 12px;border-bottom:1px solid var(--hair-d);font-weight:600}
+  table.tbl td{padding:11px 12px;border-bottom:1px solid var(--hair-d);font-size:13.5px}
+  table.tbl tr:last-child td{border-bottom:none}
+  table.tbl .r{text-align:right;font-family:'IBM Plex Mono'}
+  table.tbl .sub2{font-size:11px;color:var(--steel);font-family:'Inter'}
+  table.tbl .pos{color:var(--ok);font-weight:600} table.tbl .neg{color:var(--danger);font-weight:600}
+  .pillf{display:inline-block;padding:3px 8px;border-radius:6px;font-family:'IBM Plex Mono';font-size:11.5px;font-weight:600}
+  .pillf.good{background:#E4F1EA;color:var(--ok)} .pillf.bad{background:#F8E7E2;color:var(--danger)}
+
+  /* toast */
+  #auda-toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(14px);
+    background:var(--graphite);color:#fff;padding:14px 20px;border-radius:12px;font-size:13.5px;max-width:min(620px,92vw);
+    box-shadow:var(--shadow-lg);opacity:0;visibility:hidden;transition:opacity .25s,transform .25s,visibility .25s;z-index:300;line-height:1.55}
+  #auda-toast.on{opacity:1;visibility:visible;transform:translateX(-50%)}
+
+  @media (max-width:1000px){
+    .two-col,.two-col.wide{grid-template-columns:minmax(0,1fr)}
+    .vol,.fin-grid{grid-template-columns:repeat(2,1fr)}
+    .cas-row,.cas-row.tot{grid-template-columns:120px minmax(0,1fr) 96px 64px;gap:9px;font-size:12.5px}
+  }
+  @media (max-width:620px){
+    .vol,.fin-grid{grid-template-columns:minmax(0,1fr)}
+    .cas-row,.cas-row.tot{grid-template-columns:minmax(0,1fr) 92px;gap:8px}
+    .cas-bar,.cas-p{display:none}
+    .par{grid-template-columns:minmax(0,1fr) 92px}
+    .par-v{grid-column:1/-1;text-align:left}
+  }
+
+  /* el shell nunca colapsó bien en tablet — la barra crecía en vez de deslizarse */
+  @media(max-width:900px){
+    .app{min-width:0}
+    .side{min-width:0;overflow:hidden}
+    .side .nav{min-width:0;flex-wrap:nowrap;align-items:center}
+    .side .nav a{flex:0 0 auto;white-space:nowrap}
+    .side .nav .grp{flex:0 0 auto;padding:0 6px;align-self:center;white-space:nowrap}
+    .main{min-width:0}
+    .view{min-width:0}
+    .card{min-width:0}
+  }
+  .tbl-wrap{max-width:100%}
+  #tbl-plantillas .vent,#tbl-plantillas .vent-h{background:rgba(230,151,31,.09);font-weight:600}
+  #tbl-plantillas .vent{font-family:'IBM Plex Mono'}
+  @media(max-width:900px){ .card{overflow-x:auto} }
+  /* la barra superior se salía del ancho en teléfono */
+  @media(max-width:560px){
+    .topbar{gap:10px}
+    .topbar .right{min-width:0;flex-shrink:1;gap:8px}
+    .topbar .crumb{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .topbar .right .avatar{flex:none}
+    .topbar .bell{display:none}
+    .topbar .obra-sel{min-width:0;max-width:150px}
+    .topbar .obra-sel select{min-width:0;max-width:112px}
+    #obrasGrid{grid-template-columns:minmax(0,1fr)}
+    .obra-card{min-width:0}
+    .oc-top{flex-wrap:wrap;gap:8px;min-width:0}
+  }
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-in">
+    <div class="splash-logo">A</div>
+    <h1>AUDA <span class="a">OS</span></h1>
+    <p>El sistema operativo de obra — presupuestos con IA, control financiero y proveedores, en un solo lugar.</p>
+    <button class="enter" id="enterBtn">Entrar al sistema →</button>
+    <div class="splash-meta">Demo interactivo · Fase 1 · construido sobre Atelio</div>
+  </div>
+</div>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="side">
+    <a class="brand" href="index.html"><div class="logo">A</div><div class="nm"><b>AUDA&nbsp;OS</b><span>‹ Volver a la presentación</span></div></a>
+    <nav class="nav">
+      <div class="grp">Fase 1 · Núcleo</div>
+      <a data-view="panel" class="active"><span class="ic">🎛️</span>Panel de obra</a>
+      <a data-view="obras"><span class="ic">🏗️</span>Obras</a>
+      <a data-view="presupuestos"><span class="ic">🤖</span>Presupuestos con IA</a>
+      <a data-view="plantillas"><span class="ic">🧱</span>Plantillas de costos</a>
+      <a data-view="finanzas"><span class="ic">💰</span>Finanzas por obra</a>
+      <div class="grp">Fase 1 · Presupuesto y costos</div>
+      <a data-view="presupanual"><span class="ic">🎯</span>Presupuesto anual</a>
+      <a data-view="factor"><span class="ic">✳️</span>Indirectos y factor</a>
+      <a data-view="integracion"><span class="ic">🏷️</span>Integración de precio</a>
+      <a data-view="real"><span class="ic">📐</span>Presupuesto vs real</a>
+      <a data-view="finmodel"><span class="ic">📈</span>Modelo financiero</a>
+      <a data-view="proveedores"><span class="ic">👷</span>Proveedores</a>
+      <div class="grp">Ampliado · de otros sistemas Atelio</div>
+      <a data-view="cuadrillas"><span class="ic">🦺</span>Cuadrillas &amp; Dispatch</a>
+      <a data-view="pipeline"><span class="ic">📊</span>Pipeline de obra</a>
+      <div class="grp">Próximamente · Fase 2–3</div>
+      <a class="soon"><span class="ic">📸</span>Bitácora de obra<span class="tag">F2</span></a>
+      <a class="soon"><span class="ic">🗂️</span>Expediente<span class="tag">F2</span></a>
+      <a class="soon"><span class="ic">📋</span>Trámites<span class="tag">F3</span></a>
+      <a class="soon"><span class="ic">📈</span>Captación<span class="tag">F3</span></a>
+    </nav>
+    <div class="mini-obra">
+      <div class="k">Obra en foco</div>
+      <div class="nm">Depto. Polanco</div>
+      <div class="track"><span></span></div>
+      <div class="pct">62% de avance · 92 m²</div>
+    </div>
+    <div class="foot">Demo · sobre <b>Atelio</b></div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="crumb"><b id="crumb">Panel de obra</b><span>· AUDA Construcción</span></div>
+      <div class="right">
+        <div class="search">🔎<input placeholder="Buscar obra, proveedor…"></div>
+        <div class="obra-sel"><span style="font-size:15px">🏗️</span><select id="obraSel"></select></div>
+        <div class="bell">🔔</div>
+        <div class="avatar">DR</div>
+      </div>
+    </div>
+
+    <!-- PANEL -->
+    <div class="view show" id="view-panel">
+      <div class="banner"><div class="in">
+        <div class="eyebrow" id="todayLbl">Hoy</div>
+        <h1>Buenos días, Diego 👋</h1>
+        <p>Tienes <span class="lede-b">2 obras en ejecución</span> y una propuesta por enviar. Todo el dinero, los proveedores y los pendientes — <span class="lede-b">en un solo lugar</span>.</p>
+      </div></div>
+      <div class="kpi-row">
+        <div class="kpi"><div class="top"><div class="ic">🏗️</div><span class="trend flat">3 obras</span></div><div class="k">Obras activas</div><div class="v" id="k-obras">3</div><div class="sub">2 en ejecución · 1 en cotización</div></div>
+        <div class="kpi"><div class="top"><div class="ic">📥</div><span class="trend up">▲ mes</span></div><div class="k">Anticipos recibidos</div><div class="v" id="k-ant">$0</div><div class="sub">Acumulado del mes</div></div>
+        <div class="kpi"><div class="top"><div class="ic">📤</div><span class="trend down">▼ salidas</span></div><div class="k">Pagado a proveedores</div><div class="v" id="k-pag">$0</div><div class="sub">Salidas del mes</div></div>
+        <div class="kpi accent"><div class="top"><div class="ic">💎</div><span class="trend up">post-IVA</span></div><div class="k">Ingreso real</div><div class="v" id="k-net" style="color:var(--ok-soft)">$0</div><div class="sub">Suma neta de obras activas</div></div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <h3>🏗️ Obras</h3><div class="card-sub">Estado y balance de cada proyecto.</div>
+          <table id="tbl-obras"><thead><tr><th>Obra</th><th>Estado</th><th class="num">Anticipos</th><th class="num">Pagado</th><th class="num">Neto post-IVA</th></tr></thead><tbody></tbody></table>
+        </div>
+        <div class="card">
+          <h3>⚡ Pendientes</h3><div class="card-sub">Lo que necesita tu atención hoy.</div>
+          <table><tbody>
+            <tr><td>Enviar propuesta · <b>Local Roma Norte</b></td><td class="num"><span class="chip-status st-cotiz">Cotización</span></td></tr>
+            <tr><td>Pago pendiente · <b>Herrería (Herrero)</b></td><td class="num neg">$18,500</td></tr>
+            <tr><td>Anticipo por cobrar · <b>Casa Coyoacán</b></td><td class="num"><span class="chip-status st-cierre">2ª exhib.</span></td></tr>
+            <tr><td>Subir avance con fotos · <b>Depto. Polanco</b></td><td class="num" style="color:var(--steel)">Fase 2</td></tr>
+          </tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRESUPUESTOS -->
+    <div class="view hidden" id="view-presupuestos">
+      <div class="banner"><div class="in">
+        <div class="eyebrow">Módulo estrella</div>
+        <h1>Presupuestos con IA</h1>
+        <p>El asistente entrevista al cliente <span class="lede-b">con la voz de Diego</span> y arma la propuesta con costos directos, indirectos e IVA. Contesta y genera.</p>
+      </div></div>
+      <div class="ai-wrap">
+        <div class="ai-panel">
+          <div class="ai-head"><div class="bot">🤖</div><div class="t"><b>Asistente AUDA</b><span>Entrevista guiada · voz de Diego</span></div><div class="live"><span class="d"></span>EN VIVO</div></div>
+          <div class="ai-body" id="aiBody"></div>
+          <div class="ai-foot"><span class="hint" id="aiHint">Contesta para armar el presupuesto</span><button class="btn" id="genBtn">⚡ Generar propuesta</button></div>
+        </div>
+        <div class="prop" id="prop">
+          <div class="prop-empty" id="propEmpty"><div class="big">📄</div><p>Aquí aparece la propuesta lista para el cliente en cuanto generes el presupuesto.</p></div>
+          <div id="propContent" class="hidden"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLANTILLAS -->
+    <div class="view hidden" id="view-plantillas">
+      <div class="banner"><div class="in"><div class="eyebrow">Catálogo</div><h1>Plantillas de costos</h1><p>Partidas estándar con precio base. La IA jala de aquí para armar cada presupuesto — y siempre puedes agregar partidas a la medida.</p></div></div>
+      <div class="plantilla-tip">💡 <b>Cómo funciona:</b> cada partida tiene un precio unitario base; el nivel de acabado (básico / medio / premium) lo ajusta solo. Pasa el cursor sobre un precio — en el sistema real es editable por Diego.</div>
+      <div class="card"><h3>🧱 Catálogo de partidas</h3><div class="card-sub">Precios base en pesos mexicanos (material + mano de obra).</div>
+        <div class="note" id="pl-facnote" style="margin:0 0 14px;font-family:Inter;font-size:12.5px;line-height:1.6;color:var(--steel-3)"></div>
+        <table id="tbl-plantillas"><thead><tr><th>Partida</th><th>Unidad</th><th class="num">Básico</th><th class="num">Medio</th><th class="num">Premium</th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+
+    <!-- FINANZAS -->
+    <div class="view hidden" id="view-finanzas">
+      <div class="banner"><div class="in"><div class="eyebrow">Módulo estrella</div><h1>Finanzas por obra</h1><p>Lo que entra, lo que sale y — el número que importa — <span class="lede-b">cuánto queda de verdad después de IVA</span>.</p></div></div>
+      <div class="kpi-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="kpi"><div class="top"><div class="ic">📥</div></div><div class="k">Anticipos recibidos</div><div class="v" id="f-ant">$0</div></div>
+        <div class="kpi"><div class="top"><div class="ic">📤</div></div><div class="k">Pagado a proveedores</div><div class="v" id="f-pag">$0</div></div>
+        <div class="kpi accent"><div class="top"><div class="ic">💎</div></div><div class="k">Ingreso real post-IVA</div><div class="v" id="f-net" style="color:var(--ok-soft)">$0</div><div class="sub" id="f-net-sub"></div></div>
+      </div>
+      <div class="two-col">
+        <div class="card"><h3>💸 Movimientos de <span id="f-obra-name"></span></h3><div class="card-sub">Anticipos del cliente y pagos a cada gremio.</div>
+          <table id="tbl-fin"><thead><tr><th>Concepto</th><th>Tipo</th><th class="num">Monto</th></tr></thead><tbody></tbody></table>
+          <div class="add-pay"><select id="payGremio"></select><input type="number" id="payMonto" placeholder="Monto $" min="0"><button class="btn sm dark" id="payBtn">+ Registrar pago</button></div>
+          <div class="note">Prueba a registrar un pago y observa cómo el ingreso real se recalcula solo.</div>
+        </div>
+        <div class="card"><h3>📊 Desglose</h3><div class="card-sub">Del anticipo al ingreso neto.</div><div class="fin-visual" id="finBars"></div></div>
+      </div>
+    </div>
+
+    <!-- OBRAS (projects) -->
+    <div class="view hidden" id="view-obras">
+      <div class="banner"><div class="in"><div class="eyebrow">Tus proyectos</div><h1>Obras</h1><p>Todas tus obras de un vistazo. Entra a cualquiera para ver sus finanzas, o cámbiala desde el selector de arriba en cualquier pantalla.</p></div></div>
+      <div class="obras-grid" id="obrasGrid"></div>
+    </div>
+
+    <!-- MODELO FINANCIERO -->
+    <div class="view hidden" id="view-finmodel">
+      <div class="banner"><div class="in"><div class="eyebrow">Salud del negocio</div><h1>Modelo financiero</h1><p>El estado de resultados de toda la empresa: ingresos de tus obras, costos directos, <span class="lede-b">gastos de operación (OPEX)</span> y utilidad operativa. Edita el OPEX y mira el EBITDA moverse.</p></div></div>
+      <div class="kpi-row">
+        <div class="kpi"><div class="top"><div class="ic">📥</div></div><div class="k">Ingresos (sin IVA)</div><div class="v" id="fm-rev">$0</div></div>
+        <div class="kpi"><div class="top"><div class="ic">📊</div></div><div class="k">Utilidad bruta</div><div class="v" id="fm-gross">$0</div></div>
+        <div class="kpi"><div class="top"><div class="ic">🏢</div></div><div class="k">OPEX total</div><div class="v" id="fm-opex">$0</div></div>
+        <div class="kpi accent"><div class="top"><div class="ic">💎</div><span class="trend up" id="fm-em">0%</span></div><div class="k">Utilidad operativa (EBITDA)</div><div class="v" id="fm-ebitda" style="color:var(--ok-soft)">$0</div><div class="sub">Después de OPEX</div></div>
+      </div>
+      <div class="two-col" style="grid-template-columns:1.5fr 1fr">
+        <div class="card pl">
+          <h3>📄 Estado de resultados</h3><div class="card-sub">Del periodo · obras activas. Los montos de ingresos y costos vienen de tus obras.</div>
+          <div class="pl-sec">Ingresos (base sin IVA)</div>
+          <div id="fm-revrows"></div>
+          <div class="pl-row tot"><span>Total ingresos</span><span class="m" id="fm-revtot">$0</span></div>
+          <div class="pl-sec">Costos directos de obra</div>
+          <div class="pl-row"><span>Pagos a proveedores y mano de obra</span><span class="m neg" id="fm-cogs">$0</span></div>
+          <div class="pl-row tot"><span>Utilidad bruta <small class="mono" id="fm-gm" style="color:var(--ok)"></small></span><span class="m pos" id="fm-gross2">$0</span></div>
+          <div class="pl-sec">Gastos de operación · OPEX <span class="edit-hint">editable</span></div>
+          <div id="fm-opexrows"></div>
+          <div class="pl-row tot"><span>Total OPEX</span><span class="m neg" id="fm-opextot">$0</span></div>
+          <div class="pl-row grand"><span>Utilidad operativa · EBITDA <small class="mono" id="fm-em2"></small></span><span class="m" id="fm-ebitda2">$0</span></div>
+        </div>
+        <div class="card">
+          <h3>💡 Cómo leerlo</h3><div class="card-sub">Un modelo vivo, no una foto.</div>
+          <div class="fm-note"><b>Ingresos</b> = lo cobrado a clientes, ya sin IVA (el IVA no es tuyo, se entrega al SAT).</div>
+          <div class="fm-note"><b>Utilidad bruta</b> = ingresos − lo que pagas a proveedores y mano de obra en la obra.</div>
+          <div class="fm-note"><b>OPEX</b> = lo que cuesta mantener el negocio, exista o no obra: oficina, sueldos administrativos, vehículos, software, seguros, contador, marketing.</div>
+          <div class="fm-note"><b>EBITDA</b> = utilidad bruta − OPEX. Es lo que de verdad gana la empresa operando.</div>
+          <div class="fm-note" style="border:none;color:var(--steel)">Ajusta cualquier renglón de OPEX y el EBITDA y el margen se recalculan al instante.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROVEEDORES -->
+    <div class="view hidden" id="view-proveedores">
+      <div class="banner"><div class="in"><div class="eyebrow">Directorio</div><h1>Proveedores</h1><p>Da de alta proveedores por oficio y <span class="lede-b">asígnalos a las obras</span> donde trabajan. Cada uno con lo pagado y su saldo.</p></div></div>
+      <div class="card add-sup"><h3>➕ Nuevo proveedor</h3><div class="card-sub">Registra una empresa o persona por gremio y asígnala a una obra.</div>
+        <div class="add-sup-row">
+          <input id="supName" placeholder="Nombre o empresa">
+          <select id="supGremio"></select>
+          <select id="supObra"></select>
+          <button class="btn sm dark" id="supAdd">+ Agregar proveedor</button>
+        </div>
+      </div>
+      <div class="filters" id="gremioFilters"></div>
+      <div class="card"><table id="tbl-prov"><thead><tr><th>Proveedor</th><th>Gremio</th><th>Obra asignada</th><th class="num">Pagado</th><th class="num">Saldo</th></tr></thead><tbody></tbody></table></div>
+    </div>
+
+    <!-- CUADRILLAS & DISPATCH -->
+    <div class="view hidden" id="view-cuadrillas">
+      <div class="banner"><div class="in"><div class="eyebrow">Ampliado · de Service &amp; Dispatch (QCS · Umbria)</div><h1>Cuadrillas &amp; Dispatch</h1><p>La agenda del día por obra: qué gremio va, a qué hora, y su check-in en sitio con foto y checklist — <span class="lede-b">pensado para el campo</span>.</p></div></div>
+      <div class="disp">
+        <div class="disp-card">
+          <div class="top"><h4>🏗️ Depto. Polanco <span class="chip-status st-activa" style="margin-left:8px">Hoy</span></h4><span class="checkin">3 gremios · 2 en sitio</span></div>
+          <div class="crew">
+            <div class="m"><span class="st" style="background:var(--ok)"></span>Kadiel · Albañilería <span class="checkin">✓ 8:10</span></div>
+            <div class="m"><span class="st" style="background:var(--ok)"></span>Marco · Electricidad <span class="checkin">✓ 8:35</span></div>
+            <div class="m"><span class="st" style="background:var(--warn)"></span>Rodrigo · Pintura <span class="checkin">pendiente</span></div>
+          </div>
+        </div>
+        <div class="disp-card">
+          <div class="top"><h4>🏗️ Casa Coyoacán <span class="chip-status st-activa" style="margin-left:8px">Hoy</span></h4><span class="checkin">2 gremios · 1 en sitio</span></div>
+          <div class="crew">
+            <div class="m"><span class="st" style="background:var(--ok)"></span>Martín · Carpintería <span class="checkin">✓ 9:00</span></div>
+            <div class="m"><span class="st" style="background:var(--steel)"></span>Juan Luis · Plomería <span class="checkin">programado 14:00</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:20px"><h3>✅ Checklist en sitio · Depto. Polanco</h3><div class="card-sub">Lo que la cuadrilla marca desde el celular, con foto.</div>
+        <table><tbody>
+          <tr><td>Preparación de muros — recámara principal</td><td class="num"><span class="chip-status st-activa">Hecho 📷</span></td></tr>
+          <tr><td>Registro eléctrico — sala</td><td class="num"><span class="chip-status st-activa">Hecho 📷</span></td></tr>
+          <tr><td>Aplanado — cocina</td><td class="num"><span class="chip-status st-cotiz">En proceso</span></td></tr>
+          <tr><td>Primera mano de pintura — recámaras</td><td class="num" style="color:var(--steel)">Programado</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <!-- PIPELINE DE OBRA -->
+    <div class="view hidden" id="view-pipeline">
+      <div class="banner"><div class="in"><div class="eyebrow">Ampliado · de CRM / commercial spine (QCS · Umbria · Bugambilia)</div><h1>Pipeline de obra</h1><p>Del prospecto a la obra cerrada. Cada tarjeta conecta con el asistente de presupuestos — <span class="lede-b">tu embudo comercial en una vista</span>.</p></div></div>
+      <div class="kanban">
+        <div class="kcol"><div class="kh"><b>Prospecto</b><span>2</span></div>
+          <div class="kcard"><h4>Oficina Reforma</h4><div class="meta">Referido · IG</div></div>
+          <div class="kcard"><h4>Casa Del Valle</h4><div class="meta">Google Ads</div></div>
+        </div>
+        <div class="kcol"><div class="kh"><b>Cotización</b><span>1</span></div>
+          <div class="kcard"><h4>Local Roma Norte</h4><div class="meta">75 m² · Medio</div><div class="val">$312,000 MXN</div></div>
+        </div>
+        <div class="kcol"><div class="kh"><b>Contrato</b><span>1</span></div>
+          <div class="kcard"><h4>Casa Coyoacán</h4><div class="meta">210 m²</div><div class="val">Anticipo ✓</div></div>
+        </div>
+        <div class="kcol"><div class="kh"><b>En obra</b><span>1</span></div>
+          <div class="kcard"><h4>Depto. Polanco</h4><div class="meta">92 m² · 62%</div><div class="val">$300,000 anticipos</div></div>
+        </div>
+        <div class="kcol"><div class="kh"><b>Cerrada</b><span>1</span></div>
+          <div class="kcard"><h4>Depto. Nápoles</h4><div class="meta">Entregada</div><div class="val" style="color:var(--ok)">Liquidada</div></div>
+        </div>
+      </div>
+    </div>
+
+<section class="view hidden" id="view-presupanual">
+  <div class="sec-lbl">Fase 1 · Presupuesto y costos</div>
+  <h2 style="font-size:26px;margin-bottom:6px">Presupuesto anual</h2>
+  <p class="card-sub" style="margin-bottom:22px;max-width:70ch">Lo que tienes que vender para cubrir lo que ya te
+    comprometiste a gastar. De aquí sale el factor con el que se cotiza todo lo demás.</p>
+  <div class="kpi-row" id="pa-kpis"></div>
+  <div class="card"><h3>🧾 De dónde sale cada peso</h3>
+    <div class="card-sub">La integración del precio como la pide una constructora: directo, indirectos, financiamiento y utilidad.</div>
+    <div id="pa-cascada"></div></div>
+  <div class="card"><h3>📏 ¿Alcanza el volumen?</h3>
+    <div class="card-sub">Un factor correcto con obras insuficientes sigue sin pagar la oficina.</div>
+    <div id="pa-volumen"></div></div>
+  <div class="notebox" id="pa-nota"></div>
+</section>
+
+<section class="view hidden" id="view-factor">
+  <div class="sec-lbl">Fase 1 · Presupuesto y costos</div>
+  <h2 style="font-size:26px;margin-bottom:6px">Indirectos y factor de sobrecosto</h2>
+  <p class="card-sub" style="margin-bottom:22px;max-width:70ch">Mueve cualquier renglón y el factor cambia solo —
+    y con él, cada presupuesto que salga después. Ese es el punto: no se vuelve a capturar en ningún lado.</p>
+  <div class="kpi-row" id="fa-kpis"></div>
+  <div class="two-col">
+    <div class="card"><h3>🏗️ Indirectos de obra</h3>
+      <div class="card-sub">Lo que cuesta tener una obra abierta, aunque nadie ponga un tabique. Mensual.</div>
+      <div id="fa-io"></div></div>
+    <div class="card"><h3>🏢 Indirectos de oficina</h3>
+      <div class="card-sub">La estructura que sostiene todas las obras a la vez. Mensual — es la misma lista del modelo financiero.</div>
+      <div id="fa-iof"></div></div>
+  </div>
+  <div class="card"><h3>🏦 Financiamiento</h3>
+    <div class="card-sub">El hueco entre pagarle al gremio y cobrar la estimación. En México es el costo que casi nadie mete al precio.</div>
+    <div id="fa-fin"></div></div>
+  <div class="card"><h3>✳️ Cómo se arma el factor</h3>
+    <div class="card-sub">Cada renglón multiplica al anterior. El resultado es el número con el que cotizas.</div>
+    <div id="fa-build"></div></div>
+  <div class="notebox" id="fa-nota"></div>
+</section>
+
+<section class="view hidden" id="view-integracion">
+  <div class="sec-lbl">Fase 1 · Presupuesto y costos</div>
+  <h2 style="font-size:26px;margin-bottom:6px">Integración de precio</h2>
+  <p class="card-sub" style="margin-bottom:22px;max-width:70ch">Arma la obra con las partidas del catálogo. El precio
+    se integra solo con el factor del presupuesto — nadie teclea un porcentaje.</p>
+  <div class="kpi-row" id="in-kpis"></div>
+  <div class="two-col wide">
+    <div class="card"><h3>🧱 Partidas</h3>
+      <div class="card-sub">Cantidades por partida. El costo directo se arma aquí.</div>
+      <div id="in-partidas"></div></div>
+    <div class="card"><h3>🏷️ Cómo se integra</h3>
+      <div class="card-sub">Del costo directo al total con IVA, renglón por renglón.</div>
+      <div id="in-build"></div></div>
+  </div>
+  <div class="card"><h3>💵 Contra cotizar a ojo</h3>
+    <div class="card-sub">El mismo trabajo, con el factor que se usa cuando nadie sacó las cuentas.</div>
+    <div id="in-cmp"></div></div>
+</section>
+
+<section class="view hidden" id="view-real">
+  <div class="sec-lbl">Fase 1 · Presupuesto y costos</div>
+  <h2 style="font-size:26px;margin-bottom:6px">Presupuesto vs real</h2>
+  <p class="card-sub" style="margin-bottom:22px;max-width:70ch">El mismo factor, al revés: cuánto indirecto se ha
+    gastado, cuánto ha recuperado el trabajo facturado, y cuánto dinero tuyo está adentro de las obras ahora mismo.</p>
+  <div class="kpi-row" id="re-kpis"></div>
+  <div id="re-banner"></div>
+  <div class="card"><h3>📐 Obra por obra</h3>
+    <div class="card-sub">Cada obra cargando su parte de la estructura.</div>
+    <div class="tbl-wrap" id="re-tbl"></div></div>
+  <div class="notebox" id="re-nota"></div>
+</section>
+
+
+  </div>
+</div>
+
+
+
+<script>
+const MXN = n => '$' + Math.round(n).toLocaleString('es-MX');
+const IVA = 0.16;
+const gremios = {'Albañilería':{c:'#B5723A'},'Electricidad':{c:'#E6971F'},'Plomería':{c:'#2E6FA7'},'Carpintería':{c:'#8A6D3B'},'Pintura':{c:'#6FA6D4'},'Herrería':{c:'#5B646F'}};
+const proveedores = [
+  {n:'Kadiel Méndez', g:'Albañilería', obra:'Depto. Polanco', pagado:42000, saldo:15000},
+  {n:'Marco Aguilar', g:'Electricidad', obra:'Depto. Polanco', pagado:28500, saldo:6500},
+  {n:'Juan Luis Ortega', g:'Plomería', obra:'Casa Coyoacán', pagado:19000, saldo:9000},
+  {n:'Martín Reyes', g:'Carpintería', obra:'Casa Coyoacán', pagado:33000, saldo:22000},
+  {n:'Rodrigo Salas', g:'Pintura', obra:'Depto. Polanco', pagado:14500, saldo:0},
+  {n:'Taller El Herrero', g:'Herrería', obra:'Casa Coyoacán', pagado:11000, saldo:18500},
+];
+const plantillas = [
+  {p:'Demolición y retiro', u:'m²', base:150, key:'demolicion'},
+  {p:'Piso porcelánico', u:'m²', base:680, key:'pisos'},
+  {p:'Plafón de tablaroca', u:'m²', base:480, key:'plafon'},
+  {p:'Pintura de muros', u:'m²', base:190, key:'pintura'},
+  {p:'Instalación eléctrica', u:'m²', base:320, key:'electrica'},
+  {p:'Instalación hidrosanitaria', u:'m²', base:290, key:'plomeria'},
+  {p:'Cocina integral', u:'proyecto', base:52000, key:'cocina'},
+  {p:'Closet a la medida', u:'proyecto', base:19500, key:'closets'},
+  {p:'Baño completo (remodelación)', u:'baño', base:38000, key:'bano'},
+  {p:'Cancelería de aluminio', u:'proyecto', base:24000, key:'canceleria'},
+];
+const MULT = {'Básico':0.85,'Medio':1.0,'Premium':1.4};
+const obras = [
+  {id:'polanco', nombre:'Depto. Polanco', estado:'activa', m2:92, mov:[
+    {desc:'Anticipo inicial (contrato)', tipo:'anticipo', monto:180000},
+    {desc:'2ª exhibición', tipo:'anticipo', monto:120000},
+    {desc:'Kadiel Méndez', tipo:'pago', gremio:'Albañilería', monto:42000},
+    {desc:'Marco Aguilar', tipo:'pago', gremio:'Electricidad', monto:28500},
+    {desc:'Rodrigo Salas', tipo:'pago', gremio:'Pintura', monto:14500}]},
+  {id:'coyoacan', nombre:'Casa Coyoacán', estado:'activa', m2:210, mov:[
+    {desc:'Anticipo inicial (contrato)', tipo:'anticipo', monto:350000},
+    {desc:'Martín Reyes', tipo:'pago', gremio:'Carpintería', monto:33000},
+    {desc:'Juan Luis Ortega', tipo:'pago', gremio:'Plomería', monto:19000},
+    {desc:'Taller El Herrero', tipo:'pago', gremio:'Herrería', monto:11000}]},
+  {id:'roma', nombre:'Local Roma Norte', estado:'cotizacion', m2:75, mov:[]},
+];
+let currentObra = obras[0];
+
+document.getElementById('enterBtn').addEventListener('click',()=>document.getElementById('splash').classList.add('hide'));
+try{ const d=new Date(); document.getElementById('todayLbl').textContent = d.toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long'}); }catch(e){}
+
+const crumbNames={presupanual:'Presupuesto anual',factor:'Indirectos y factor de sobrecosto',integracion:'Integración de precio',real:'Presupuesto vs real',panel:'Panel de obra',obras:'Obras',presupuestos:'Presupuestos con IA',plantillas:'Plantillas de costos',finanzas:'Finanzas por obra',finmodel:'Modelo financiero',proveedores:'Proveedores',cuadrillas:'Cuadrillas & Dispatch',pipeline:'Pipeline de obra'};
+document.querySelectorAll('.nav a[data-view]').forEach(a=>{
+  a.addEventListener('click',()=>{
+    document.querySelectorAll('.nav a').forEach(x=>x.classList.remove('active'));
+    a.classList.add('active');
+    const v=a.dataset.view;
+    document.querySelectorAll('.view').forEach(x=>{x.classList.add('hidden');x.classList.remove('show');});
+    const el=document.getElementById('view-'+v);el.classList.remove('hidden');void el.offsetWidth;el.classList.add('show');
+    document.getElementById('crumb').textContent=crumbNames[v];
+    window.scrollTo(0,0);
+  });
+});
+
+const obraSel=document.getElementById('obraSel');
+obras.forEach(o=>{const op=document.createElement('option');op.value=o.id;op.textContent=o.nombre;obraSel.appendChild(op);});
+obraSel.addEventListener('change',()=>{currentObra=obras.find(o=>o.id===obraSel.value);renderFinanzas();});
+
+function calcObra(o){
+  const ant=o.mov.filter(m=>m.tipo==='anticipo').reduce((s,m)=>s+m.monto,0);
+  const pag=o.mov.filter(m=>m.tipo==='pago').reduce((s,m)=>s+m.monto,0);
+  const ivaAmt=ant>0? ant - ant/(1+IVA):0;
+  const neto=ant/(1+IVA)-pag;
+  return {ant,pag,ivaAmt,neto};
+}
+
+function animateMoney(el,target){
+  const t0=performance.now();const dur=850;
+  function step(t){const p=Math.min(1,(t-t0)/dur);const e=1-Math.pow(1-p,3);el.textContent=MXN(target*e);if(p<1)requestAnimationFrame(step);}
+  requestAnimationFrame(step);
+}
+let panelAnimated=false;
+
+function renderPanel(){
+  let tA=0,tP=0,tN=0;
+  const tb=document.querySelector('#tbl-obras tbody');tb.innerHTML='';
+  obras.forEach(o=>{
+    const c=calcObra(o);
+    if(o.estado==='activa'){tA+=c.ant;tP+=c.pag;tN+=c.neto;}
+    const stMap={activa:['st-activa','Activa'],cotizacion:['st-cotiz','Cotización'],cierre:['st-cierre','Cierre']};
+    const st=stMap[o.estado];
+    tb.innerHTML+=`<tr><td><b>${o.nombre}</b><br><small class="mono" style="color:var(--steel)">${o.m2} m²</small></td>
+      <td><span class="chip-status ${st[0]}">${st[1]}</span></td>
+      <td class="num">${o.estado==='cotizacion'?'—':MXN(c.ant)}</td>
+      <td class="num">${o.estado==='cotizacion'?'—':MXN(c.pag)}</td>
+      <td class="num pos">${o.estado==='cotizacion'?'<span style="color:var(--steel)">—</span>':MXN(c.neto)}</td></tr>`;
+  });
+  document.getElementById('k-obras').textContent=obras.length;
+  if(!panelAnimated){animateMoney(document.getElementById('k-ant'),tA);animateMoney(document.getElementById('k-pag'),tP);animateMoney(document.getElementById('k-net'),tN);panelAnimated=true;}
+  else{document.getElementById('k-ant').textContent=MXN(tA);document.getElementById('k-pag').textContent=MXN(tP);document.getElementById('k-net').textContent=MXN(tN);}
+}
+
+function renderPlantillas(){
+  const tb=document.querySelector('#tbl-plantillas tbody');tb.innerHTML='';
+  const fac = (typeof PRESUP!=='undefined'&&PRESUP&&typeof calcFactor==='function') ? calcFactor().factor : 0;
+  plantillas.forEach(p=>{tb.innerHTML+=`<tr><td><b>${p.p}</b></td><td class="mono" style="color:var(--steel-2)">${p.u}</td>
+    <td class="num"><span class="editable">${MXN(p.base*MULT['Básico'])}</span></td>
+    <td class="num"><span class="editable">${MXN(p.base)}</span></td>
+    <td class="num"><span class="editable">${MXN(p.base*MULT['Premium'])}</span></td>
+    <td class="num vent">${fac?MXN(p.base*fac):'—'}</td></tr>`;});
+  const h=document.querySelector('#tbl-plantillas thead tr');
+  if(h && !h.querySelector('.vent-h')) h.insertAdjacentHTML('beforeend',
+    '<th class="num vent-h">Venta · medio</th>');
+  const note=document.getElementById('pl-facnote');
+  if(note&&fac) note.innerHTML='Las tres primeras columnas son <b>costo directo</b>: material y mano de obra puestos en obra. '+
+    'La última es lo que hay que cobrar para que esa partida pague su parte de la oficina, el financiamiento y la utilidad — '+
+    'costo directo × <b>'+fac.toFixed(3)+'</b>, el factor que sale del presupuesto anual. Cambia un indirecto allá y esta columna se mueve sola.';
+}
+
+let gremioFilter='Todos';
+function renderProvFilters(){
+  const wrap=document.getElementById('gremioFilters');wrap.innerHTML='';
+  ['Todos',...Object.keys(gremios)].forEach(g=>{const b=document.createElement('button');b.className='f'+(g===gremioFilter?' active':'');b.textContent=g;b.onclick=()=>{gremioFilter=g;renderProvFilters();renderProv();};wrap.appendChild(b);});
+}
+function obraOptions(sel){let h='<option value="">Sin asignar</option>';obras.forEach(o=>{h+=`<option ${o.nombre===sel?'selected':''}>${o.nombre}</option>`;});return h;}
+function renderProv(){
+  const tb=document.querySelector('#tbl-prov tbody');tb.innerHTML='';
+  proveedores.filter(p=>gremioFilter==='Todos'||p.g===gremioFilter).forEach(p=>{const i=proveedores.indexOf(p);const gc=gremios[p.g]?gremios[p.g].c:'#8A93A0';tb.innerHTML+=`<tr>
+    <td><b>${p.n}</b></td>
+    <td><span class="tag-gremio"><span class="d" style="background:${gc}"></span>${p.g}</span></td>
+    <td><select class="obra-sel-row" data-i="${i}">${obraOptions(p.obra)}</select></td>
+    <td class="num">${MXN(p.pagado)}</td>
+    <td class="num ${p.saldo>0?'neg':'pos'}">${p.saldo>0?MXN(p.saldo):'Liquidado'}</td></tr>`;});
+  tb.querySelectorAll('.obra-sel-row').forEach(s=>s.addEventListener('change',()=>{proveedores[+s.dataset.i].obra=s.value||'Sin asignar';}));
+}
+function initSupForm(){
+  const g=document.getElementById('supGremio');if(g&&g.options.length===0){Object.keys(gremios).forEach(x=>g.insertAdjacentHTML('beforeend',`<option>${x}</option>`));}
+  const o=document.getElementById('supObra');if(o&&o.options.length===0){o.innerHTML=obraOptions('');}
+  const btn=document.getElementById('supAdd');if(btn)btn.onclick=()=>{
+    const n=document.getElementById('supName').value.trim();if(!n)return;
+    const gr=document.getElementById('supGremio').value;const ob=document.getElementById('supObra').value||'Sin asignar';
+    proveedores.push({n,g:gr,obra:ob,pagado:0,saldo:0});
+    document.getElementById('supName').value='';gremioFilter='Todos';renderProvFilters();renderProv();
+  };
+}
+/* ===== OBRAS (project navigation) ===== */
+const avanceMap={polanco:62,coyoacan:40,roma:0};
+function renderObras(){
+  const g=document.getElementById('obrasGrid');if(!g)return;g.innerHTML='';
+  obras.forEach(o=>{const c=calcObra(o);const stMap={activa:['st-activa','Activa'],cotizacion:['st-cotiz','Cotización']};const st=stMap[o.estado];const av=avanceMap[o.id]||0;const cot=o.estado==='cotizacion';
+    g.innerHTML+=`<div class="obra-card">
+      <div class="oc-top"><div><h3>${o.nombre}</h3><span class="mono" style="color:var(--steel);font-size:12px">${o.m2} m²</span></div><span class="chip-status ${st[0]}">${st[1]}</span></div>
+      <div class="oc-bar"><span style="width:${av}%"></span></div><div class="oc-pct mono">${av}% de avance</div>
+      <div class="oc-nums"><div><div class="k">Anticipos</div><div class="v">${cot?'—':MXN(c.ant)}</div></div><div><div class="k">Ingreso real</div><div class="v pos">${cot?'—':MXN(c.neto)}</div></div></div>
+      <button class="btn sm" style="width:100%;justify-content:center;margin-top:14px" onclick="openObra('${o.id}')">Ver finanzas →</button>
+    </div>`;});
+}
+function openObra(id){currentObra=obras.find(o=>o.id===id);renderFinanzas();const link=document.querySelector('.nav a[data-view="finanzas"]');if(link)link.click();}
+/* ===== MODELO FINANCIERO (with OPEX) ===== */
+let opex=[
+  {n:'Renta de oficina y bodega',v:18000},
+  {n:'Sueldos administrativos',v:45000},
+  {n:'Vehículos y combustible (admin)',v:12000},
+  {n:'Software y sistemas (AUDA OS)',v:20880},
+  {n:'Seguros',v:6000},
+  {n:'Contador y legal',v:8000},
+  {n:'Marketing y publicidad',v:10000},
+  {n:'Otros gastos',v:5000},
+];
+function renderFinModelTotals(){
+  let revenue=0,cogs=0;
+  obras.forEach(o=>{if(o.estado!=='activa')return;const c=calcObra(o);revenue+=c.ant/(1+IVA);cogs+=c.pag;});
+  const gross=revenue-cogs;const opexTotal=opex.reduce((s,l)=>s+l.v,0);const ebitda=gross-opexTotal;
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  set('fm-rev',MXN(revenue));set('fm-revtot',MXN(revenue));
+  set('fm-cogs','−'+MXN(cogs));
+  set('fm-gross',MXN(gross));set('fm-gross2',MXN(gross));
+  set('fm-opex',MXN(opexTotal));set('fm-opextot',MXN(opexTotal));
+  set('fm-ebitda',MXN(ebitda));set('fm-ebitda2',MXN(ebitda));
+  const gm=revenue?gross/revenue*100:0, em=revenue?ebitda/revenue*100:0;
+  set('fm-gm','· margen '+gm.toFixed(1)+'%');set('fm-em','margen '+em.toFixed(1)+'%');set('fm-em2','· margen '+em.toFixed(1)+'%');
+}
+function renderFinModel(){
+  const rb=document.getElementById('fm-revrows');if(!rb)return;rb.innerHTML='';
+  obras.filter(o=>o.estado==='activa').forEach(o=>{const c=calcObra(o);rb.innerHTML+=`<div class="pl-row"><span>${o.nombre}</span><span class="m">${MXN(c.ant/(1+IVA))}</span></div>`;});
+  const ob=document.getElementById('fm-opexrows');ob.innerHTML='';
+  opex.forEach((l,i)=>{ob.innerHTML+=`<div class="pl-row"><span>${l.n}</span><span class="m"><span class="pk">$</span><input class="opex-inp" type="number" value="${l.v}" data-i="${i}"></span></div>`;});
+  ob.querySelectorAll('.opex-inp').forEach(inp=>inp.addEventListener('input',()=>{opex[+inp.dataset.i].v=parseFloat(inp.value)||0;renderFinModelTotals();}));
+  renderFinModelTotals();
+}
+
+function renderFinanzas(){
+  obraSel.value=currentObra.id;
+  const c=calcObra(currentObra);
+  document.getElementById('f-ant').textContent=MXN(c.ant);
+  document.getElementById('f-pag').textContent=MXN(c.pag);
+  document.getElementById('f-net').textContent=MXN(c.neto);
+  document.getElementById('f-net-sub').textContent='IVA descontado: '+MXN(c.ivaAmt);
+  document.getElementById('f-obra-name').textContent=currentObra.nombre;
+  const tb=document.querySelector('#tbl-fin tbody');tb.innerHTML='';
+  if(currentObra.mov.length===0){tb.innerHTML='<tr><td colspan="3" style="color:var(--steel);text-align:center;padding:26px">Sin movimientos — obra en cotización.</td></tr>';}
+  currentObra.mov.forEach(m=>{const isAnt=m.tipo==='anticipo';
+    tb.innerHTML+=`<tr><td><b>${m.desc}</b>${m.gremio?`<br><small class="mono" style="color:var(--steel)">${m.gremio}</small>`:''}</td>
+      <td>${isAnt?'<span class="chip-status st-activa">Anticipo</span>':'<span class="chip-status st-cotiz">Pago</span>'}</td>
+      <td class="num ${isAnt?'pos':'neg'}">${isAnt?'+':'−'}${MXN(m.monto)}</td></tr>`;});
+  const base=c.ant/(1+IVA);const maxV=Math.max(c.ant,1);
+  document.getElementById('finBars').innerHTML=
+    bar('Anticipos cobrados (con IVA)',c.ant,maxV,'var(--blueprint)')+
+    bar('IVA incluido (16%)',c.ivaAmt,maxV,'var(--steel)')+
+    bar('Base sin IVA',base,maxV,'var(--ochre)')+
+    bar('Pagado a proveedores',c.pag,maxV,'var(--warn)')+
+    bar('Ingreso real (post-IVA)',c.neto,maxV,'var(--ok)');
+  const pg=document.getElementById('payGremio');
+  if(pg.options.length===0){Object.keys(gremios).forEach(g=>{const o=document.createElement('option');o.value=g;o.textContent=g;pg.appendChild(o);});}
+}
+function bar(lbl,val,max,color){const pct=Math.max(0,Math.min(100,(val/max)*100));return `<div class="bar-row"><div class="lbl"><span>${lbl}</span><b>${MXN(val)}</b></div><div class="bar"><span style="width:${pct}%;background:${color}"></span></div></div>`;}
+document.getElementById('payBtn').addEventListener('click',()=>{
+  const g=document.getElementById('payGremio').value;const m=parseFloat(document.getElementById('payMonto').value);
+  if(!m||m<=0)return;
+  currentObra.mov.push({desc:'Pago manual · '+g,tipo:'pago',gremio:g,monto:m});
+  document.getElementById('payMonto').value='';renderFinanzas();renderPanel();
+});
+
+const aiState={tipo:null,m2:80,acabado:null,conceptos:new Set(),banos:1};
+const tipos=['Departamento','Casa','Local comercial','Oficina'];
+const acabados=['Básico','Medio','Premium'];
+const conceptosList=[{k:'demolicion',n:'Demolición'},{k:'pisos',n:'Pisos'},{k:'plafon',n:'Plafón'},{k:'pintura',n:'Pintura'},{k:'electrica',n:'Eléctrica'},{k:'plomeria',n:'Plomería'},{k:'cocina',n:'Cocina integral'},{k:'closets',n:'Closets'},{k:'bano',n:'Baños'},{k:'canceleria',n:'Cancelería'}];
+function buildAI(){
+  const b=document.getElementById('aiBody');
+  b.innerHTML=`
+    <div class="bubble"><div class="who">Diego pregunta</div><div class="msg">Va, cuénteme del proyecto. ¿Qué tipo de espacio vamos a intervenir?</div><div class="q-field"><div class="opts" id="optTipo"></div></div></div>
+    <div class="bubble"><div class="who">Diego pregunta</div><div class="msg">Perfecto. ¿Como cuántos metros cuadrados, más o menos?</div><div class="q-field"><input type="range" id="rngM2" min="30" max="400" step="5" value="${aiState.m2}"><div class="rangeval"><span id="m2val">${aiState.m2}</span> <small>m²</small></div></div></div>
+    <div class="bubble"><div class="who">Diego pregunta</div><div class="msg">¿Qué nivel de acabados busca el cliente? Eso mueve bastante el número.</div><div class="q-field"><div class="opts" id="optAcab"></div></div></div>
+    <div class="bubble"><div class="who">Diego pregunta</div><div class="msg">¿Y qué incluye la obra? Marque todo lo que aplique.</div><div class="q-field"><div class="opts" id="optConc"></div></div>
+      <div class="q-field" id="banoWrap" style="display:none"><label>¿Cuántos baños?</label><div class="num-inp"><button id="banoMinus">−</button><span class="val" id="banoVal">1</span><button id="banoPlus">+</button></div></div></div>`;
+  const ot=document.getElementById('optTipo');tipos.forEach(t=>{const o=document.createElement('button');o.className='opt'+(aiState.tipo===t?' sel':'');o.textContent=t;o.onclick=()=>{aiState.tipo=t;buildAI();};ot.appendChild(o);});
+  const rng=document.getElementById('rngM2');rng.addEventListener('input',()=>{aiState.m2=+rng.value;document.getElementById('m2val').textContent=rng.value;});
+  const oa=document.getElementById('optAcab');acabados.forEach(t=>{const o=document.createElement('button');o.className='opt'+(aiState.acabado===t?' sel':'');o.textContent=t;o.onclick=()=>{aiState.acabado=t;buildAI();};oa.appendChild(o);});
+  const oc=document.getElementById('optConc');conceptosList.forEach(c=>{const o=document.createElement('button');o.className='opt'+(aiState.conceptos.has(c.k)?' sel':'');o.textContent=c.n;o.onclick=()=>{aiState.conceptos.has(c.k)?aiState.conceptos.delete(c.k):aiState.conceptos.add(c.k);buildAI();};oc.appendChild(o);});
+  if(aiState.conceptos.has('bano')){document.getElementById('banoWrap').style.display='block';document.getElementById('banoVal').textContent=aiState.banos;document.getElementById('banoMinus').onclick=()=>{aiState.banos=Math.max(1,aiState.banos-1);buildAI();};document.getElementById('banoPlus').onclick=()=>{aiState.banos=Math.min(6,aiState.banos+1);buildAI();};}
+  const ready=aiState.tipo&&aiState.acabado&&aiState.conceptos.size>0;
+  document.getElementById('aiHint').textContent=ready?'Listo para generar ✨':'Contesta tipo, acabado y conceptos';
+  document.getElementById('genBtn').style.opacity=ready?1:.5;
+}
+function generar(){
+  if(!aiState.tipo||!aiState.acabado||aiState.conceptos.size===0){document.getElementById('aiHint').textContent='Faltan respuestas ⚠️';return;}
+  const mult=MULT[aiState.acabado];const lines=[];
+  conceptosList.forEach(c=>{if(!aiState.conceptos.has(c.k))return;const pl=plantillas.find(p=>p.key===c.k);let amount,qlabel;
+    if(pl.u==='m²'){amount=pl.base*mult*aiState.m2;qlabel=`${aiState.m2} m² × ${MXN(pl.base*mult)}`;}
+    else if(pl.u==='baño'){amount=pl.base*mult*aiState.banos;qlabel=`${aiState.banos} baño(s) × ${MXN(pl.base*mult)}`;}
+    else{amount=pl.base*mult;qlabel=`1 ${pl.u} × ${MXN(pl.base*mult)}`;}
+    lines.push({desc:pl.p,sub:qlabel,amt:amount});});
+  const directos=lines.reduce((s,l)=>s+l.amt,0);
+  /* los indirectos ya no se teclean: salen del presupuesto anual */
+  const F=(typeof PRESUP!=='undefined'&&PRESUP&&typeof calcFactor==='function')?calcFactor():{ioPct:10,iofPct:0,finPct:0,dias:0,factor:1.3};
+  const UTIL=(typeof PRESUP!=='undefined'&&PRESUP)?PRESUP.utilidad:20;
+  const indObra=directos*F.ioPct/100, indOfi=directos*F.iofPct/100;
+  const indirectos=indObra+indOfi;
+  const subtotal=directos+indirectos;
+  const financiamiento=subtotal*F.finPct/100;
+  const conFin=subtotal+financiamiento;
+  const utilidad=conFin*UTIL/100;const preIva=conFin+utilidad;const iva=preIva*IVA;const total=preIva+iva;
+  let html=`<div class="ph"><div class="l"><div class="plogo">A</div><div><div class="k">Propuesta AUDA</div><h3>${aiState.tipo} · ${aiState.m2} m²</h3><p>Acabado ${aiState.acabado} · ${lines.length} conceptos</p></div></div><div class="stamp">GENERADO<br>POR IA</div></div><div class="pb"><div class="sec-lbl">Costos directos</div>`;
+  lines.forEach(l=>{html+=`<div class="li"><div class="desc">${l.desc}<small>${l.sub}</small></div><div class="amt">${MXN(l.amt)}</div></div>`;});
+  html+=`<div class="sec-lbl">Costos indirectos</div>
+    <div class="li"><div class="desc">Indirectos de obra<small>residente, bodega, herramienta · ${F.ioPct.toFixed(1)}% de directos</small></div><div class="amt">${MXN(indObra)}</div></div>
+    <div class="li"><div class="desc">Indirectos de oficina<small>estructura que sostiene la obra · ${F.iofPct.toFixed(1)}% de directos</small></div><div class="amt">${MXN(indOfi)}</div></div>
+    <div class="li"><div class="desc">Financiamiento<small>${F.dias} días entre pagar al gremio y cobrar</small></div><div class="amt">${MXN(financiamiento)}</div></div>
+    <div class="totals">
+      <div class="totrow"><span>Costos directos</span><span class="m">${MXN(directos)}</span></div>
+      <div class="totrow"><span>Costos indirectos</span><span class="m">${MXN(indirectos)}</span></div>
+      <div class="totrow"><span>Financiamiento</span><span class="m">${MXN(financiamiento)}</span></div>
+      <div class="totrow"><span>Utilidad (${UTIL}%)</span><span class="m">${MXN(utilidad)}</span></div>
+      <div class="totrow" style="border-top:1px dashed var(--hair-d);margin-top:6px;padding-top:8px"><span>Subtotal</span><span class="m">${MXN(preIva)}</span></div>
+      <div class="totrow"><span>IVA (16%)</span><span class="m">${MXN(iva)}</span></div>
+      <div class="totrow grand"><span>Total al cliente</span><span class="m">${MXN(total)}</span></div>
+      <div class="totrow net" style="margin-top:8px"><span>Ingreso real de Diego (post-IVA)</span><span class="m">${MXN(preIva)}</span></div>
+      <div class="totrow" style="border-top:1px dashed var(--hair-d);margin-top:6px;padding-top:8px;font-size:11.5px;color:var(--steel)">
+        <span>Integrado con el factor ${F.factor.toFixed(3)} del presupuesto ${(typeof PRESUP!=='undefined'&&PRESUP)?PRESUP.anio:''}</span><span class="m">${(directos?preIva/directos:0).toFixed(3)}×</span></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px"><button class="btn sm" style="flex:1">📄 Exportar PDF</button><button class="btn sm ghost" style="flex:1">📤 Enviar al cliente</button></div></div>`;
+  document.getElementById('propEmpty').classList.add('hidden');
+  const pc=document.getElementById('propContent');pc.classList.remove('hidden');pc.classList.remove('grow');void pc.offsetWidth;pc.classList.add('grow');pc.innerHTML=html;
+  document.getElementById('aiHint').textContent='Propuesta generada ✅ — ajusta y regenera';
+}
+document.getElementById('genBtn').addEventListener('click',generar);
+
+renderPanel();renderPlantillas();renderProvFilters();renderProv();renderFinanzas();buildAI();renderObras();renderFinModel();initSupForm();
+
+/* =========================================================================
+   PRESUPUESTO Y FACTOR DE SOBRECOSTO
+   La integración del precio como se hace en México:
+   Costo Directo → Indirectos de obra → Indirectos de oficina →
+   Financiamiento → Utilidad → Precio de venta → IVA
+   ========================================================================= */
+
+var PRESUP = {
+  anio: new Date().getFullYear(),
+  obrasAnio: 14,
+  m2Anio: 1680,
+  cdAnual: 5940000,                       /* costo directo planeado del año */
+  mezcla: {material:46, gremios:48, equipo:6},
+  indirectosObra: [
+    {n:'Residente de obra', v:22000},
+    {n:'Bodega, almacén y fletes', v:7000},
+    {n:'Herramienta y equipo menor', v:4500},
+    {n:'Seguridad e higiene (EPP, señalización)', v:2800},
+    {n:'Limpieza y retiro de escombro', v:5200},
+    {n:'Servicios provisionales (luz, agua)', v:1800},
+  ],
+  fin: {diasPago:15, diasCobro:62, tasa:24},
+  utilidad: 12,
+  factorCalle: 1.35                        /* con lo que cotiza el de enfrente */
+};
+
+function pctFmt(n,d){return (n).toFixed(d===undefined?1:d)+'%'}
+
+function calcFactor(){
+  const cd = PRESUP.cdAnual;
+  const io = PRESUP.indirectosObra.reduce((s,l)=>s+l.v,0)*12;
+  const iof = opex.reduce((s,l)=>s+l.v,0)*12;
+  const ioPct = cd? io/cd*100 : 0;
+  const iofPct = cd? iof/cd*100 : 0;
+  const subtotal = cd + io + iof;
+  const dias = Math.max(0, PRESUP.fin.diasCobro - PRESUP.fin.diasPago);
+  const finPct = PRESUP.fin.tasa * dias / 365;
+  const finMonto = subtotal * finPct/100;
+  const conFin = subtotal + finMonto;
+  const utilMonto = conFin * PRESUP.utilidad/100;
+  const precio = conFin + utilMonto;
+  const factor = cd? precio/cd : 0;
+  return {cd, io, iof, ioPct, iofPct, subtotal, dias, finPct, finMonto, conFin,
+          utilMonto, precio, factor,
+          margen: precio? utilMonto/precio*100 : 0,
+          cdPct: precio? cd/precio*100 : 0,
+          ventaObra: PRESUP.obrasAnio? precio/PRESUP.obrasAnio : 0,
+          m2: PRESUP.m2Anio? precio/PRESUP.m2Anio : 0};
+}
+
+/* ---------- 1 · PRESUPUESTO ANUAL ---------- */
+function renderPresupuestoAnual(){
+  const f = calcFactor();
+  const k = document.getElementById('pa-kpis'); if(!k) return;
+  k.innerHTML = `
+    <div class="kpi accent"><div class="top"><span class="ic">🎯</span></div>
+      <div class="k">Venta necesaria</div><div class="v">${MXN(f.precio)}</div>
+      <div class="sub">para cubrir todo y dejar ${pctFmt(f.margen)} de utilidad</div></div>
+    <div class="kpi"><div class="top"><span class="ic">🧱</span>
+      <span class="trend flat">${pctFmt(f.cdPct)}</span></div>
+      <div class="k">Costo directo</div><div class="v">${MXN(f.cd)}</div>
+      <div class="sub">material, gremios y equipo</div></div>
+    <div class="kpi"><div class="top"><span class="ic">🏢</span>
+      <span class="trend ${f.ioPct+f.iofPct>30?'down':'flat'}">${pctFmt(f.ioPct+f.iofPct)}</span></div>
+      <div class="k">Indirectos</div><div class="v">${MXN(f.io+f.iof)}</div>
+      <div class="sub">obra ${MXN(f.io)} · oficina ${MXN(f.iof)}</div></div>
+    <div class="kpi"><div class="top"><span class="ic">✳️</span></div>
+      <div class="k">Factor de sobrecosto</div><div class="v">${f.factor.toFixed(3)}</div>
+      <div class="sub">cada $1 de costo directo se vende en $${f.factor.toFixed(2)}</div></div>`;
+
+  /* la cascada */
+  const steps = [
+    {n:'Costo directo', v:f.cd, t:'cd'},
+    {n:'Indirectos de obra', v:f.io, t:'io'},
+    {n:'Indirectos de oficina', v:f.iof, t:'iof'},
+    {n:'Financiamiento', v:f.finMonto, t:'fin'},
+    {n:'Utilidad', v:f.utilMonto, t:'ut'},
+  ];
+  const w = document.getElementById('pa-cascada');
+  w.innerHTML = steps.map(s=>`
+    <div class="cas-row">
+      <div class="cas-n">${s.n}</div>
+      <div class="cas-bar"><i class="${s.t}" style="width:${(s.v/f.precio*100).toFixed(1)}%"></i></div>
+      <div class="cas-v">${MXN(s.v)}</div>
+      <div class="cas-p">${pctFmt(s.v/f.precio*100)}</div>
+    </div>`).join('') +
+    `<div class="cas-row tot">
+      <div class="cas-n">Precio de venta</div>
+      <div class="cas-bar"><i class="pv" style="width:100%"></i></div>
+      <div class="cas-v">${MXN(f.precio)}</div>
+      <div class="cas-p">100%</div></div>
+     <div class="cas-row iva">
+      <div class="cas-n">IVA 16%</div><div class="cas-bar"></div>
+      <div class="cas-v">${MXN(f.precio*IVA)}</div>
+      <div class="cas-p">al cliente ${MXN(f.precio*(1+IVA))}</div></div>`;
+
+  /* el chequeo de volumen */
+  const v = document.getElementById('pa-volumen');
+  v.innerHTML = `
+    <div class="vol">
+      <div class="vol-i"><div class="vol-k">Obras al año</div>
+        <div class="vol-v">${PRESUP.obrasAnio}</div>
+        <div class="stepper"><button data-pa="obras-">−</button><button data-pa="obras+">+</button></div></div>
+      <div class="vol-i"><div class="vol-k">Venta por obra</div>
+        <div class="vol-v">${MXN(f.ventaObra)}</div>
+        <div class="vol-d">promedio necesario</div></div>
+      <div class="vol-i"><div class="vol-k">m² al año</div>
+        <div class="vol-v">${PRESUP.m2Anio.toLocaleString('es-MX')}</div>
+        <div class="stepper"><button data-pa="m2-">−</button><button data-pa="m2+">+</button></div></div>
+      <div class="vol-i"><div class="vol-k">Precio por m²</div>
+        <div class="vol-v">${MXN(f.m2)}</div>
+        <div class="vol-d">sobre ${MXN(PRESUP.m2Anio?PRESUP.cdAnual/PRESUP.m2Anio:0)} / m² de costo directo</div></div>
+    </div>`;
+
+  document.getElementById('pa-nota').innerHTML =
+    `<b>Esto no es la meta que te gustaría tener.</b> Es la que sale de sumar lo que ya te comprometiste a gastar. ` +
+    `Con ${MXN(f.io+f.iof)} de indirectos al año y un costo directo planeado de ${MXN(f.cd)}, ` +
+    `cualquier precio por debajo de <b>${f.factor.toFixed(3)}×</b> el costo directo se paga con tu utilidad. ` +
+    `Y si haces menos de ${PRESUP.obrasAnio} obras, el mismo indirecto se reparte entre menos trabajos: el factor sube, no baja.`;
+}
+
+/* ---------- 2 · INDIRECTOS Y FACTOR ---------- */
+function renderFactor(){
+  const f = calcFactor();
+  const k = document.getElementById('fa-kpis'); if(!k) return;
+  k.innerHTML = `
+    <div class="kpi accent"><div class="top"><span class="ic">✳️</span></div>
+      <div class="k">Factor de sobrecosto</div><div class="v">${f.factor.toFixed(3)}</div>
+      <div class="sub">costo directo × ${f.factor.toFixed(3)} = precio antes de IVA</div></div>
+    <div class="kpi"><div class="top"><span class="ic">🏗️</span></div>
+      <div class="k">Indirectos de obra</div><div class="v">${pctFmt(f.ioPct)}</div>
+      <div class="sub">${MXN(f.io)} al año</div></div>
+    <div class="kpi"><div class="top"><span class="ic">🏢</span></div>
+      <div class="k">Indirectos de oficina</div><div class="v">${pctFmt(f.iofPct)}</div>
+      <div class="sub">${MXN(f.iof)} al año</div></div>
+    <div class="kpi"><div class="top"><span class="ic">🏦</span>
+      <span class="trend ${f.dias>40?'down':'flat'}">${f.dias} días</span></div>
+      <div class="k">Financiamiento</div><div class="v">${pctFmt(f.finPct,2)}</div>
+      <div class="sub">${MXN(f.finMonto)} al año de dinero prestado</div></div>`;
+
+  const io = document.getElementById('fa-io');
+  io.innerHTML = PRESUP.indirectosObra.map((l,i)=>
+    `<div class="pl-row"><span>${l.n}</span><span class="m"><span class="pk">$</span>
+      <input class="io-inp" type="number" value="${l.v}" data-i="${i}"></span></div>`).join('') +
+    `<div class="pl-row tot"><span>Total mensual</span><span class="m">${MXN(f.io/12)}</span></div>
+     <div class="pl-row tot"><span>Al año</span><span class="m">${MXN(f.io)}</span></div>`;
+  io.querySelectorAll('.io-inp').forEach(inp=>inp.addEventListener('input',()=>{
+    PRESUP.indirectosObra[+inp.dataset.i].v = parseFloat(inp.value)||0; refreshPresup(false);
+  }));
+
+  const iof = document.getElementById('fa-iof');
+  iof.innerHTML = opex.map((l,i)=>
+    `<div class="pl-row"><span>${l.n}</span><span class="m"><span class="pk">$</span>
+      <input class="iof-inp" type="number" value="${l.v}" data-i="${i}"></span></div>`).join('') +
+    `<div class="pl-row tot"><span>Total mensual</span><span class="m">${MXN(f.iof/12)}</span></div>
+     <div class="pl-row tot"><span>Al año</span><span class="m">${MXN(f.iof)}</span></div>`;
+  iof.querySelectorAll('.iof-inp').forEach(inp=>inp.addEventListener('input',()=>{
+    opex[+inp.dataset.i].v = parseFloat(inp.value)||0; refreshPresup(false);
+    if(typeof renderFinModelTotals==='function') renderFinModelTotals();
+  }));
+
+  /* financiamiento */
+  document.getElementById('fa-fin').innerHTML = `
+    <div class="fin-grid">
+      <div class="fin-i"><div class="vol-k">Pagas al gremio a los</div>
+        <div class="vol-v">${PRESUP.fin.diasPago}<small> días</small></div>
+        <div class="stepper"><button data-pa="dp-">−</button><button data-pa="dp+">+</button></div></div>
+      <div class="fin-i"><div class="vol-k">Te pagan la estimación a los</div>
+        <div class="vol-v">${PRESUP.fin.diasCobro}<small> días</small></div>
+        <div class="stepper"><button data-pa="dc-">−</button><button data-pa="dc+">+</button></div></div>
+      <div class="fin-i"><div class="vol-k">Costo del dinero</div>
+        <div class="vol-v">${PRESUP.fin.tasa}<small>% anual</small></div>
+        <div class="stepper"><button data-pa="t-">−</button><button data-pa="t+">+</button></div></div>
+      <div class="fin-i hi"><div class="vol-k">Estás financiando</div>
+        <div class="vol-v">${f.dias}<small> días</small></div>
+        <div class="vol-d">${MXN(f.finMonto)} al año. Ese dinero sale de tu bolsa o del banco, y hoy no está en ningún precio.</div></div>
+    </div>`;
+
+  /* utilidad + la construcción del factor */
+  document.getElementById('fa-build').innerHTML = `
+    <div class="bld">
+      ${[['Costo directo','1.000','base'],
+         ['+ Indirectos de obra',(f.ioPct/100).toFixed(3),'io'],
+         ['+ Indirectos de oficina',(f.iofPct/100).toFixed(3),'iof'],
+         ['× Financiamiento','+'+(f.finPct/100).toFixed(4),'fin'],
+         ['× Utilidad '+PRESUP.utilidad+'%','+'+(PRESUP.utilidad/100).toFixed(3),'ut']]
+        .map(r=>`<div class="bld-r"><span class="bn">${r[0]}</span><span class="bv ${r[2]}">${r[1]}</span></div>`).join('')}
+      <div class="bld-r tot"><span class="bn">Factor de sobrecosto</span><span class="bv">${f.factor.toFixed(3)}</span></div>
+    </div>
+    <div class="ut-row">
+      <div class="vol-k">Utilidad objetivo</div>
+      <div class="vol-v">${PRESUP.utilidad}<small>%</small></div>
+      <div class="stepper"><button data-pa="u-">−</button><button data-pa="u+">+</button></div>
+      <div class="vol-d">Sobre costo. En el precio final eso es <b>${pctFmt(f.margen)}</b> — no es lo mismo y es la confusión más cara del gremio.</div>
+    </div>`;
+
+  document.getElementById('fa-nota').innerHTML =
+    `<b>El de enfrente cotiza a ${PRESUP.factorCalle.toFixed(2)}.</b> ` +
+    `Con tus números eso deja ${MXN(f.cd*PRESUP.factorCalle - f.conFin)} ` +
+    (f.cd*PRESUP.factorCalle < f.conFin
+      ? `<b>de pérdida</b> por cada ${MXN(f.cd)} de costo directo — antes de utilidad. `
+      : `de utilidad por cada ${MXN(f.cd)} de costo directo. `) +
+    `No es que él sea más barato: es que no sabe cuánto le cuesta la oficina. Tú vas a perder esa obra, y es la obra correcta para perder.`;
+}
+
+/* ---------- 3 · INTEGRACIÓN DE PRECIO ---------- */
+var INTEG = {nivel:'Medio', m2:92, partidas:{}, enviado:false};
+plantillas.slice(0,6).forEach((p,i)=>{ INTEG.partidas[p.key] = i<4 ? (p.u==='m²'?92:1) : 0; });
+
+function calcInteg(){
+  const f = calcFactor(), mult = MULT[INTEG.nivel];
+  const lineas = plantillas.map(p=>{
+    const q = INTEG.partidas[p.key]||0;
+    const pu = p.base*mult;
+    return {p:p, q:q, pu:pu, cd:q*pu};
+  }).filter(l=>l.q>0);
+  const cd = lineas.reduce((s,l)=>s+l.cd,0);
+  const io = cd*f.ioPct/100, iof = cd*f.iofPct/100;
+  const sub = cd+io+iof;
+  const fin = sub*f.finPct/100;
+  const conFin = sub+fin;
+  const ut = conFin*PRESUP.utilidad/100;
+  const precio = conFin+ut;
+  const calle = cd*PRESUP.factorCalle;
+  return {f, lineas, cd, io, iof, fin, ut, precio, conFin,
+          iva:precio*IVA, total:precio*(1+IVA),
+          calle, calleUt: calle-conFin,
+          m2: INTEG.m2? precio/INTEG.m2 : 0};
+}
+
+function renderIntegracion(){
+  const c = calcInteg(); if(!document.getElementById('in-kpis')) return;
+  document.getElementById('in-kpis').innerHTML = `
+    <div class="kpi"><div class="top"><span class="ic">🧱</span></div>
+      <div class="k">Costo directo</div><div class="v">${MXN(c.cd)}</div>
+      <div class="sub">${c.lineas.length} partidas · acabado ${INTEG.nivel.toLowerCase()}</div></div>
+    <div class="kpi accent"><div class="top"><span class="ic">🏷️</span></div>
+      <div class="k">Precio de venta</div><div class="v">${MXN(c.precio)}</div>
+      <div class="sub">${MXN(c.m2)} / m² · IVA ${MXN(c.iva)} · total ${MXN(c.total)}</div></div>
+    <div class="kpi"><div class="top"><span class="ic">🏦</span></div>
+      <div class="k">Financiamiento incluido</div><div class="v">${MXN(c.fin)}</div>
+      <div class="sub">${c.f.dias} días de carga entre pagar y cobrar</div></div>
+    <div class="kpi"><div class="top"><span class="ic">💵</span>
+      <span class="trend ${c.calleUt<0?'down':'up'}">${c.calleUt<0?'pierdes':'ganas'}</span></div>
+      <div class="k">Si cotizas a ${PRESUP.factorCalle.toFixed(2)}</div>
+      <div class="v">${MXN(Math.abs(c.calleUt))}</div>
+      <div class="sub">${c.calleUt<0?'de pérdida en esta obra':'de utilidad, menos de la mitad de la tuya'}</div></div>`;
+
+  /* selector de partidas */
+  document.getElementById('in-partidas').innerHTML = `
+    <div class="niv">${Object.keys(MULT).map(n=>
+      `<button class="niv-b ${n===INTEG.nivel?'on':''}" data-niv="${n}">${n}</button>`).join('')}
+      <span class="niv-d">El nivel de acabado mueve todos los precios base a la vez.</span></div>` +
+    plantillas.map(p=>{
+      const q = INTEG.partidas[p.key]||0;
+      return `<div class="par ${q?'on':''}">
+        <div class="par-n"><b>${p.p}</b><span class="par-u">${MXN(p.base*MULT[INTEG.nivel])} / ${p.u}</span></div>
+        <div class="par-q"><span class="stepper"><button data-par="${p.key}-">−</button>
+          <b>${q}</b><button data-par="${p.key}+">+</button></span><span class="par-uu">${p.u}</span></div>
+        <div class="par-v">${q?MXN(q*p.base*MULT[INTEG.nivel]):'—'}</div></div>`;
+    }).join('');
+
+  /* la integración */
+  document.getElementById('in-build').innerHTML = `
+    ${[['Costo directo', c.cd, 'Material, gremios y equipo puestos en obra.','cd'],
+       ['Indirectos de obra', c.io, 'Residente, bodega, herramienta, limpieza — '+pctFmt(c.f.ioPct)+' del directo.','io'],
+       ['Indirectos de oficina', c.iof, 'Renta, administración, sistemas, contador — '+pctFmt(c.f.iofPct)+' del directo.','iof'],
+       ['Financiamiento', c.fin, c.f.dias+' días entre pagarle al gremio y cobrar la estimación.','fin'],
+       ['Utilidad '+PRESUP.utilidad+'%', c.ut, 'Sobre costo. En el precio son '+pctFmt(c.f.margen)+'.','ut']]
+      .map(r=>`<div class="int-r ${r[3]}"><div class="int-n"><b>${r[0]}</b><span>${r[2]}</span></div>
+        <div class="int-v">${MXN(r[1])}</div></div>`).join('')}
+    <div class="int-r tot"><div class="int-n"><b>Precio de venta</b><span>antes de IVA</span></div>
+      <div class="int-v">${MXN(c.precio)}</div></div>
+    <div class="int-r iva"><div class="int-n"><b>IVA 16%</b><span>lo que factura el cliente</span></div>
+      <div class="int-v">${MXN(c.iva)}</div></div>
+    <div class="int-r grand"><div class="int-n"><b>Total al cliente</b></div>
+      <div class="int-v">${MXN(c.total)}</div></div>`;
+
+  document.getElementById('in-cmp').innerHTML = `
+    <div class="cmp ${c.calleUt<0?'bad':''}">
+      <div class="cmp-l">Cotizado a ojo, factor ${PRESUP.factorCalle.toFixed(2)}</div>
+      <div class="cmp-row">
+        <div><div class="cmp-v">${MXN(c.calle)}</div><div class="cmp-d">precio "de la calle"</div></div>
+        <div class="cmp-a">→</div>
+        <div><div class="cmp-v strong">${MXN(c.precio)}</div><div class="cmp-d">integrado con tus números</div></div>
+      </div>
+      <div class="cmp-n">${c.calleUt<0
+        ? `Un factor a ojo deja <b>${MXN(Math.abs(c.calleUt))}</b> de esta obra sin cubrir. No aparece en ningún lado hasta el cierre del año, cuando ya se hicieron ocho obras iguales.`
+        : `El factor a ojo alcanza en esta obra, pero no sabe cuántos días de financiamiento trae ni cuánta oficina carga. En la siguiente no alcanza y nadie va a saber por qué.`}</div>
+    </div>
+    <div class="in-act">
+      <button class="btn" id="in-send">${INTEG.enviado?'Propuesta generada ✓':'Generar propuesta'}</button>
+      <span class="note" style="margin:0">Sale con el desglose que el cliente sí quiere ver — partidas y total — y el que sólo ves tú.</span>
+    </div>`;
+  const b=document.getElementById('in-send');
+  if(b) b.onclick=()=>{ INTEG.enviado=true; renderIntegracion();
+    toastA('Propuesta armada por '+MXN(c.total)+' con IVA. Lleva '+MXN(c.io+c.iof)+' de indirectos y '+MXN(c.fin)+' de financiamiento adentro, porque el presupuesto los puso ahí.'); };
+}
+
+/* ---------- 4 · PRESUPUESTO VS REAL ----------
+   No se puede sacar un "factor real" a media obra con puro flujo de efectivo:
+   el anticipo entra antes que los pagos al gremio. Lo que sí se puede medir es
+   avance físico contra avance financiero, y cuánto indirecto ha recuperado el
+   trabajo devengado. ------------------------------------------------------- */
+function renderReal(){
+  const f = calcFactor(); if(!document.getElementById('re-kpis')) return;
+  const indPct = f.precio ? (f.io+f.iof)/f.precio*100 : 0;   /* indirecto dentro de cada peso vendido */
+  const activas = obras.filter(o=>o.estado==='activa');
+  let contratoT=0, devengadoT=0, cobradoT=0, cdComp=0;
+  const filas = activas.map(o=>{
+    const c = calcObra(o);
+    const contrato = o.m2 * f.m2;
+    const avance = (typeof avanceMap!=='undefined' && avanceMap[o.id]!=null) ? avanceMap[o.id] : 0;
+    const devengado = contrato * avance/100;
+    const cobrado = c.ant/(1+IVA);
+    const finPct = contrato ? cobrado/contrato*100 : 0;
+    const indCarga = devengado * indPct/100;
+    const porCobrar = Math.max(0, devengado - cobrado);
+    const comp = (typeof proveedores!=='undefined'
+      ? proveedores.filter(p=>p.obra===o.nombre).reduce((s,p)=>s+p.pagado+p.saldo,0) : c.pag);
+    contratoT+=contrato; devengadoT+=devengado; cobradoT+=cobrado; cdComp+=comp;
+    return {o, contrato, avance, devengado, cobrado, finPct, indCarga, porCobrar, comp, pagado:c.pag};
+  });
+  const recuperado = devengadoT * indPct/100;
+  const incurrido  = (f.io+f.iof) * seasonFrac();
+  const brecha     = incurrido - recuperado;
+  const porCobrarT = filas.reduce((s,x)=>s+x.porCobrar,0);
+  const obrasNec   = indPct && f.m2 ? Math.ceil(incurrido / ((f.precio/PRESUP.obrasAnio)*indPct/100)) : 0;
+
+  document.getElementById('re-kpis').innerHTML = `
+    <div class="kpi"><div class="top"><span class="ic">📄</span>
+      <span class="trend flat">${activas.length} activas</span></div>
+      <div class="k">Contratado</div><div class="v">${MXN(contratoT)}</div>
+      <div class="sub">devengado ${MXN(devengadoT)} · cobrado ${MXN(cobradoT)}</div></div>
+    <div class="kpi"><div class="top"><span class="ic">🏗️</span></div>
+      <div class="k">Avance físico</div><div class="v">${contratoT?(devengadoT/contratoT*100).toFixed(0):0}%</div>
+      <div class="sub">financiero ${contratoT?(cobradoT/contratoT*100).toFixed(0):0}% — construyes más rápido de lo que cobras</div></div>
+    <div class="kpi ${brecha>0?'warnk':''}"><div class="top"><span class="ic">🏢</span></div>
+      <div class="k">Indirectos sin recuperar</div><div class="v">${MXN(Math.max(0,brecha))}</div>
+      <div class="sub">incurridos ${MXN(incurrido)} · recuperados ${MXN(recuperado)}</div></div>
+    <div class="kpi accent"><div class="top"><span class="ic">🏦</span></div>
+      <div class="k">Trabajo hecho sin cobrar</div><div class="v">${MXN(porCobrarT)}</div>
+      <div class="sub">dinero tuyo adentro de las obras hoy</div></div>`;
+
+  document.getElementById('re-banner').innerHTML = brecha>0
+    ? `<div class="ban"><div class="ban-t">${MXN(brecha)} de estructura ya se gastó y el trabajo devengado todavía no la paga.</div>
+       <div class="ban-d">La renta, la administración y el residente corren con el calendario. La recuperación corre con lo que
+       construyes. Con <b>${activas.length} obras activas</b> el presupuesto anual no cuadra: para cubrir ${MXN(incurrido)}
+       de indirectos a este ritmo necesitas del orden de <b>${obrasNec} obras</b> abiertas o vendidas en el periodo.
+       No es un problema de precio — el factor está bien. Es un problema de volumen, y se arregla en el pipeline, no en la cotización.</div></div>`
+    : `<div class="ban ok"><div class="ban-t">El trabajo devengado ya cubre la estructura del periodo.</div>
+       <div class="ban-d">El factor y el volumen van a la par. Vale la pena revisarlo cuando entre la siguiente obra grande.</div></div>`;
+
+  document.getElementById('re-tbl').innerHTML = `
+    <table class="tbl"><thead><tr>
+      <th>Obra</th><th class="r">Contrato</th><th class="r">Avance</th><th class="r">Devengado</th>
+      <th class="r">Cobrado</th><th class="r">Por cobrar</th><th class="r">Indirectos que carga</th><th class="r">Costo directo comprometido</th>
+    </tr></thead><tbody>${filas.map(x=>`
+      <tr><td><b>${x.o.nombre}</b><div class="sub2">${x.o.m2} m² · ${MXN(f.m2)} / m²</div></td>
+        <td class="r">${MXN(x.contrato)}</td>
+        <td class="r"><span class="pillf ${x.avance>=x.finPct?'bad':'good'}">${x.avance}% / ${x.finPct.toFixed(0)}%</span>
+          <div class="sub2">físico / financiero</div></td>
+        <td class="r">${MXN(x.devengado)}</td>
+        <td class="r">${MXN(x.cobrado)}</td>
+        <td class="r ${x.porCobrar>0?'neg':''}">${x.porCobrar?MXN(x.porCobrar):'<span class="sub2">—</span>'}</td>
+        <td class="r">${MXN(x.indCarga)}</td>
+        <td class="r">${MXN(x.comp)}<div class="sub2">pagado ${MXN(x.pagado)}</div></td></tr>`).join('')}
+    </tbody></table>`;
+
+  document.getElementById('re-nota').innerHTML =
+    `<b>Avance físico contra avance financiero es el control que falta.</b> Cuando construyes al ${
+      contratoT?(devengadoT/contratoT*100).toFixed(0):0}% y sólo has cobrado el ${
+      contratoT?(cobradoT/contratoT*100).toFixed(0):0}%, la diferencia — ${MXN(porCobrarT)} — la estás financiando tú. ` +
+    `Por eso el financiamiento es un renglón del precio y no un problema de bancos: son los mismos ${f.dias} días que ya trae ` +
+    `cada presupuesto que sale de <b>Integración de precio</b>. El presupuesto anual, la cotización y esta tabla son el mismo número en tres momentos.`;
+}
+/* qué fracción del año fiscal llevamos — los indirectos corren con el calendario */
+function seasonFrac(){
+  const d=new Date(), ini=new Date(d.getFullYear(),0,1);
+  return Math.min(1, Math.max(0.08, (d-ini)/(365*864e5)));
+}
+
+/* ---------- toast ---------- */
+function toastA(msg){
+  let t=document.getElementById('auda-toast');
+  if(!t){ t=document.createElement('div'); t.id='auda-toast'; document.body.appendChild(t); }
+  t.textContent=msg; t.classList.add('on');
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('on'),6000);
+}
+
+/* ---------- interacción ---------- */
+function refreshPresup(full){
+  if(full!==false){ renderFactor(); }
+  renderPresupuestoAnual(); renderIntegracion(); renderReal();
+  if(full===false){ /* no repintar los inputs que se están escribiendo */ }
+}
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-pa],[data-par],[data-niv]');
+  if(!t) return;
+  const d=t.dataset.pa, p=t.dataset.par, n=t.dataset.niv;
+  if(d){
+    const P=PRESUP;
+    if(d==='obras+')P.obrasAnio++; else if(d==='obras-')P.obrasAnio=Math.max(1,P.obrasAnio-1);
+    else if(d==='m2+')P.m2Anio+=120; else if(d==='m2-')P.m2Anio=Math.max(120,P.m2Anio-120);
+    else if(d==='dp+')P.fin.diasPago=Math.min(90,P.fin.diasPago+5); else if(d==='dp-')P.fin.diasPago=Math.max(0,P.fin.diasPago-5);
+    else if(d==='dc+')P.fin.diasCobro=Math.min(180,P.fin.diasCobro+5); else if(d==='dc-')P.fin.diasCobro=Math.max(0,P.fin.diasCobro-5);
+    else if(d==='t+')P.fin.tasa=Math.min(60,P.fin.tasa+2); else if(d==='t-')P.fin.tasa=Math.max(0,P.fin.tasa-2);
+    else if(d==='u+')P.utilidad=Math.min(45,P.utilidad+1); else if(d==='u-')P.utilidad=Math.max(0,P.utilidad-1);
+    refreshPresup(true); renderPlantillas(); return;
+  }
+  if(p){
+    const key=p.slice(0,-1), up=p.slice(-1)==='+';
+    const pl=plantillas.find(x=>x.key===key); if(!pl) return;
+    const step = pl.u==='m²' ? 4 : 1;
+    INTEG.partidas[key]=Math.max(0,(INTEG.partidas[key]||0)+(up?step:-step));
+    INTEG.enviado=false; renderIntegracion(); return;
+  }
+  if(n){ INTEG.nivel=n; INTEG.enviado=false; renderIntegracion(); }
+});
+
+/* arranque del módulo de presupuesto */
+refreshPresup(true);
+renderPlantillas();   /* la columna de venta necesita el factor, que se define aquí abajo */
+</script>
+</body>
+</html>
