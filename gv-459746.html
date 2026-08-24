@@ -386,6 +386,58 @@ table.dt th,table.dt td{padding:9px 11px}
 .escal{padding:9px 12px;margin-bottom:7px}
 .escal .q{font-size:13.5px;margin:5px 0 6px;line-height:1.3}
 
+/* ── recorrido guiado ────────────────────────────────────────────────────
+   El foco es UN elemento con una sombra enorme alrededor: así el "hueco"
+   siempre coincide con el recuadro real, sin cuatro paneles que calcular. */
+/* el botón vive al final de una barra que se desplaza a lo ancho: sin flex:none
+   el texto se comprime a cero y sólo queda el triángulo */
+.tourbtn{margin-left:14px;flex:none;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;flex:none;
+  font-family:var(--f-ui);font-size:11.5px;font-weight:600;color:var(--accent);
+  background:var(--accent-subtle);border:1px solid transparent;padding:6px 11px;cursor:pointer;
+  transition:background .12s,color .12s}
+.tourbtn:hover{background:var(--accent);color:#fff}
+#tourlayer{position:fixed;inset:0;z-index:200}
+.tourback{position:absolute;inset:0;background:transparent}
+.tourback.solid{background:rgba(0,22,45,.55)}
+.tourhole{position:absolute;border-radius:2px;box-shadow:0 0 0 9999px rgba(0,22,45,.55);
+  outline:2px solid var(--cyan);outline-offset:0;pointer-events:none;
+  transition:left .18s ease,top .18s ease,width .18s ease,height .18s ease}
+.tourcard{position:absolute;background:var(--surface);border:1px solid var(--border-strong);
+  box-shadow:0 14px 40px rgba(0,22,45,.28);padding:15px 17px 13px}
+.tourcard .th{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.tourcard .th .n{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-muted)}
+.tourcard .tx{margin-left:auto;background:0;border:0;padding:2px 4px;cursor:pointer;
+  font-family:var(--f-ui);font-size:11.5px;color:var(--ink-muted)}
+.tourcard .tx:hover{color:var(--ink)}
+.tourcard h4{font-family:var(--f-disp);font-weight:600;font-size:17px;letter-spacing:-.01em;margin:0 0 7px}
+.tourcard p{font-size:12.8px;line-height:1.55;color:var(--ink-2);margin:0 0 9px}
+.tourcard p b{color:var(--ink)}
+.tourcard .say{font-family:var(--f-disp);font-style:normal;font-weight:500;font-size:13px;
+  color:var(--ink-2);border-left:2px solid var(--accent);padding-left:11px;margin-bottom:11px}
+.tourcard .tf{display:flex;align-items:center;gap:7px}
+.tourcard .dots{display:flex;gap:3px;margin-right:auto;flex-wrap:wrap;max-width:140px}
+.tourcard .dots .d{width:5px;height:5px;border-radius:50%;background:var(--border-strong)}
+.tourcard .dots .d.was{background:var(--accent-subtle)}
+.tourcard .dots .d.on{background:var(--accent);transform:scale(1.35)}
+.tourcard .pill[disabled]{opacity:.4;cursor:default}
+.tourcard.sheet{left:10px;right:10px;bottom:10px;top:auto;width:auto}
+body.touring .wbody,body.touring .insp{scroll-behavior:auto}
+
+/* invitación de primera visita */
+.tourinvite{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;z-index:150;
+  display:flex;align-items:center;gap:12px;max-width:min(620px,calc(100vw - 24px));
+  background:var(--rail);color:#E6F1F9;padding:11px 14px;box-shadow:0 10px 30px rgba(0,22,45,.3);
+  font-size:12.5px;line-height:1.45}
+.tourinvite b{color:#fff}
+.tourinvite .pill{flex:none}
+.tourinvite .tinyx{background:0;border:0;color:#8FB3CE;cursor:pointer;font-size:13px;padding:2px 4px;flex:none}
+.tourinvite .tinyx:hover{color:#fff}
+@media (max-width:760px){
+  .tourbtn{margin-left:0}
+  .tourinvite{flex-wrap:wrap;bottom:10px}
+}
+
 /* ══════════════════════════════════════════════════════════════════════════
    GRUPO VENCOM — brand layer.
    Every value here was read off vencom.com.mx as it renders, not guessed:
@@ -1207,7 +1259,12 @@ function cliPicker(id, label){
         `<option value="${x.id}" ${x.id===id?"selected":""}>${esc(x.n)}</option>`).join("")}
     </select></div>`;
 }
+/* El cliente en foco es SU PROPIO estado. Antes se deducía de `sel`, así que
+   seleccionar a un trabajador —que también usa `sel`— devolvía la ficha al
+   cliente más grande a media demostración. */
+let cliFocus = null;
 function fichaId(){
+  if(cliFocus && CRM(cliFocus)) return cliFocus;
   if(sel && sel.t === "client" && CRM(sel.id)) return sel.id;
   return D.clients.slice().sort((a,b)=>b.emp-a.emp)[0].id;
 }
@@ -3350,6 +3407,256 @@ function inspector(){
   return {kick:"", ttl:"—", body:""};
 }
 
+
+/* ══════════════════════════════════════════════════════════════════════════
+   RECORRIDO GUIADO
+   No es un video ni un carrusel de capturas: mueve el demo de verdad. Cada
+   paso deja el sistema EXACTAMENTE donde tiene que estar, ilumina el elemento
+   del que se está hablando y trae la frase para decirla en voz alta. Si un
+   objetivo no aparece —porque el cliente no tiene ese servicio, por ejemplo—
+   el paso se salta solo en vez de romper el recorrido.
+   ══════════════════════════════════════════════════════════════════════════ */
+const TOUR = [
+ {at:{screen:"hoy", rango:"sem"}, target:null,
+  t:"Esto es la operación de Vencom, un lunes por la mañana",
+  b:"Doce pantallas sobre una misma base de datos. Los clientes, los trabajadores y las cifras "+
+    "son inventados; las reglas, los plazos y las tasas son las de verdad, vigentes en 2026.",
+  say:"Antes de enseñarte nada: todo lo que vas a ver son empresas ficticias. Lo único real aquí es la ley."},
+
+ {at:{screen:"hoy"}, target:"#rail",
+  t:"El riel dice de quién es cada pantalla",
+  b:"Arriba el día y el cliente. En medio la operación por tema. Abajo la gente de Vencom, "+
+    "los parámetros y, hasta el final, prospección — que la opera Telaia, no Vencom.",
+  say:"El orden no es estético. Primero el día, luego el cliente, y de ahí cuelga todo lo demás."},
+
+ {at:{screen:"hoy"}, target:".ctxbar .instr",
+  t:"Los indicadores cambian con la pantalla",
+  b:"Nunca son adorno: cada uno se calcula con la misma función que dibuja el contenido de abajo. "+
+    "Si el encabezado dice cinco, abajo hay cinco.",
+  say:"Fíjate en esta franja mientras nos movemos. Siempre está contando lo que estás viendo."},
+
+ {at:{screen:"hoy"}, target:".rangebar",
+  t:"El día no es la unidad de trabajo de un despacho",
+  b:"Hoy, siete días, treinta o el trimestre. El cierre es quincenal, las obligaciones son mensuales "+
+    "y la prima de riesgo es anual. Con una regla encima: <b>lo vencido aparece siempre</b>, esté o no "+
+    "dentro del rango.",
+  say:"Puedo cambiar la ventana. Lo que no puedo es esconder un vencimiento eligiendo un rango más corto."},
+
+ {at:{screen:"hoy"}, target:".wbody .escal",
+  t:"Lo que ya no puede esperar a nadie más",
+  b:"Cada renglón trae su plazo legal, el cliente y el responsable dentro de Vencom. Están ordenados "+
+    "por urgencia real, no por fecha de captura.",
+  say:"El primer renglón dice VENCIDO. Ese reloj empezó el día del hecho, no el día que ustedes se enteraron."},
+
+ {at:{screen:"hoy", ib:0}, target:"#insp",
+  t:"El panel de detalle contesta “¿y por qué?”",
+  b:"Cualquier renglón del sistema se abre aquí con su fundamento: el artículo que aplica, el plazo, "+
+    "quién responde y qué pasa si no se atiende.",
+  say:"Aquí es donde dejo de mostrarte una lista y te muestro por qué esa lista importa."},
+
+ {at:{screen:"cartera", tab:{cartera:"ficha"}, client:"C-03", ftab:"resumen"}, target:".fichahd",
+  t:"Cartera es el CRM: un cliente, un expediente",
+  b:"Contrato y tarifa, quién responde de los dos lados, la última nómina que se le procesó, "+
+    "sus facturas abiertas y lo que trae abierto ahora mismo en operación.",
+  say:"¿Dónde vive hoy toda esta información de un cliente? Normalmente en tres lugares y en la cabeza de alguien."},
+
+ {at:{screen:"cartera", tab:{cartera:"ficha"}, client:"C-03", ftab:"resumen"}, target:".wbody .opline",
+  t:"Y desde el expediente se baja a la operación",
+  b:"Corridas abiertas, movimientos del IMSS sin presentar, obligaciones y submayores del fondo fuera "+
+    "de regla — de este cliente, ahora, con un clic a la pantalla donde se resuelven.",
+  say:"Este bloque es el que convierte el CRM en algo que se usa un martes, no sólo cuando hay junta."},
+
+ {at:{screen:"cartera", tab:{cartera:"ficha"}, client:"C-03", ftab:"trab"}, target:".wbody .dt",
+  t:"El padrón, persona por persona",
+  b:"Cada trabajador con su NSS, puesto, calendario, salario base de cotización y su situación ante "+
+    "el IMSS. En el demo es una muestra y lo dice en pantalla; en producción es el padrón completo.",
+  say:"Hasta aquí hemos hablado de empresas. A partir de aquí hablamos de personas."},
+
+ {at:{screen:"cartera", tab:{cartera:"ficha"}, client:"C-03", ftab:"trab", worker:0}, target:"#insp",
+  t:"Un trabajador, sus tres sistemas en una ficha",
+  b:"Lo que se le paga y lo que se le retiene; cómo está ante el IMSS y cuánto le queda al plazo; "+
+    "y su submayor del FPL® con el tope que le rige, los retiros del año y "+
+    "<b>los intentos de retiro que el sistema rechazó, con su motivo</b>.",
+  say:"Esto que estás viendo junto hoy vive en tres sistemas distintos. Ese es todo el argumento."},
+
+ {at:{screen:"cartera", tab:{cartera:"ficha"}, client:"C-03", ftab:"fpl"}, target:".wbody .dvg",
+  t:"FPL® por empresa: la paridad se vigila sola",
+  b:"La barra del patrón contra la del trabajador. Cuando la patronal queda corta, esa parte "+
+    "<b>integra al salario base de cotización de forma retroactiva</b> — no a partir de que alguien lo note.",
+  say:"Esta gráfica es una alarma. Cada barra corta es una diferencia que ya se está acumulando hacia atrás."},
+
+ {at:{screen:"fpl", tab:{fpl:"fondo"}}, target:".wbody .dt",
+  t:"Y la regla se aplica antes del error, no después",
+  b:"Un tercer retiro en el ejercicio rompe la exención del fondo de ahorro. El sistema se niega, "+
+    "registra el intento y ofrece la alternativa: un préstamo contra el mismo saldo.",
+  say:"Hoy, ¿qué impide que alguien autorice ese tercer retiro? La respuesta honesta suele ser: que se acuerde."},
+
+ {at:{screen:"nomina", tab:{nomina:"trab"}}, target:".wbody .dt",
+  t:"La nómina, abierta trabajador por trabajador",
+  b:"Percepciones, ISR retenido, IMSS obrero, INFONAVIT, otros descuentos y el neto que sale al banco. "+
+    "El mismo cálculo de la corrida, sin caja negra.",
+  say:"Cuando el cliente pregunta por un solo trabajador, esta es la pantalla que evita abrir Excel."},
+
+ {at:{screen:"imss", tab:{imss:"recon"}}, target:".wbody",
+  t:"IMSS: la conciliación que dispara las auditorías",
+  b:"Lo que se timbró, lo que se calculó en el SUA y lo que el IMSS dice que se debe en la EMA. "+
+    "Desde junio de 2026 ese cruce entre SAT, IMSS e INFONAVIT es automático.",
+  say:"No lo llamo auditoría para asustarte. Lo llamo cruce automático porque ya lo es."},
+
+ {at:{screen:"obligaciones", tab:{obligaciones:"repse"}}, target:".wbody",
+  t:"Obligaciones: el expediente que se entrega cuando preguntan",
+  b:"Calendario por cliente y por jurisdicción, con responsable y evidencia. El REPSE vale tres años "+
+    "y su ventana de renovación abre noventa días antes; si caduca, el gasto deja de ser deducible "+
+    "<b>para cada uno de sus clientes</b>.",
+  say:"Si no saben de memoria cuándo vence su REPSE, esa sola respuesta ya justifica la fase cero."},
+
+ {at:{screen:"obligaciones", tab:{obligaciones:"seguros"}}, target:".wbody .dt",
+  t:"Y los seguros, que también son una obligación con fecha",
+  b:"Vida, gastos médicos mayores, accidentes y responsabilidad civil, con su vigencia y su prima. "+
+    "Una póliza que caduca sin renovarse deja al cliente descubierto.",
+  say:"Una póliza vencida normalmente se descubre el día que hay un siniestro. Aquí se descubre 45 días antes."},
+
+ {at:{screen:"ajustes", tab:{ajustes:"isn"}}, target:".wbody .dt",
+  t:"Ninguna tasa vive dentro del programa",
+  b:"UMA, salario mínimo, ISN por estado, cuota CEAV, topes y jornada: todo guardado con su fecha de "+
+    "vigencia. Un periodo anterior se recalcula con los valores de ese periodo.",
+  say:"Cuando el INEGI publica la UMA de febrero, aquí cambia un renglón. No se reprograma nada."},
+
+ {at:{screen:"prospeccion", tab:{prospeccion:"embudo"}}, target:".wbody .ronly",
+  t:"Prospección: la operamos nosotros, ustedes la revisan",
+  b:"El motor busca empresas con el mismo perfil que los clientes que Vencom ya atiende bien y las "+
+    "contacta conforme a la LFPDPPP. Vencom ve todo lo que hace — y no ejecuta nada desde aquí.",
+  say:"Este módulo no se los entrego. Se los enseño, lo corremos nosotros, y ustedes auditan cada conversación."},
+
+ {at:{screen:"hoy"}, target:null,
+  t:"Eso es el sistema completo",
+  b:"Doce pantallas, una sola base de datos y las reglas aplicadas antes del error. Puedes volver a "+
+    "abrir este recorrido cuando quieras con el botón <b>Recorrido</b> de la barra superior.",
+  say:"¿Qué de lo que viste describe mal su semana? Prefiero corregir el alcance ahora que después."},
+];
+
+let tourN = -1;               /* -1 = apagado */
+window.__TOURLEN__ = TOUR.length;
+const tourOn = () => tourN >= 0;
+
+function tourGoto(step){
+  const a = step.at || {};
+  if(a.rango) rango = a.rango;
+  if(a.tab) Object.assign(tab, a.tab);
+  if(a.ftab) ftab = a.ftab;
+  if(a.client){ cliFocus = a.client; sel = {t:"client", id:a.client}; }
+  if(a.screen) screen = a.screen;
+  if(!a.client && a.ib == null && a.worker == null) sel = null;
+  showAll = {};
+  paintRail(); paintCtx(); paintBody();
+  /* algunos pasos necesitan que ya exista la tabla para elegir un renglón */
+  if(a.ib != null){
+    const el = document.querySelectorAll(".wbody [data-ib]")[a.ib];
+    if(el){ const [k,id] = el.dataset.ib.split(":");
+      sel = {t:({mov:"mov",run:"run",fund:"fund",obl:"obl",imp:"imp",plc:"plc",
+                 loan:"loan",act:"act",claim:"claim"})[k] || "mov", id}; }
+  }
+  if(a.worker != null){
+    const el = document.querySelectorAll(".wbody tr[data-worker]")[a.worker];
+    if(el) sel = {t:"worker", id:el.dataset.worker};
+  }
+  paintBody(); paintInsp(); paintCtx();
+}
+
+function tourStart(n){
+  tourN = typeof n === "number" ? n : 0;
+  document.body.classList.add("touring");
+  tourRender();
+}
+function tourEnd(){
+  tourN = -1;
+  document.body.classList.remove("touring");
+  const l = $("#tourlayer"); if(l) l.remove();
+  paint();
+}
+function tourStep(d){
+  const n = tourN + d;
+  if(n < 0) return;
+  if(n >= TOUR.length) return tourEnd();
+  tourN = n; tourRender();
+}
+
+function tourRender(){
+  const step = TOUR[tourN];
+  /* expuesto para la verificación: qué paso es y qué objetivo dice buscar */
+  window.__TOURN__ = tourN; window.__TOURTARGET__ = step.target || null;
+  tourGoto(step);
+  let layer = $("#tourlayer");
+  if(!layer){
+    layer = document.createElement("div");
+    layer.id = "tourlayer";
+    document.body.appendChild(layer);
+  }
+  const el = step.target ? $(step.target) : null;
+  if(el && el.scrollIntoView) el.scrollIntoView({block:"nearest", inline:"nearest"});
+
+  const r = el ? el.getBoundingClientRect() : null;
+  const vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
+  const useHole = !!(r && r.width > 4 && r.height > 4 && r.bottom > 0 && r.top < vh);
+  const P = 6;
+  const hole = useHole ? {
+    x: Math.max(2, r.left - P), y: Math.max(2, r.top - P),
+    w: Math.min(vw - 4, r.width + P*2), h: Math.min(vh - 4, r.height + P*2)
+  } : null;
+
+  const narrow = vw <= 760;
+  const CW = Math.min(400, vw - 28);
+  let cx = 0, cy = 0, ch = 240;
+  if(!narrow && hole){
+    /* debajo del foco si cabe; si no, encima; si el foco es muy alto, a un lado */
+    const below = vh - (hole.y + hole.h) - 18;
+    const above = hole.y - 18;
+    if(hole.h > vh * 0.6){
+      cx = hole.x > vw / 2 ? Math.max(14, hole.x - CW - 16) : Math.min(vw - CW - 14, hole.x + hole.w + 16);
+      cy = Math.max(14, Math.min(vh - ch - 14, hole.y + 10));
+    } else if(below >= 170){
+      cx = Math.max(14, Math.min(vw - CW - 14, hole.x + hole.w/2 - CW/2));
+      cy = hole.y + hole.h + 14;
+    } else if(above >= 170){
+      cx = Math.max(14, Math.min(vw - CW - 14, hole.x + hole.w/2 - CW/2));
+      cy = Math.max(14, hole.y - ch - 14);
+    } else {
+      cx = Math.max(14, Math.min(vw - CW - 14, hole.x + hole.w/2 - CW/2));
+      cy = Math.max(14, vh - ch - 20);
+    }
+  } else if(!narrow){
+    cx = vw/2 - CW/2; cy = Math.max(20, vh/2 - ch/2);
+  }
+
+  const dots = TOUR.map((_,i)=>`<span class="d ${i===tourN?"on":i<tourN?"was":""}"></span>`).join("");
+  layer.innerHTML = `
+    <div class="tourback ${useHole?"":"solid"}"></div>
+    ${useHole?`<div class="tourhole" style="left:${hole.x}px;top:${hole.y}px;width:${hole.w}px;height:${hole.h}px"></div>`:""}
+    <div class="tourcard ${narrow?"sheet":""}" role="dialog" aria-modal="true" aria-label="Recorrido guiado"
+         ${narrow?"":`style="left:${Math.round(cx)}px;top:${Math.round(cy)}px;width:${CW}px"`}>
+      <div class="th">
+        <span class="n">Paso ${tourN+1} de ${TOUR.length}</span>
+        <button class="tx" data-tour="end" aria-label="Salir del recorrido">Salir</button>
+      </div>
+      <h4>${step.t}</h4>
+      <p>${step.b}</p>
+      ${step.say?`<p class="say">“${esc(step.say)}”</p>`:""}
+      <div class="tf">
+        <div class="dots">${dots}</div>
+        <button class="pill" data-tour="prev" ${tourN===0?"disabled":""}>Atrás</button>
+        <button class="pill on" data-tour="next">${tourN===TOUR.length-1?"Terminar":"Siguiente"}</button>
+      </div>
+    </div>`;
+}
+
+document.addEventListener("keydown", e=>{
+  if(!tourOn()) return;
+  if(e.key === "Escape"){ e.preventDefault(); tourEnd(); }
+  else if(e.key === "ArrowRight" || e.key === "Enter"){ e.preventDefault(); tourStep(1); }
+  else if(e.key === "ArrowLeft"){ e.preventDefault(); tourStep(-1); }
+});
+window.addEventListener("resize", ()=>{ if(tourOn()) tourRender(); });
+
 /* ══════════════════════════ render ══════════════════════════ */
 const BADGE = {hoy:true, imss:true, fpl:true, obligaciones:true};
 /* segunda línea del tooltip: dice de quién es cada pantalla */
@@ -3377,7 +3684,11 @@ function paintCtx(){
   const ins = INSTR[screen]();
   $("#ctx").innerHTML = `
     <div class="crumb"><span class="tenant">${esc(D.tenant.short)}</span><span class="scr">${esc(NAV[screen])}</span></div>
-    <div class="instr">${ins.map(([k,v,c])=>`<div class="ins ${c||""}"><span class="k">${esc(k)}</span><span class="v">${v}</span></div>`).join("")}</div>`;
+    <div class="instr">${ins.map(([k,v,c])=>`<div class="ins ${c||""}"><span class="k">${esc(k)}</span><span class="v">${v}</span></div>`).join("")}</div>
+    <button class="tourbtn" data-tour="start" aria-label="Abrir el recorrido guiado">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+           stroke-linecap="round" stroke-linejoin="round"><path d="m5 3 14 9-14 9V3Z"/></svg>
+      Recorrido</button>`;
 }
 function paintBody(){ window.__TRUNC__ = 0; const el = $("#body");
   el.innerHTML = SC[screen](); el.scrollTop = 0; }
@@ -3398,6 +3709,7 @@ let panelOff = false;          // desktop only: the panel is collapsed
 
 function go(k){ if(screen===k) return; screen = k; sel = null; paint(); closeDrawer(); }
 function select(t,id){ if(!id) return; sel = {t:t, id:id};
+  if(t === "client") cliFocus = id;
   if(!isNarrow()) setPanel(true);          // selecting always brings the panel back
   paintBody(); paintInsp(); paintCtx(); openDrawer(); }
 function openDrawer(){ if(isNarrow()){ $("#insp").classList.add("open"); $("#back").classList.add("on"); } }
@@ -3410,6 +3722,15 @@ function togglePanel(){ if(isNarrow()){
   } setPanel(panelOff); }
 
 document.addEventListener("click", e=>{
+  const tb2 = e.target.closest("[data-tour]");
+  if(tb2){
+    const v = tb2.dataset.tour;
+    if(v === "end") return tourEnd();
+    if(v === "start") return tourStart(0);
+    return tourStep(v === "next" ? 1 : -1);
+  }
+  /* con el recorrido abierto, el resto de la interfaz no responde: el paso manda */
+  if(tourOn()) return;
   const nav = e.target.closest("[data-nav]"); if(nav) return go(nav.dataset.nav);
   if(e.target.closest("#inspbtn")) return togglePanel();
   if(e.target.closest("#inspclose")) return isNarrow() ? closeDrawer() : setPanel(false);
@@ -3418,7 +3739,7 @@ document.addEventListener("click", e=>{
   if(tb){ tab[tb.dataset.tab] = tb.dataset.v; sel = null; showAll = {}; paintBody(); paintCtx(); paintInsp(); return; }
   if(e.target.closest("[data-more]")){ showAll[moreKey()] = true; paintBody(); return; }
   const of = e.target.closest("[data-openficha]");
-  if(of){ sel = {t:"client", id: of.dataset.openficha}; tab.cartera = "ficha";
+  if(of){ cliFocus = of.dataset.openficha; sel = {t:"client", id: of.dataset.openficha}; tab.cartera = "ficha";
           screen = "cartera"; paint(); closeDrawer(); return; }
   const gt = e.target.closest("[data-goto]");
   if(gt){ return go(gt.dataset.goto); }
@@ -3448,7 +3769,8 @@ document.addEventListener("keydown", e=>{
 });
 document.addEventListener("change", e=>{
   const pk = e.target.closest('[data-pick="client"]');
-  if(pk){ sel = {t:"client", id: pk.value}; paintBody(); paintInsp(); paintCtx(); }
+  if(pk){ cliFocus = pk.value; sel = {t:"client", id: pk.value};
+          paintBody(); paintInsp(); paintCtx(); }
 });
 /* Una nota que no se guarda no demuestra nada. Vive en memoria, como el resto
    del prototipo, y se pierde al recargar — eso está dicho en el pie del panel. */
@@ -3495,6 +3817,24 @@ window.addEventListener("resize", ()=>{
 })();
 
 paint();
+
+/* Una invitación, no un secuestro: el recorrido NO arranca solo. Quien llega
+   por su cuenta ve la franja; quien va a presentar la cierra y no vuelve a
+   aparecer. Con ?tour=1 en la liga sí arranca en el primer paso —- útil cuando
+   la liga se manda para que alguien la recorra sin nadie al lado. */
+(function(){
+  if(/[?&]tour=1/.test(location.search)){ tourStart(0); return; }
+  const inv = document.createElement("div");
+  inv.className = "tourinvite";
+  inv.innerHTML = `<span><b>¿Primera vez aquí?</b> Hay un recorrido guiado de ${TOUR.length} pasos
+      que enseña todo el sistema en orden.</span>
+    <button class="pill on" data-tour="start">Empezar el recorrido</button>
+    <button class="tinyx" aria-label="Cerrar">✕</button>`;
+  document.body.appendChild(inv);
+  const kill = () => inv.remove();
+  inv.querySelector(".tinyx").addEventListener("click", kill);
+  inv.querySelector("[data-tour]").addEventListener("click", kill);
+})();
 })();
 
 </script>
