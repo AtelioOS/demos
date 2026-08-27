@@ -384,7 +384,13 @@ footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--border-strong
   table.doc.wrap td:first-child{width:auto;display:block;padding-bottom:2px}
   table.doc.wrap tr{display:block;border-bottom:1px solid var(--border)}
   table.doc.wrap td{border-bottom:0}
-}
+}.despues{display:grid;grid-template-columns:repeat(2,1fr);gap:0 26px;margin:0 0 20px}
+.despues>*{min-width:0}
+.dsp{padding:11px 0;border-bottom:1px solid var(--border)}
+.dsp b{display:block;font-size:13.5px;margin-bottom:4px}
+.dsp span{display:block;font-size:12.5px;line-height:1.55;color:var(--ink-2)}
+@media (max-width:760px){ .despues{grid-template-columns:1fr} }
+
 </style></head>
 <body>
 <nav class="top">
@@ -400,24 +406,23 @@ footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--border-strong
 <main>
 <div class="hero">
   <div class="kick">Sistema de operación</div>
-  <h1>Tres fases. Cada una se decide sola.</h1>
-  <p class="sub">La primera es el sistema que ya se recorrió en la demostración, con la cifra que se dijo
-  en la junta. Las otras dos no hay que comprarlas ahora, ni comprarlas juntas: cada una tiene su propio
-  precio, su propio calendario y su propia razón para existir. Lo que sí conviene es saber desde hoy
-  cuánto cuestan.</p>
+  <h1>Dos números, y uno que todavía no.</h1>
+  <p class="sub">La construcción del sistema y lo que cuesta tenerlo corriendo cada mes: ésas son las
+  cifras del acuerdo y no se mueven. Hay un complemento —que cada empresa cliente y su gente entren al
+  sistema— con su propio precio de construcción, y una mensualidad que <b>preferimos no comprometer
+  hasta medir cuánta información habría que procesar</b>. Prometer esa cifra hoy sería adivinar.</p>
   <div class="cluster">
-    <div class="ins"><span class="k">Fase 1 · construcción</span><span class="v">$30,000 CAD</span></div>
-    <div class="ins"><span class="k">Fase 2 · construcción</span><span class="v">$27,500 CAD</span></div>
-    <div class="ins"><span class="k">Fase 3 · construcción</span><span class="v">$30,000 CAD</span></div>
-    <div class="ins"><span class="k">Mensual estimada, fase 1</span><span class="v">$1,200 CAD</span></div>
+    <div class="ins"><span class="k">Construcción</span><span class="v">$30,000 CAD</span></div>
+    <div class="ins"><span class="k">Suscripción mensual</span><span class="v">$1,200 CAD</span></div>
+    <div class="ins"><span class="k">Complemento · portales</span><span class="v">$10,000 CAD</span></div>
+    <div class="ins"><span class="k">Implementación</span><span class="v">1–3 meses</span></div>
   </div>
-</div>
 
 <section>
-<h2>Fase 1 · El sistema de operación</h2>
+<h2>El sistema de operación</h2>
 <p>Es lo que se recorrió en la demostración: catorce módulos sobre una misma base de datos, para que la
-gente de Vencom deje de sostener la operación con Excel, correo y memoria. <b>Las cifras de esta fase son
-las que se dijeron en la junta y no se mueven.</b></p>
+gente de Vencom deje de sostener la operación con Excel, correo y memoria. <b>Los cálculos que hoy hacen
+en hoja de cálculo y que el sistema necesita para servirles de verdad están dentro de esta cifra.</b></p>
 <div class="opts">
   <div class="opt-c pick">
     <span class="tag">Una sola vez</span>
@@ -430,18 +435,18 @@ las que se dijeron en la junta y no se mueven.</b></p>
       conciliación SUA ↔ EMA, obligaciones y expediente REPSE, FPL® con proyecciones a dos y cinco años,
       caja de ahorro y reaseguro, actuaría, In House, talento, conciliación contable, parámetros con
       vigencia, y perfiles y permisos</li>
+      <li><b>Los cálculos que hoy viven en Excel</b>, los que hacen falta para que el sistema les sirva,
+      van incluidos aquí</li>
       <li><b>Implementación de 1 a 3 meses</b>, según qué tan lista esté la información que exista hoy</li>
       <li>Se entrega por partes y cada una entra a producción cuando está lista — no hay una entrega
       final donde todo aparece de golpe</li>
-      <li>El calendario de pagos se acuerda al firmar</li>
     </ul>
   </div>
   <div class="opt-c">
-    <span class="tag">Cada mes · estimada</span>
+    <span class="tag">Cada mes</span>
     <h4>Suscripción</h4>
     <div class="big">$1,200 CAD</div>
-    <p class="fine">Plana en número de trabajadores, clientes y usuarios. <b>Estimada</b> porque depende
-    del volumen de documentos — el bloque de abajo lo explica.</p>
+    <p class="fine">Plana en número de trabajadores, clientes y usuarios de Vencom.</p>
     <ul>
       <li>Servidores, respaldos y disponibilidad</li>
       <li><b>Mantenimiento de los parámetros normativos</b>: UMA, salario mínimo, ISN por estado,
@@ -451,151 +456,77 @@ las que se dijeron en la junta y no se mueven.</b></p>
     </ul>
   </div>
 </div>
+</section>
 
-<div class="blk warn">
-<p><b>Por qué la mensualidad va como estimada.</b> Lo que hace crecer un sistema de nómina no son las
-pantallas ni los usuarios: son los <b>documentos</b>. Cada CFDI de nómina son un XML y un PDF por
-trabajador y por periodo, y hay que conservarlos <b>cinco años</b> por el Código Fiscal. Con cuatro mil
-trabajadores en calendario quincenal eso es del orden de <b>diez gigabytes al año</b>, y cinco ejercicios
-de retención son unos cincuenta — más el expediente laboral y los recibos firmados, si se contratan
-después.</p>
-<p>La cifra de arriba supone un envolvente de hasta <b>5,000 trabajadores administrados</b> y
-<b>250 GB</b> almacenados. Si la operación real resulta mayor, o si se migra de golpe mucho histórico,
-hace falta una <b>instancia dedicada</b>: eso es un <b>costo mensual, no un costo de construcción</b>, se
-cotiza al costo del proveedor más una cuota de administración, se estima por escrito antes de mover nada
-y se revisa una vez al año. Nunca se aplica de forma retroactiva ni a media mensualidad.</p>
-<p>La lista de descubrimiento que acompaña esta propuesta tiene una sección entera dedicada a medir eso.
-<b>Contestarla es lo que convierte esta cifra estimada en una cifra firme.</b></p>
+<section>
+<h2>El complemento: que sus clientes entren al sistema</h2>
+<p>Hasta aquí el sistema lo usa <b>la gente de Vencom</b>: cincuenta o cien personas con nombre, a las que
+se puede sentar a explicarles. El complemento abre el sistema <b>hacia afuera</b> — que cada empresa
+cliente vea lo suyo, administre a su propia gente y le mande invitaciones a su personal nuevo, y que cada
+trabajador saque su recibo sin llamar a nadie.</p>
+<p>Es también lo que cambia la conversación de renovación: un director que entra a su portal y ve
+<b>cuánto de su pasivo laboral ya está cubierto</b> entiende en un segundo por qué paga.</p>
+<div class="ph"><div class="hd"><div><div class="no">Complemento</div><h4>Portal del cliente</h4></div><div class="price"><span class="mk">Se cotiza junto</span></div></div><div class="bd"><p>Su tablero con la barra de cobertura del pasivo laboral, sus obligaciones del mes, su cuenta con Vencom y cómo se calcula lo que paga.</p><ul><li>Tablero con el pasivo laboral cubierto arriba de todo</li><li>Bóveda documental: constancia de situación fiscal, opinión 32-D, estudio actuarial, comprobantes de pago al IMSS e INFONAVIT, estado de cuenta del fondo</li><li>Facturas, estado de cuenta y el desglose de cómo sale la tarifa</li><li>Perfiles dentro del cliente: dirección, recursos humanos y finanzas no ven lo mismo</li></ul></div></div><div class="ph"><div class="hd"><div><div class="no">Complemento</div><h4>Gestión de su propia gente</h4></div><div class="price"><span class="mk">Se cotiza junto</span></div></div><div class="bd"><p>Que cada empresa administre y siga a su personal desde el mismo sistema, sin pedirle nada a Vencom.</p><ul><li>Alta y baja de trabajadores desde el portal, con el plazo de cinco días hábiles corriendo igual</li><li><b>Invitaciones a su personal nuevo</b>: la empresa manda la liga y el trabajador captura sus propios datos —CLABE con validación del dígito verificador, domicilio, beneficiarios—</li><li>Padrón propio, con el estado de cada trámite ante el IMSS a la vista</li><li>Recordatorios automáticos a quien no completó su captura</li></ul></div></div><div class="ph"><div class="hd"><div><div class="no">Complemento</div><h4>Formularios y buzón de incidencias</h4></div><div class="price"><span class="mk">Se cotiza junto</span></div></div><div class="bd"><p>Todo lo que hoy entra por correo y por WhatsApp, con formato y con hora de corte.</p><ul><li>Buzón con <b>hora de corte por cliente</b>: faltas, incapacidades, tiempo extra, vacaciones, bonos, descuentos y bajas</li><li>Dos excepciones escritas: la incapacidad y la baja tienen plazo de ley y no esperan al corte</li><li>Entrada por portal, correo y WhatsApp, con el registro de por dónde llegó cada cosa</li></ul></div></div><div class="ph"><div class="hd"><div><div class="no">Complemento</div><h4>Portal del trabajador</h4></div><div class="price"><span class="mk">Se cotiza junto</span></div></div><div class="bd"><p>El que quita la mayor cantidad de llamadas: su recibo, su saldo del fondo y su constancia para el banco.</p><ul><li>Recibo timbrado en XML y PDF, descargable por el propio trabajador</li><li>Saldo del fondo de ahorro y lo que puso cada parte en el año</li><li>Constancia de percepciones para el banco</li><li>Ve lo suyo y nada más — ni el padrón, ni el sueldo de nadie, ni el pasivo laboral</li></ul></div></div>
+<div class="opts">
+  <div class="opt-c pick">
+    <span class="tag">Una sola vez</span>
+    <h4>Construcción del complemento</h4>
+    <div class="big">$10,000 CAD</div>
+    <p class="fine">Los cuatro bloques de arriba, tomados juntos. Duración estimada: <b>4–6 semanas</b>.</p>
+    <ul>
+      <li>Se construye después de que el sistema base esté en producción, no en paralelo</li>
+      <li>No hace falta decidirlo hoy: el sistema base funciona completo sin él</li>
+    </ul>
+  </div>
+  <div class="opt-c">
+    <span class="tag">Cada mes · por definir</span>
+    <h4>Lo que se suma a la mensualidad</h4>
+    <div class="big">Por definir</div>
+    <p class="fine">Y preferimos decirlo así antes que inventar una cifra que después haya que corregir.</p>
+    <ul>
+      <li>Lo que encarece este complemento <b>no es programarlo</b>: es la cantidad de información que hay
+      que procesar y guardar cuando cada empresa cliente y cada trabajador tienen su propio acceso</li>
+      <li>Eso depende de <b>cuántas empresas cliente hay y cuántos trabajadores administran</b> — un dato
+      que hoy nadie tiene con precisión</li>
+      <li>La lista de descubrimiento que acompaña esta propuesta tiene una sección entera para medirlo.
+      Con eso, la cifra se cierra por escrito y ya no se mueve</li>
+    </ul>
+  </div>
 </div>
 
 <div class="blk accent">
-<p><b>La suscripción puede desaparecer.</b> El módulo de prospección lo opera Telaia y se remunera por
-comisión sobre los clientes nuevos que le consigue a Vencom. <b>Mientras esa comisión esté corriendo,
-no se cobra la suscripción de la fase 1.</b> Cobrar las dos cosas al mismo tiempo no tendría sentido:
-si el sistema ya está generando ingreso para ambas partes, se paga solo.</p>
+<p><b>Y este complemento se puede pagar solo.</b> Cada empresa cliente de Vencom recibe su propio acceso:
+su tablero, sus documentos, su gente. Eso es algo por lo que <b>una empresa paga</b> — del orden de
+doscientos cincuenta dólares al mes por acceso, en el rango de lo que cuesta cualquier portal
+administrativo.</p>
+<p>Con cien empresas cliente eso es un ingreso recurrente que cubre varias veces el costo de servidor que
+lo genera. No es una condición de esta propuesta ni algo que decidamos nosotros — es la decisión de Vencom
+sobre si lo absorbe o lo traslada. Pero conviene tenerla presente antes de mirar el costo mensual, porque
+cambia por completo cómo se ve.</p>
 </div>
 </section>
 
 <section>
-<h2>Fase 2 · El cliente y su gente entran al sistema</h2>
-<p>La fase 1 es hacia adentro: la usa la gente de Vencom, que son cincuenta o cien personas con nombre y
-con quien se puede sentar a explicar. <b>La fase 2 es hacia afuera</b> — la usan los clientes y sus
-trabajadores, que son miles, desde su propio teléfono y sin que nadie los capacite. Cada campo confuso
-en esta fase se convierte en una llamada a recursos humanos, y por eso se construye distinto y cuesta
-distinto.</p>
-<p>Es también la fase que cambia la conversación de renovación: un director que entra a su portal y ve
-<b>cuánto de su pasivo laboral ya está cubierto</b> entiende en un segundo por qué paga.</p>
-<div class="ph"><div class="hd"><div><div class="no">Fase 2</div><h4>Portal del cliente</h4><div class="dur">$250 CAD/mes adicionales</div></div><div class="price"><span class="mk">$9,500 CAD</span></div></div><div class="bd"><p>Su tablero con la barra de cobertura del pasivo laboral, sus obligaciones del mes, su cuenta con Vencom y cómo se calcula lo que paga.</p><ul><li>Tablero con el pasivo laboral cubierto arriba de todo</li><li>Bóveda documental: constancia de situación fiscal, opinión 32-D, estudio actuarial, comprobantes de pago al IMSS e INFONAVIT, estado de cuenta del fondo</li><li>Facturas, estado de cuenta y el desglose de cómo sale la tarifa</li><li>Perfiles dentro del cliente: dirección, recursos humanos y finanzas no ven lo mismo</li></ul></div></div><div class="ph"><div class="hd"><div><div class="no">Fase 2</div><h4>Portal del trabajador</h4><div class="dur">$150 CAD/mes adicionales</div></div><div class="price"><span class="mk">$6,500 CAD</span></div></div><div class="bd"><p>El que quita la mayor cantidad de llamadas: su recibo, su saldo del fondo y su constancia para el banco.</p><ul><li>Recibo timbrado en XML y PDF, descargable por el propio trabajador</li><li>Saldo del fondo de ahorro y lo que puso cada parte en el año</li><li>Constancia de percepciones para el banco</li><li>Ve lo suyo y nada más — ni el padrón, ni el sueldo de nadie, ni el pasivo laboral</li></ul></div></div><div class="ph"><div class="hd"><div><div class="no">Fase 2</div><h4>Formularios y captura</h4><div class="dur">$200 CAD/mes adicionales</div></div><div class="price"><span class="mk">$6,500 CAD</span></div></div><div class="bd"><p>Todo lo que hoy entra por correo y por WhatsApp, con formato y con hora de corte.</p><ul><li>Buzón de incidencias con <b>hora de corte por cliente</b>: faltas, incapacidades, tiempo extra, vacaciones, bonos, descuentos y bajas</li><li>Dos excepciones escritas: la incapacidad y la baja tienen plazo de ley y no esperan al corte</li><li>Alta y baja de trabajadores desde el portal del cliente</li><li><b>Captura de datos por el propio trabajador</b>: CLABE con validación del dígito verificador, domicilio y beneficiarios, con recordatorios automáticos</li><li>Entrada por WhatsApp, correo y portal, con el registro de por dónde llegó cada cosa</li></ul></div></div><div class="ph"><div class="hd"><div><div class="no">Fase 2</div><h4>Academia</h4><div class="dur">$300 CAD/mes adicionales</div></div><div class="price"><span class="mk">$9,500 CAD</span></div></div><div class="bd"><p>Alguien que sabe graba el video una vez; el sistema genera el examen solo y deja constancia con fecha.</p><ul><li>Cursos con lecciones en video, texto y documento adjunto</li><li><b>Exámenes generados de la transcripción del video</b>, con revisión obligatoria de una persona antes de publicar</li><li><b>Tarjetas de repaso con repetición espaciada</b>: vuelven justo antes de que se olvide la regla</li><li><b>Rutas adaptativas por puesto</b>: saltan lo que ya se sabe, agregan práctica donde se falla y se detienen a los tres intentos fallidos</li><li><b>Asistente acotado</b> al material de la empresa, que cita la lección de la que salió y dice cuando no sabe</li><li>Desempeño del autor: quién se atoró y en qué, no cuánta gente entró</li><li>Certificados con fecha y tablero de puntos</li><li>Incluye hasta 40 horas de video y 200 personas activas</li></ul></div></div>
-<div class="opts">
-  <div class="opt-c pick">
-    <span class="tag">Los cuatro bloques juntos</span>
-    <h4>Fase 2 completa</h4>
-    <div class="big">$27,500 CAD</div>
-    <p class="fine">Precio de lista por separado: $32,000 CAD. Tomados juntos comparten la misma
-    capa de acceso y la misma bóveda de documentos, y eso se refleja en el precio.</p>
-    <ul>
-      <li>Duración estimada: <b>6–8 semanas</b></li>
-      <li><b>$600 CAD al mes</b> adicionales a la suscripción de la fase 1</li>
-      <li>Ese mensual cubre el tráfico de los portales, el almacenamiento de video de la Academia y el
-      costo por conversación de WhatsApp — que lo cobra Meta y se traslada al costo</li>
-      <li>Cada bloque se puede comprar solo, al precio de lista</li>
-    </ul>
-  </div>
-  <div class="opt-c">
-    <span class="tag">Por qué en este orden</span>
-    <h4>Qué desbloquea</h4>
-    <div class="big">—</div>
-    <p class="fine">La fase 2 es la que quita trabajo de la mesa de Vencom, no la que agrega funciones.</p>
-    <ul>
-      <li>Las cinco preguntas que hoy entran por teléfono quedan contestadas en pantalla</li>
-      <li>La incidencia deja de llegar por WhatsApp a las once de la noche y llega con formato y con hora</li>
-      <li>El dato que sólo el trabajador conoce lo captura el trabajador — y si viene mal, viene mal de su lado</li>
-      <li>La constancia de capacitación queda con fecha, que es lo que sirve el día que alguien dice que
-      nunca le explicaron</li>
-    </ul>
-  </div>
+<h2>Lo que ya está construido y se puede activar después</h2>
+<p>Todo lo de esta lista <b>existe y se puede recorrer hoy en la demostración</b>, marcado en pantalla como
+«más adelante». No está incluido en las cifras de arriba y <b>no lo estamos cotizando todavía</b>: cada
+pieza se activa cuando tenga sentido, y entonces se cotiza sola.</p>
+<div class="despues"><div class="dsp"><b>Puesta en marcha de cada cliente nuevo</b><span>Plan de arranque, validación del padrón, corrida en paralelo contra el sistema anterior y bitácora de hallazgos. Abarata cada cliente que entre.</span></div><div class="dsp"><b>Expediente laboral y firma NOM-151</b><span>Completitud documental por trabajador, alertas de contratos determinados por vencer y firma del recibo con constancia de conservación de un prestador acreditado.</span></div><div class="dsp"><b>Simulador de finiquito y liquidación</b><span>Renuncia voluntaria contra despido injustificado sobre el mismo trabajador, con la fórmula y el artículo de cada renglón.</span></div><div class="dsp"><b>Motor de reglas por cliente</b><span>Las reglas propias de cada empresa —vacaciones, prima dominical, bonos, tiempo extra— escritas en vez de recordadas.</span></div><div class="dsp"><b>Protección de saldo deudor</b><span>Producto de seguro sobre los préstamos del FPL®. Es el único de esta lista que genera ingreso propio para Vencom.</span></div><div class="dsp"><b>Academia</b><span>Cursos, exámenes generados del propio material, tarjetas de repaso, rutas por puesto y un asistente acotado a los materiales de la empresa.</span></div></div>
+<div class="blk">
+<p>Se enseña marcado, y no escondido, por una razón: si alguien recorre la demostración asumiendo que todo
+entra en la cifra, la corrección llega después de la firma — y ahí ya no cuesta dinero, cuesta la relación.</p>
 </div>
 </section>
 
 <section>
-<h2>Fase 3 · El expediente, el motor y el producto nuevo</h2>
-<p>La fase 3 es la que se nota cuando algo sale mal: una demanda, una inspección, un cliente que se
-migra, un acreditado que fallece. No hace la operación más rápida — hace que <b>lo que ya se hizo se
-pueda probar</b>, y que las reglas dejen de depender de que alguien se acuerde.</p>
-<p>Y trae una pieza que no es un módulo sino un <b>producto que Vencom puede vender</b>: la protección de
-saldo deudor sobre los préstamos del FPL®. Es la única de las tres fases que tiene ingreso propio.</p>
-<div class="ph"><div class="hd"><div><div class="no">Fase 3</div><h4>Puesta en marcha</h4><div class="dur">sin costo mensual adicional</div></div><div class="price"><span class="mk">$8,500 CAD</span></div></div><div class="bd"><p>Incorporación termina el día de la firma. Aquí empieza lo caro: montar la empresa, cargar a su gente y correr una nómina en paralelo antes de tocar la de verdad.</p><ul><li>Plan de arranque de dieciséis pasos, cada uno con responsable y fecha</li><li>Registros patronales confrontados contra el IDSE, prima de riesgo, ISN por estado y calendarios</li><li>Carga y validación del padrón: NSS, CURP, RFC, CLABE, fechas y SBC contra el mínimo y el tope</li><li>Nada se rechaza: lo que no pasa se devuelve <b>fila por fila con el motivo</b></li><li><b>Corrida en paralelo</b> contra el sistema anterior, comparada persona por persona</li><li>Bitácora de hallazgos del arranque, documentados con su referencia legal</li></ul></div></div><div class="ph"><div class="hd"><div><div class="no">Fase 3</div><h4>Expediente laboral y firma NOM-151</h4><div class="dur">$400 CAD/mes adicionales</div></div><div class="price"><span class="mk">$9,500 CAD</span></div></div><div class="bd"><p>El recibo timbrado prueba que el SAT lo recibió. No prueba que el trabajador lo recibió. Eso es lo que se pide en una junta.</p><ul><li>Completitud documental por trabajador: contrato, aviso de privacidad, acuse del reglamento interior, NOM-035, DC-3, identificación y beneficiarios</li><li><b>Contratos por tiempo determinado</b> con avisos a 90, 30 y 7 días</li><li>Firma electrónica del recibo y <b>constancia de conservación NOM-151</b> de un prestador acreditado</li><li>Conservación a cinco años</li><li>Incluye hasta 5,000 constancias al mes; el excedente se factura al costo del prestador</li></ul></div></div><div class="ph"><div class="hd"><div><div class="no">Fase 3</div><h4>Simulador de finiquito y liquidación</h4><div class="dur">sin costo mensual adicional</div></div><div class="price"><span class="mk">$4,500 CAD</span></div></div><div class="bd"><p>Renuncia voluntaria contra despido injustificado, sobre el mismo trabajador y el mismo día.</p><ul><li>Cada renglón con la fórmula con la que salió y el artículo que lo manda</li><li>Salario diario y salario integrado, separados — que es donde se captura mal</li><li>Prima de antigüedad con el tope de dos salarios mínimos</li><li>Cruce contra el saldo del préstamo del FPL®</li><li>Estimación del ISR de la separación con la exención por año de servicio</li></ul></div></div><div class="ph"><div class="hd"><div><div class="no">Fase 3</div><h4>Motor de reglas por cliente</h4><div class="dur">sin costo mensual adicional</div></div><div class="price"><span class="mk">$7,500 CAD</span></div></div><div class="bd"><p>Los parámetros son de la ley. Las reglas son de cada empresa, y hoy viven en la cabeza de alguien.</p><ul><li>Vacaciones, prima vacacional, prima dominical, aguinaldo, bonos, tiempo extra, redondeo y descuentos</li><li>Cada regla con su mínimo legal al lado y de dónde sale: contrato colectivo, reglamento o costumbre</li><li>Las que sólo viven en la costumbre quedan marcadas</li><li>Prueba de regresión por cada regla nueva — una regla mal escrita cambia el pago de miles de personas</li></ul></div></div><div class="ph"><div class="hd"><div><div class="no">Fase 3</div><h4>Protección de saldo deudor</h4><div class="dur">$250 CAD/mes adicionales</div></div><div class="price"><span class="mk">$5,500 CAD</span></div></div><div class="bd"><p>El segundo producto de seguro. Cubre el saldo del préstamo del FPL® por fallecimiento o invalidez total y permanente.</p><ul><li>Prima por millar de saldo insoluto: baja sola conforme se paga el crédito</li><li>Altas, bajas y cobro dentro de la misma línea del préstamo</li><li>Siniestros, y la conciliación de lo cobrado contra lo remitido a la aseguradora</li><li>Reporte mensual a la aseguradora</li><li><b>Requiere que Vencom contrate la póliza de grupo</b> — esa negociación es de Vencom</li></ul></div></div>
-<div class="opts">
-  <div class="opt-c pick">
-    <span class="tag">Los cinco bloques juntos</span>
-    <h4>Fase 3 completa</h4>
-    <div class="big">$30,000 CAD</div>
-    <p class="fine">Precio de lista por separado: $35,500 CAD.</p>
-    <ul>
-      <li>Duración estimada: <b>8–10 semanas</b></li>
-      <li><b>$650 CAD al mes</b> adicionales, principalmente por las constancias NOM-151 y el
-      almacenamiento del expediente</li>
-      <li>Cada bloque se puede comprar solo, al precio de lista</li>
-      <li>La protección de saldo deudor <b>requiere que Vencom contrate una póliza de grupo</b>; conviene
-      empezar esa conversación con la aseguradora desde ahora, porque no depende de nosotros</li>
-    </ul>
-  </div>
-  <div class="opt-c">
-    <span class="tag">Recomendación</span>
-    <h4>Si hubiera que partirla</h4>
-    <div class="big">—</div>
-    <p class="fine">Un orden defendible si la fase 3 no se compra completa.</p>
-    <ul>
-      <li><b>Primero el simulador de finiquito</b>: es el más barato, el más rápido y el que recursos
-      humanos pide en la primera reunión</li>
-      <li><b>Luego la puesta en marcha</b>: se paga sola, porque abarata cada cliente nuevo que entre</li>
-      <li><b>Después el expediente</b>, que es el que protege el día que hay demanda</li>
-      <li><b>El motor de reglas al final</b>, porque toca el cálculo de la nómina y conviene hacerlo con
-      el sistema ya asentado</li>
-    </ul>
-  </div>
-</div>
-</section>
-
-<section>
-<h2>Las tres fases, sumadas</h2>
-<table class="doc">
-<thead><tr><th>Fase</th><th>Qué es</th><th>Duración</th><th class="num">Construcción</th><th class="num">Mensual</th></tr></thead>
-<tbody>
-<tr><td><b>Fase 1</b></td><td>El sistema de operación · 14 módulos</td><td>1–3 meses</td>
-  <td class="num">$30,000 CAD</td><td class="num">$1,200 CAD</td></tr>
-<tr><td><b>Fase 2</b></td><td>Portales, formularios y Academia</td><td>6–8 semanas</td>
-  <td class="num">$27,500 CAD</td><td class="num">+$600 CAD</td></tr>
-<tr><td><b>Fase 3</b></td><td>Expediente, motor de reglas y saldo deudor</td><td>8–10 semanas</td>
-  <td class="num">$30,000 CAD</td><td class="num">+$650 CAD</td></tr>
-<tr><td colspan="3"><b>Total si se toman las tres</b></td>
-  <td class="num"><b>$87,500 CAD</b></td><td class="num"><b>$2,450 CAD</b></td></tr>
-</tbody></table>
-<p>No hay que decidir las tres hoy. Lo que sí conviene decidir hoy es <b>la fase 1</b>, porque las otras
-dos se montan encima de ella y ninguna tiene sentido sola.</p>
-</section>
-
-<section>
-<h2>Cómo se entrega la fase 1</h2>
+<h2>Cómo se entrega el sistema base</h2>
 <p>El orden no es arbitrario: primero lo recurrente y lo que tiene plazo legal corto, porque ahí está el
 riesgo y el pico de trabajo. Cada entrega pone algo en producción — ninguna produce sólo documentos. La implementación completa toma de <b>uno a tres meses</b>, y lo que decide si son uno o tres
 no es el tamaño del sistema: es qué tan ordenada esté hoy la información que hay que cargar.</p>
-<div class="ph"><div class="hd"><div><div class="no">Entrega 0</div><h4>Descubrimiento</h4><div class="dur">2 semanas</div></div><div class="price"><span class="mk">Primeras entregas</span></div></div><div class="bd"><p>Dos semanas dentro de la operación real: acompañar un cierre completo, ver dónde vive hoy cada dato y qué se resuelve en Excel, en correo y de memoria. Es la única fase que se puede comprar sola.</p><ul><li>Mapa de procesos por línea de negocio</li><li>Inventario de datos y de dónde sale cada uno</li><li>Lista priorizada de lo que duele, con costo estimado de cada falla</li><li>Alcance cerrado y precio en firme de las fases siguientes</li></ul></div></div><div class="ph"><div class="hd"><div><div class="no">Entrega 1</div><h4>Cartera, nómina e IMSS</h4><div class="dur">4–6 semanas</div></div><div class="price"><span class="mk">Primeras entregas</span></div></div><div class="bd"><p>Primero lo que corre todos los periodos y lo que tiene el plazo legal más corto, porque ahí está el pico de fin de mes y ahí está el riesgo. Al terminar esta fase el sistema ya se usa en producción.</p><ul><li>Expediente de cliente, registros patronales y calendarios de pago</li><li>Corridas por etapas: incidencias → cálculo → revisión → timbrado → dispersión → cierre</li><li>Reloj de timbrado: fecha de pago más tres días hábiles</li><li>Movimientos afiliatorios con el plazo de cinco días hábiles desde el hecho</li><li>Conciliación SUA ↔ EMA con cola de diferencias por cliente y por renglón</li><li>Parámetros con vigencia: UMA, salario mínimo, ISN por estado, cuota CEAV</li></ul></div></div><div class="ph"><div class="hd"><div><div class="no">Entrega 2</div><h4>Obligaciones y REPSE</h4><div class="dur">3–4 semanas</div></div><div class="price"><span class="mk">Primeras entregas</span></div></div><div class="bd"><p>El calendario por cliente y por jurisdicción, y el expediente que se entrega cuando alguien pregunta. Registra qué se debía y qué se hizo; no opina sobre estructuras.</p><ul><li>Calendario de obligaciones con responsable, evidencia y acuse</li><li>Vigencia del registro REPSE con la ventana de renovación a la vista</li><li>ISN por estado con las tasas vigentes de cada periodo</li><li>ICSOE y SISUB generadas por contrato de servicio</li><li>Bóveda de opiniones de cumplimiento con su fecha de caducidad</li></ul></div></div><div class="ph opt"><div class="hd"><div><div class="no">Entrega 3</div><h4>FPL®, préstamos y seguros</h4><div class="dur">4–5 semanas</div></div><div class="price"><span class="mk">Entrega posterior</span></div></div><div class="bd"><p>Las reglas que hoy dependen de que alguien las recuerde, aplicadas por el sistema antes de autorizar, no descubiertas al cierre del ejercicio.</p><ul><li>Submayores del fondo con paridad, periodicidad y control de retiros</li><li>El intento que rompe una regla queda registrado, con la alternativa ofrecida</li><li>Préstamos dentro de la corrida y cruce automático contra finiquito</li><li>Censo contra aseguradora y seguimiento de siniestros</li></ul></div></div><div class="ph opt"><div class="hd"><div><div class="no">Entrega 4</div><h4>Actuaría, In House y Talento</h4><div class="dur">3 semanas</div></div><div class="price"><span class="mk">Entrega posterior</span></div></div><div class="bd"><p>Las tres líneas que hoy viven fuera de cualquier sistema y se coordinan por correo.</p><ul><li>Pipeline de estudios actuariales con el censo como compuerta</li><li>Asignaciones de implants, ausencias y relevo, visibles desde el corporativo</li><li>Requisiciones de talento con reloj de garantía por colocación</li></ul></div></div><div class="ph opt"><div class="hd"><div><div class="no">Entrega 5</div><h4>Prospección y portal</h4><div class="dur">3 semanas</div></div><div class="price"><span class="mk">Entrega posterior</span></div></div><div class="bd"><p>Traer clientes con el mismo perfil que ya se atiende bien, y abrir al cliente lo que hoy se manda por correo.</p><ul><li>Descubrimiento por código SCIAN y estrato de personal ocupado</li><li>Contacto en frío conforme a la LFPDPPP, con aviso de privacidad y derechos ARCO</li><li>Entregas al equipo comercial y medición hasta el contrato, no hasta el clic</li><li>Portal del cliente con la barra de cobertura del pasivo laboral y bóveda documental</li><li>Autoservicio del trabajador: recibo, saldo del fondo y constancia</li></ul></div></div>
+<div class="ph"><div class="hd"><div><div class="no">Entrega 0</div><h4>Descubrimiento</h4><div class="dur">2 semanas</div></div><div class="price"><span class="mk">Primeras entregas</span></div></div><div class="bd"><p>Dos semanas dentro de la operación real: acompañar un cierre completo, ver dónde vive hoy cada dato y qué se resuelve en Excel, en correo y de memoria. Es la única fase que se puede comprar sola.</p><ul><li>Mapa de procesos por línea de negocio</li><li>Inventario de datos y de dónde sale cada uno</li><li>Lista priorizada de lo que duele, con costo estimado de cada falla</li><li>Alcance cerrado y precio en firme de las fases siguientes</li></ul></div></div><div class="ph"><div class="hd"><div><div class="no">Entrega 1</div><h4>Cartera, nómina e IMSS</h4><div class="dur">4–6 semanas</div></div><div class="price"><span class="mk">Primeras entregas</span></div></div><div class="bd"><p>Primero lo que corre todos los periodos y lo que tiene el plazo legal más corto, porque ahí está el pico de fin de mes y ahí está el riesgo. Al terminar esta fase el sistema ya se usa en producción.</p><ul><li>Expediente de cliente, registros patronales y calendarios de pago</li><li>Corridas por etapas: incidencias → cálculo → revisión → timbrado → dispersión → cierre</li><li>Reloj de timbrado: fecha de pago más tres días hábiles</li><li>Movimientos afiliatorios con el plazo de cinco días hábiles desde el hecho</li><li>Conciliación SUA ↔ EMA con cola de diferencias por cliente y por renglón</li><li>Parámetros con vigencia: UMA, salario mínimo, ISN por estado, cuota CEAV</li></ul></div></div><div class="ph"><div class="hd"><div><div class="no">Entrega 2</div><h4>Obligaciones y REPSE</h4><div class="dur">3–4 semanas</div></div><div class="price"><span class="mk">Primeras entregas</span></div></div><div class="bd"><p>El calendario por cliente y por jurisdicción, y el expediente que se entrega cuando alguien pregunta. Registra qué se debía y qué se hizo; no opina sobre estructuras.</p><ul><li>Calendario de obligaciones con responsable, evidencia y acuse</li><li>Vigencia del registro REPSE con la ventana de renovación a la vista</li><li>ISN por estado con las tasas vigentes de cada periodo</li><li>ICSOE y SISUB generadas por contrato de servicio</li><li>Bóveda de opiniones de cumplimiento con su fecha de caducidad</li></ul></div></div><div class="ph opt"><div class="hd"><div><div class="no">Entrega 3</div><h4>FPL®, préstamos y seguros</h4><div class="dur">4–5 semanas</div></div><div class="price"><span class="mk">Entrega posterior</span></div></div><div class="bd"><p>Las reglas que hoy dependen de que alguien las recuerde, aplicadas por el sistema antes de autorizar, no descubiertas al cierre del ejercicio.</p><ul><li>Submayores del fondo con paridad, periodicidad y control de retiros</li><li>El intento que rompe una regla queda registrado, con la alternativa ofrecida</li><li>Préstamos dentro de la corrida y cruce automático contra finiquito</li><li>Censo contra aseguradora y seguimiento de siniestros</li></ul></div></div><div class="ph opt"><div class="hd"><div><div class="no">Entrega 4</div><h4>Actuaría, In House y Talento</h4><div class="dur">3 semanas</div></div><div class="price"><span class="mk">Entrega posterior</span></div></div><div class="bd"><p>Las tres líneas que hoy viven fuera de cualquier sistema y se coordinan por correo.</p><ul><li>Pipeline de estudios actuariales con el censo como compuerta</li><li>Asignaciones de implants, ausencias y relevo, visibles desde el corporativo</li><li>Requisiciones de talento con reloj de garantía por colocación</li></ul></div></div><div class="ph opt"><div class="hd"><div><div class="no">Entrega 5</div><h4>Reportes y perfiles</h4><div class="dur">2 semanas</div></div><div class="price"><span class="mk">Entrega posterior</span></div></div><div class="bd"><p>Lo último que se entrega es lo que mira hacia adentro: quién carga con qué y quién ve qué.</p><ul><li>Reportes de carga por persona del equipo de Vencom</li><li>Concentración de la cartera y riesgo por cliente</li><li>Perfiles y permisos, con el recorte aplicado en la fuente y no en la pantalla</li></ul></div></div>
 </section>
 
-<section>
-<h2>Prospección: un modelo distinto</h2>
-<div class="blk">
-<p>La prospección no se cobra como el resto del sistema, y <b>no la opera Vencom</b>. La opera Telaia:
-busca empresas con el mismo perfil que los clientes que Vencom ya atiende bien, las contacta conforme a
-la LFPDPPP y entrega al equipo comercial de Vencom sólo las que califican.</p>
-<p>Vencom ve todo lo que ese motor hace —qué empresas encontró, a quién le escribió, qué contestaron,
-qué se entregó y en qué terminó— desde el mismo sistema, en una vista de <b>sólo lectura</b>. El registro
-completo queda auditable; la operación corre por cuenta de Telaia.</p>
-<p>La remuneración es por <b>comisión sobre la nómina administrada de cada cliente nuevo</b> que entre por
-esa vía, en los términos que se acuerden en el contrato. Y mientras haya comisión, no hay suscripción.</p>
-</div>
-</section>
+
 
 <section>
 <h2>Condiciones comerciales</h2>
@@ -606,7 +537,7 @@ esa vía, en los términos que se acuerden en el contrato. Y mientras haya comis
 </table>
 
 <h3>Lo que no está incluido</h3>
-<ul><li>Timbrado de CFDI: el costo por timbre lo cobra el PAC directamente a Vencom</li><li>Dispersión bancaria y las comisiones del banco</li><li>Licencias o accesos de terceros (aseguradoras, portales, servicios de datos)</li><li>Equipo de cómputo, conectividad y firmas electrónicas</li><li>Migración de históricos de más de tres ejercicios, que se cotiza al cerrar la fase 0</li><li>Asesoría legal, fiscal, contable o actuarial de cualquier tipo</li><li>Todo lo de las fases 2 y 3, si sólo se contrata la fase 1</li><li>El costo por conversación de WhatsApp, que lo cobra Meta y se traslada al costo</li><li>Las constancias NOM-151 por encima de las 5,000 mensuales incluidas en la fase 3</li><li>La póliza de grupo de la protección de saldo deudor, que la contrata Vencom con su aseguradora</li><li>Infraestructura dedicada, si la operación rebasa el envolvente de 5,000 trabajadores o 250 GB</li></ul>
+<ul><li>Timbrado de CFDI: el costo por timbre lo cobra el PAC directamente a Vencom</li><li>Dispersión bancaria y las comisiones del banco</li><li>Licencias o accesos de terceros (aseguradoras, portales, servicios de datos)</li><li>Equipo de cómputo, conectividad y firmas electrónicas</li><li>Migración de históricos de más de tres ejercicios, que se cotiza al cerrar la fase 0</li><li>Asesoría legal, fiscal, contable o actuarial de cualquier tipo</li><li>El complemento de portales y todo lo de la lista de «más adelante», si sólo se contrata el sistema base</li><li>El costo por conversación de WhatsApp, que lo cobra Meta y se traslada al costo</li><li>Infraestructura dedicada, si el volumen de datos lo requiere — se estima por escrito antes de cambiar nada</li></ul>
 </section>
 
 <section>
@@ -616,9 +547,10 @@ esa vía, en los términos que se acuerden en el contrato. Y mientras haya comis
 cierre</b>, no sólo con la dirección: si las pantallas de <b>Hoy</b>, <b>Cartera · CRM</b> y <b>FPL® ·
 fondo de ahorro</b> describen bien su semana, el alcance de la fase 1 se sostiene. Si no, se corrige
 antes de empezar y este documento cambia.</p>
-<p>Segundo, <b>contestar la lista de descubrimiento</b>. Es lo que convierte la mensualidad estimada en
-una cifra firme y lo que fija el calendario real de la implementación. Las preguntas marcadas son las
-que mueven el precio.</p>
+<p>Segundo, <b>contestar la lista de descubrimiento</b>. Es lo que fija el calendario real y, sobre todo,
+lo que permite poner por escrito la mensualidad del complemento. Las preguntas marcadas son las que
+mueven el precio — y la más importante es cuántas empresas cliente hay y cuántos trabajadores administran
+entre todas.</p>
 <p><a href="https://atelioos.github.io/demos/gv-459746.html" style="font-weight:600">Abrir la demostración →</a>
 &nbsp;·&nbsp;
 <a href="https://atelioos.github.io/demos/gv-459746-scope.html" style="font-weight:600">Alcance y enfoque →</a>
@@ -630,7 +562,7 @@ que mueven el precio.</p>
 
 <footer>
 Propuesta económica preparada para Grupo Vencom. Cifras en <b>dólares canadienses</b>, antes de IVA,
-vigentes 30 días naturales. La suscripción mensual de la fase 1 es una <b>estimación</b> sujeta al volumen real de datos. Las referencias normativas y fiscales se incluyen como contexto operativo y
+vigentes 30 días naturales. La mensualidad del complemento de portales <b>no está cotizada</b>: depende del volumen real de datos y se cierra con la lista de descubrimiento. Las referencias normativas y fiscales se incluyen como contexto operativo y
 <b>no constituyen asesoría legal ni fiscal</b>.
 </footer>
 </main>
