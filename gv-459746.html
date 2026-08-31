@@ -6216,12 +6216,15 @@ function applyRole(){
   });
 }
 
+let YOPICK = () => "";
+
+
 function paintCtx(){
   const ins = INSTR[screen]();
   $("#ctx").innerHTML = `
     <div class="crumb">${CRUMB()}${extraKey()?`<span class="xchip x-${extraKind()}">${esc(EXTRA_L[extraKind()])}</span>`:""}</div>
     <div class="instr">${ins.map(([k,v,c])=>`<div class="ins ${c||""}"><span class="k">${esc(k)}</span><span class="v">${v}</span></div>`).join("")}</div>
-    ${isPros ? "" : `<div class="rolepick">
+    ${isPros ? YOPICK() : `<div class="rolepick">
       <span class="rl">Perfil</span>
       <select class="rsel" data-pick="role" aria-label="Cambiar de perfil">
         ${Object.keys(ROLES).map(k=>`<option value="${k}" ${role===k?"selected":""}>${esc(ROLES[k].n)} — ${esc(ROLES[k].role)}</option>`).join("")}
@@ -6315,11 +6318,40 @@ document.addEventListener("click", e=>{
   if(ib){ const [k,id] = ib.dataset.ib.split(":");
     const map = {mov:"mov",run:"run",fund:"fund",obl:"obl",imp:"imp",plc:"plc",loan:"loan",act:"act",claim:"claim"};
     return select(map[k]||"mov", id); }
+  /* Tomar del pozo mueve la cuenta de verdad: cambia la tabla, los
+     instrumentos y el cupo. Un botón que no cambia nada es peor que no tenerlo. */
+  const tm = e.target.closest("[data-tomar]");
+  if(tm){
+    const C = D.prospect.cartera, id = tm.dataset.tomar;
+    const i = C.pozo.findIndex(p=>p.id===id);
+    if(i < 0 || cupoDe(yo) <= 0) return;
+    const k = C.pozo.splice(i,1)[0];
+    delete k.motivo; delete k.enPozo;
+    k.rep = yo; k.dias = 0; k.bloqueo = null;
+    C.clientes.push(k);
+    recuentaCartera();
+    sel = {t:"kli", id:k.id};
+    return paint();
+  }
+  const st = e.target.closest("[data-soltar]");
+  if(st){
+    const C = D.prospect.cartera, id = st.dataset.soltar;
+    const i = C.clientes.findIndex(c=>c.id===id && c.rep===yo);
+    if(i < 0) return;
+    const k = C.clientes.splice(i,1)[0];
+    k.contacto = k.rep; k.rep = null; k.enPozo = 0;
+    k.motivo = "Su ejecutivo la soltó para dejarla disponible";
+    C.pozo.push(k);
+    recuentaCartera();
+    sel = {t:"kli", id:k.id};
+    tab.mios = "pozo";
+    return paint();
+  }
   const pairs = [["client","client"],["run","run"],["mov","mov"],["recon","recon"],["obl","obl"],
                  ["fund","fund"],["loan","loan"],["claim","claim"],["act","act"],["imp","imp"],
                  ["req","req"],["plc","plc"],["lead","lead"],["src","src"],["won","won"],
                  ["worker","worker"],["pol","pol"],["inc","inc"],
-                 ["incid","incid"],["alum","alum"],["hilo","hilo"],["junta","junta"]];
+                 ["incid","incid"],["alum","alum"],["hilo","hilo"],["junta","junta"],["kli","kli"]];
   for(const [attr,type] of pairs){
     const el = e.target.closest("[data-"+attr+"]");
     if(el) return select(type, el.dataset[attr]);
@@ -6329,6 +6361,8 @@ document.addEventListener("keydown", e=>{
   if(e.key === "Enter" && e.target && e.target.id === "nin"){ e.preventDefault(); addNote(); }
 });
 document.addEventListener("change", e=>{
+  const yp = e.target.closest('[data-pick="yo"]');
+  if(yp){ yo = yp.value; sel = null; return paint(); }
   const rp = e.target.closest('[data-pick="role"]');
   if(rp){
     role = rp.value; applyRole();
