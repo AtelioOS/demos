@@ -6309,7 +6309,7 @@ document.addEventListener("click", e=>{
                  ["fund","fund"],["loan","loan"],["claim","claim"],["act","act"],["imp","imp"],
                  ["req","req"],["plc","plc"],["lead","lead"],["src","src"],["won","won"],
                  ["worker","worker"],["pol","pol"],["inc","inc"],
-                 ["incid","incid"],["alum","alum"]];
+                 ["incid","incid"],["alum","alum"],["hilo","hilo"],["junta","junta"]];
   for(const [attr,type] of pairs){
     const el = e.target.closest("[data-"+attr+"]");
     if(el) return select(type, el.dataset[attr]);
