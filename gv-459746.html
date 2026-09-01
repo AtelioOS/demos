@@ -5799,7 +5799,7 @@ const TOUR = [
     "a quién, con aval o sin aval, y cuánto falta por recuperar antes del reparto.",
   say:"Esto lo pidieron ustedes en la junta pasada. Así se vería."},
 
- {at:{screen:"fpl", tab:{fpl:"deudor"}}, target:".wbody .addon",
+ {at:{screen:"fpl", tab:{fpl:"deudor"}}, target:null,
   t:"Y el segundo producto de seguro",
   b:"El fondo ya presta dinero. Lo que no tiene hoy es qué hacer cuando el acreditado muere: el saldo se "+
     "le come al fondo, o se le cobra al aval — <b>que es un compañero de trabajo</b>. Eso se hace una vez.",
@@ -5818,12 +5818,12 @@ const TOUR = [
     "seguridad. Y cada vez que alguien explica una partida, deja de preguntarla: de 244 sin conciliar a dos.",
   say:"El contador sigue haciendo falta. El que captura factura por factura, no."},
 
- {at:{screen:"academia", tab:{academia:"cursos"}}, target:".wbody .addon",
-  t:"La Academia — y va aparte",
+ {at:{screen:"academia", tab:{academia:"cursos"}}, target:null,
+  t:"La Academia — y entra completa",
   b:"Quien sabe graba el video <b>una vez</b>. De ahí salen solos el examen y las tarjetas de repaso, y "+
     "queda constancia con fecha — que es lo que sirve el día que alguien dice que nunca le explicaron. "+
     "Seis piezas: cursos, exámenes, tarjetas, rutas, asistente y desempeño.",
-  say:"Lo digo antes de enseñarlo para que nadie asuma que va incluido: la Academia se activa cuando quieran y se cotiza aparte."},
+  say:"Y va incluida. No hay nada en este demo que se cotice aparte."},
 
  {at:{screen:"academia", tab:{academia:"rutas"}}, target:".wbody .card",
   t:"Y la ruta no es una lista: es un destino",
@@ -6048,53 +6048,24 @@ document.addEventListener("keydown", e=>{
 window.addEventListener("resize", ()=>{ if(tourOn()) tourRender(); });
 
 /* ══════════════════════════ render ══════════════════════════ */
-/* ══════════════════ QUÉ ENTRA EN LA CIFRA BASE Y QUÉ NO ══════════════════
-   Dos estados, no tres. Se decidió presentar la cifra acordada y UN complemento
-   claramente cotizado; poner todo el alcance encima de la mesa el primer día
-   es como se espanta a un cliente que ya dijo que le parece caro.
-     · complemento — portal del cliente y de su gente: cotizado aparte
-     · después     — existe, se puede activar, todavía no tiene precio
-   Y se marca en pantalla porque si recorre el demo asumiendo que todo entra
-   en la cifra, la corrección llega después de la firma y ahí cuesta la relación. */
-const EXTRA = {portal:"comp", alta:"desp", expediente:"desp", academia:"desp"};
-const EXTRA_TAB = {"nomina:incidencias":"comp", "nomina:finiquito":"desp",
-                   "ajustes:reglas":"desp", "fpl:deudor":"desp"};
-const EXTRA_L = {comp:"Complemento", desp:"Más adelante"};
-const EXTRA_SUB = {
-  comp: "Portal del cliente y de su gente · se cotiza aparte",
-  desp: "Disponible cuando lo quieran · todavía sin precio",
-};
-const EXTRA_NOTE = {
-  portal: "El portal del cliente y el del trabajador —tablero, bóveda de documentos, facturas, recibo y "+
-        "saldo del fondo— son el complemento que se cotiza aparte.",
-  "nomina:incidencias": "El buzón de incidencias con hora de corte entra en el complemento: es un "+
-        "formulario que llenan el cliente y su gente, no una pantalla interna.",
-  academia: "La Academia está construida y se puede activar cuando quieran. Su costo depende de cuánto "+
-        "material haya que cargar y de cuánta gente la use, así que todavía no tiene precio.",
-  alta: "La puesta en marcha de cada cliente nuevo —plan de arranque, validación del padrón y corrida en "+
-        "paralelo— está construida y se puede activar más adelante.",
-  expediente: "El expediente laboral, las alertas de contratos determinados y la firma con constancia "+
-        "NOM-151 se pueden activar más adelante. La constancia la expide un tercero y tiene costo por documento.",
-  "nomina:finiquito": "El simulador de finiquito y liquidación se puede activar más adelante.",
-  "ajustes:reglas": "El motor de reglas por cliente se puede activar más adelante. Toca el cálculo de la "+
-        "nómina, así que cada regla nueva necesita su prueba de regresión.",
-  "fpl:deudor": "La protección de saldo deudor se puede activar más adelante. Es un producto de seguro: "+
-        "además de construirlo, hay que contratar la póliza de grupo con una aseguradora.",
-};
+/* ══════════════════ QUÉ ENTRA EN LA CIFRA ══════════════════
+   Todo. El 1 de septiembre se decidió presentar el sistema completo por una
+   sola cifra, así que ya no hay nada marcado como «complemento» ni como «más
+   adelante»: los diecisiete módulos entran en la construcción y la mensualidad
+   los cubre todos.
+   Las tres funciones se quedan —vacías— a propósito. Si algún día vuelve a
+   haber un módulo fuera de precio, se marca llenando UN objeto y el riel, la
+   barra superior y el aviso de la pantalla vuelven a aparecer solos. Borrarlas
+   obligaría a reconstruir el mecanismo entero para volver a marcar una cosa. */
+const EXTRA = {};
+const EXTRA_TAB = {};
+const EXTRA_L = {};
 const extraKey = () => {
   const k = screen + ":" + (tab[screen] || "");
   return EXTRA_TAB[k] ? k : (EXTRA[screen] ? screen : null);
 };
 const extraKind = () => { const k = extraKey(); return k ? (EXTRA_TAB[k] || EXTRA[k]) : null; };
-/* Un módulo entero queda fuera de la cifra base, o sólo una de sus pestañas.
-   El riel marca el primero; la barra de arriba marca los dos. */
-function addonBar(){
-  const k = extraKey(); if(!k) return "";
-  const kind = EXTRA_TAB[k] || EXTRA[k];
-  return `<div class="addon xbar x-${kind}"><span class="badge">${esc(EXTRA_L[kind])}</span>
-    <div><b>No está incluido en la cifra base.</b> ${esc(EXTRA_NOTE[k]||"")}
-    <span class="tiny muted">${esc(EXTRA_SUB[kind])}</span></div></div>`;
-}
+function addonBar(){ return ""; }
 
 const BADGE = {hoy:true, imss:true, fpl:true, obligaciones:true};
 /* segunda línea del tooltip: dice de quién es cada pantalla */
