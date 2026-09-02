@@ -1419,7 +1419,9 @@ const ICONS = {
    por tema, después la gente de casa, y al final los parámetros y los
    reportes de carga. */
 const NAV = {
-  hoy:"Hoy", cartera:"Cartera · CRM", incorp:"Incorporación", alta:"Puesta en marcha",
+  hoy:"Hoy", cartera:"Cartera · CRM",
+  /* las cuatro de prospección se insertan aquí abajo, en modo combinado */
+  incorp:"Incorporación", alta:"Puesta en marcha",
   portal:"Portal del cliente",
   nomina:"Nómina", imss:"IMSS", expediente:"Expediente laboral",
   obligaciones:"Obligaciones", fpl:"FPL®",
@@ -1429,11 +1431,22 @@ const NAV = {
   ajustes:"Parámetros", reportes:"Reportes"
 };
 
-NAV.prospeccion = "Prospección";
-NAV.agente = "Agente";
-NAV.mios = "Mi cartera";
-NAV.comisiones = "Comisiones";
 const OTRO = ["prospeccion", "agente", "mios", "comisiones"];
+const OTRO_L = {prospeccion:"Prospección", agente:"Agente", mios:"Mi cartera",
+                comisiones:"Comisiones"};
+/* Insertadas DESPUÉS de «Cartera · CRM» y antes de «Incorporación», que es el
+   orden en que ocurren de verdad: primero se consigue al cliente, luego entra.
+   Se reconstruye el objeto en vez de asignar llaves al final porque el orden de
+   las llaves ES el orden del riel. */
+(function(){
+  const nuevo = {};
+  for(const k in NAV){
+    nuevo[k] = NAV[k];
+    if(k === "cartera") for(const o of OTRO) nuevo[o] = OTRO_L[o];
+  }
+  for(const k in NAV) delete NAV[k];
+  Object.assign(NAV, nuevo);
+})();
 
 /* En el archivo de Vencom las llaves del otro producto ni siquiera existen:
    se recortan al compilar, así que el filtro sólo tiene que dejar pasar todo. */
@@ -1471,8 +1484,13 @@ function navKeys(){
   return m ? ALLKEYS.filter(k => m.indexOf(k) >= 0) : ALLKEYS;
 }
 /* un separador ANTES de esta llave, con su etiqueta */
-const NAVGROUP = isPros ? {} : {incorp:"Entrada de un cliente", nomina:"Operación por tema",
+let NAVGROUP = isPros ? {} : {incorp:"Entrada de un cliente", nomina:"Operación por tema",
                   talento:"Su empresa", ajustes:"Referencia"};
+
+/* Un solo sistema: la prospección vive dentro, con su propio grupo en el riel.
+   Se separa visualmente porque la operan otras personas y con otras reglas. */
+if(!isPros) NAVGROUP.prospeccion = "Clientes nuevos";
+
 
 let screen = "hoy";
 
@@ -4208,11 +4226,13 @@ const INTENT_C = {"interesado":"ok","pide-precio":"warn","pide-junta":"warn",
    Eso no es un detalle de permisos, es el modelo comercial — por eso el aviso
    va en TODAS las pestañas y no sólo en la primera. */
 const PROS_BANNER = isPros ? "" : `<div class="ronly">
-    <span class="badge">Sólo lectura</span>
-    <div><b>Este módulo lo opera Telaia, no Vencom.</b> Aquí queda registrado todo lo que hace el
-    motor de prospección —qué empresas encontró, a quién escribió, qué contestaron y qué se entregó
-    al equipo comercial— para que Vencom lo revise y lo audite cuando quiera.
-    Vencom no ejecuta búsquedas ni envía correos desde esta pantalla.</div>
+    <span class="badge">Cuenta maestra</span>
+    <div><b>Este módulo lo opera una sola cuenta.</b> Quien la tenga define los criterios de búsqueda,
+    aprueba las corridas y reparte los prospectos calificados entre los vendedores. Los demás perfiles
+    ven lo suyo y nada más.
+    <span class="tiny muted">Quién tiene la cuenta maestra, cómo se reparten los prospectos y cómo se
+    dividen las comisiones son <b>acuerdos que se definen con Vencom</b> — el sistema los aplica, no
+    los decide.</span></div>
   </div>`;
 
 
@@ -8178,9 +8198,57 @@ let tourN = -1;               /* -1 = apagado */
 
 const tourOn = () => tourN >= 0;
 
+/* Seis pasos, no quince. El recorrido completo ya es largo; de prospección se
+   enseña el embudo, una conversación real, la compuerta, la junta que queda
+   pendiente, el pozo del equipo y la comisión. */
+const TOUR_COMBI = [
+ {at:{screen:"prospeccion", tab:{prospeccion:"embudo"}}, target:".wbody .card",
+  t:"Y de aquí salen los clientes nuevos",
+  b:"El mismo sistema busca empresas que se parecen a las que Vencom ya atiende bien, se queda con las "+
+    "que tienen contacto real y escribe con un motivo concreto — la cuota que sube, la tasa que cambió, "+
+    "el registro que vence. La fuga cara no es la más grande: es <b>«el ejecutivo no lo atendió»</b>.",
+  say:"Esta parte y la de operación son el mismo sistema. Un cliente entra por aquí y sale operando allá."},
+ {at:{screen:"agente", tab:{agente:"conv"}}, target:".wbody .thr",
+  t:"Y la IA conversa, con límites escritos",
+  b:"Mensaje frío, interés, convenio firmado, nómina ciega y junta — <b>doce días sin que una persona "+
+    "escribiera un solo mensaje</b>. No cotiza, no toca el convenio, no opina de la situación fiscal de "+
+    "nadie: al cumplirse cualquiera de esos límites, para y pasa el hilo a una persona.",
+  say:"Léelo completo. Fíjate sobre todo en lo que no promete."},
+ {at:{screen:"agente", tab:{agente:"compuerta"}}, target:".wbody .card",
+  t:"Y consigue la firma y la nómina ciega",
+  b:"Es el tramo que hoy le come el tiempo a una persona: perseguir una firma y perseguir un archivo. "+
+    "Si el archivo llega con nombres o CURP, se rechaza, se destruye y se avisa por escrito dentro de "+
+    "tres días hábiles.",
+  say:"De los que firmaron, ocho nunca mandaron el archivo. Ésa es la fuga que esto cierra."},
+ {at:{screen:"agente", tab:{agente:"juntas"}}, target:".wbody .jta",
+  t:"Y le entrega a la persona algo que sirve",
+  b:"No un nombre y un teléfono: <b>lo que se prometió</b>, <b>lo que quedó sin preguntar</b> y con qué "+
+    "abrir. El ejecutivo llega sabiendo, en vez de repetir preguntas que el prospecto ya contestó.",
+  say:"Aquí termina la IA. La junta la hace una persona, por decisión."},
+ {at:{screen:"mios", tab:{mios:"pozo"}}, target:".wbody .pzcard",
+  t:"Y lo que nadie atiende regresa al pozo",
+  b:"Cinco días hábiles sin moverlo y la cuenta vuelve a estar disponible para quien la quiera tomar. "+
+    "No lo decide un jefe y no hay que reclamarlo: el reloj corre solo.",
+  say:"Ésta es la respuesta a «le pasé el cliente a alguien y nunca lo llamó»."},
+ {at:{screen:"comisiones"}, target:".wbody .dt",
+  t:"Y la comisión queda auditable de los dos lados",
+  b:"Quién trajo a cada cliente, cuánto lleva pagando y cuánto se acumula. Si el prospecto pasó por dos "+
+    "personas, la comisión se parte según lo que hizo cada quien — y queda escrito aquí, no en una "+
+    "conversación.",
+  say:"Las reglas de reparto las definen ustedes. El sistema las aplica."},
+];
+
 let TOURS = TOUR;
 
-TOURS = isPros ? TOUR_P : TOUR;
+/* Un solo sistema, un solo recorrido. En modo combinado el recorrido de Vencom
+   incorpora los pasos de prospección en el punto del embudo donde ocurren —
+   después de la cartera y antes de la incorporación— en vez de dejarlos al
+   final, que es donde nadie llega. */
+TOURS = isPros ? TOUR_P : (function(){
+  const corte = TOUR.findIndex(p => p.at && p.at.screen === "incorp");
+  const i = corte < 0 ? TOUR.length : corte;
+  return TOUR.slice(0, i).concat(TOUR_COMBI, TOUR.slice(i));
+})();
 
 window.__TOURLEN__ = TOURS.length;
 
