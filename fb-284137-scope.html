@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Firebelly Tea &middot; scope and approach</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap"><style>
+:root{--paper:#F7F5F1;--card:#FFF;--sand:#E5CCB4;--sand-2:#F0E2D2;--warm:#E9E3DC;
+--ink:#1A1A1A;--ink-2:#4A423B;--ink-3:#7C7167;--line:#DFD8CF;--line-2:#EBE5DC;
+--brown:#8C6A47;--brown-d:#6B4F34;--ochre:#BC7929;--ochre-ink:#8A5310;--deep:#452200;
+--risk:#A3352F;--risk-bg:#F6E4E1;--good:#2F6B52;--good-bg:#E0EDE6;--warn:#9C6F16;--warn-bg:#F7EDDA;
+--sans:'Montserrat','Helvetica Neue',Arial,sans-serif;
+--body:'DM Sans','Montserrat',Arial,sans-serif;
+--mono:'DM Mono','IBM Plex Mono',ui-monospace,Menlo,monospace;}
+*{box-sizing:border-box}html,body{margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:15.5px;line-height:1.62;-webkit-font-smoothing:antialiased}
+a{color:var(--ochre-ink);text-underline-offset:2px}
+:focus-visible{outline:2px solid var(--ochre);outline-offset:2px}
+.nav{background:var(--ink);color:#fff;padding:11px 0}
+.nav .in{max-width:960px;margin:0 auto;padding:0 26px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.nav .mk{display:flex;align-items:center;gap:6px;font-family:var(--sans);font-weight:700;font-size:10px;letter-spacing:.16em}
+.nav .mk i{width:4px;height:4px;border-radius:50%;background:var(--ochre);display:block}
+.nav .ttl{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:#B8AFA4}
+.nav .sp{flex:1}
+.nav a{color:#fff;font-family:var(--sans);font-size:11.5px;font-weight:600;letter-spacing:.02em;text-decoration:none;border-bottom:1px solid var(--ochre);padding-bottom:2px}
+.wrap{max-width:960px;margin:0 auto;padding:0 26px 90px}
+.hero{padding:52px 0 26px;border-bottom:2px solid var(--ink)}
+.eyeb{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:16px}
+h1{font-family:var(--sans);font-weight:700;font-size:clamp(31px,5.2vw,50px);line-height:1.03;letter-spacing:-.025em;margin:0 0 16px;text-wrap:balance}
+.stand{font-size:clamp(17px,2.1vw,19.5px);line-height:1.5;color:var(--ink-2);max-width:64ch;margin:0}
+.stand b{color:var(--ink);font-weight:600}
+.strip{display:flex;flex-wrap:wrap;gap:0 34px;margin-top:24px}
+.strip div{display:grid;gap:2px}
+.strip dt{font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3)}
+.strip dd{margin:0;font-family:var(--sans);font-weight:600;font-size:16px;letter-spacing:-.015em}
+section{padding-top:46px}
+.sh{display:grid;grid-template-columns:74px 1fr;gap:18px;align-items:baseline;border-top:1px solid var(--line);padding-top:15px;margin-bottom:20px}
+.sh .n{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.1em;color:var(--ochre-ink);padding-top:5px}
+h2{font-family:var(--sans);font-weight:700;font-size:clamp(21px,3vw,27px);line-height:1.14;letter-spacing:-.02em;margin:0;text-wrap:balance}
+.sh p{grid-column:2;margin:7px 0 0;color:var(--ink-2);max-width:64ch}
+.bd{max-width:66ch}.bd p{margin:0 0 14px}.bd p:last-child{margin-bottom:0}
+.ind{margin-left:92px}
+@media(max-width:720px){.sh{grid-template-columns:1fr;gap:5px}.sh p{grid-column:1}.ind{margin-left:0}}
+h3{font-family:var(--sans);font-weight:600;font-size:16.5px;letter-spacing:-.01em;margin:0 0 7px}
+strong,b{font-weight:600}
+.find{display:grid;grid-template-columns:56px 1fr;gap:18px;padding:22px 0;border-top:1px solid var(--line-2)}
+.find:first-of-type{border-top:1px solid var(--line)}
+.find .r{font-family:var(--sans);font-size:27px;font-weight:700;line-height:1;letter-spacing:-.04em;color:var(--line);font-variant-numeric:tabular-nums}
+.find.k .r{color:var(--ochre)}
+.find .bd{max-width:64ch}
+.does{margin-top:11px;padding:11px 14px;background:var(--card);border-left:2px solid var(--ochre);font-size:14.5px;line-height:1.55;max-width:64ch}
+.does b{display:block;font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.11em;text-transform:uppercase;color:var(--ochre-ink);margin-bottom:3px}
+.scr{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14.5px;min-width:540px}
+th{font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:0 13px 8px 0;border-bottom:1px solid var(--ink)}
+td{padding:12px 13px 12px 0;border-bottom:1px solid var(--line-2);vertical-align:top}
+th:last-child,td:last-child{padding-right:0}
+.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:13.5px;white-space:nowrap}
+.mod{font-family:var(--sans);font-weight:600;font-size:15px;letter-spacing:-.01em}
+.why{color:var(--ink-2);font-size:14px;line-height:1.5}
+tfoot td{border-bottom:0;border-top:1px solid var(--ink);padding-top:11px;font-family:var(--sans);font-weight:700;font-size:14.5px}
+ul.pl{list-style:none;margin:0;padding:0;display:grid;gap:11px;max-width:66ch}
+ul.pl li{display:grid;grid-template-columns:15px 1fr;gap:12px;line-height:1.5}
+ul.pl li::before{content:"\2014";font-family:var(--mono);color:var(--ink-3);font-size:12.5px;line-height:1.9}
+.cal{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--risk);padding:17px 19px;max-width:66ch}
+.cal h3{color:var(--risk)}
+.cal p:last-child{margin-bottom:0}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;align-items:start}
+.tile{background:var(--card);border:1px solid var(--line);padding:19px;display:grid;gap:9px;align-content:start}
+.tile.pick{border-left:3px solid var(--ochre)}
+.tile .tg{font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3)}
+.tile.pick .tg{color:var(--ochre-ink)}
+.tile .fg{font-family:var(--sans);font-weight:700;font-size:29px;letter-spacing:-.03em;line-height:1.04;font-variant-numeric:tabular-nums}
+.tile .fg small{font-size:14.5px;font-weight:600;color:var(--ink-3);letter-spacing:0}
+.tile p{margin:0;font-size:14.5px;color:var(--ink-2);line-height:1.5}
+.pillrow{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.pill{font-family:var(--sans);font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:2px}
+.p-good{background:var(--good-bg);color:var(--good)}.p-warn{background:var(--warn-bg);color:var(--warn)}
+.p-risk{background:var(--risk-bg);color:var(--risk)}.p-sand{background:var(--sand);color:var(--deep)}
+.foot{margin-top:52px;padding-top:17px;border-top:1px solid var(--line);font-family:var(--mono);font-size:10.5px;color:var(--ink-3);line-height:1.75}
+.cta{display:inline-block;margin-top:20px;background:var(--ink);color:#fff;font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:.02em;padding:12px 22px;text-decoration:none}
+.cta:hover{background:var(--brown-d);color:#fff}
+</style></head><body>
+<div class="nav"><div class="in"><span class="mk">TELAIA<i></i></span>
+<span class="ttl">Firebelly Tea &middot; scope and approach</span><span class="sp"></span><a href="./fb-284137.html">Demonstration</a></div></div>
+<div class="wrap"><div class="hero">
+<div class="eyeb">Scope and approach &middot; prepared for Firebelly Tea</div>
+<h1>The layer underneath the storefront</h1>
+<p class="stand">Shopify runs your storefront and your checkout beautifully. It does not know what a kilo
+of Uji matcha cost you landed, which lot it came from, whether that supplier's organic certificate is
+still valid, or what a United States order earns after duty. <b>That is the gap this proposal sits in
+&mdash; and nothing here touches your storefront.</b></p>
+<dl class="strip">
+<div><dt>Shape</dt><dd>Six modules</dd></div>
+<div><dt>Build</dt><dd>Ten weeks</dd></div>
+<div><dt>Starts with</dt><dd>A discovery week</dd></div>
+<div><dt>Touches your checkout</dt><dd>Never</dd></div>
+</dl>
+<a class="cta" href="./fb-284137.html">Open the working demonstration</a>
+</div><section><div class="sh"><div class="n">01</div><h2>What we found, before we asked you anything</h2><p>Everything below came from your public storefront and from public regulation. Three of the six are flagged for your own advisers rather than answered here.</p></div><article class="find k"><div class="r">1</div><div><h3>United States orders are carrying duty nobody has priced</h3><div class="bd"><p>On <b>29 August 2025</b> the United States removed the $800 de minimis exemption. Every parcel
+  you send to a US customer now needs a tariff classification, a country-of-origin determination, and a
+  carrier that can actually claim CUSMA &mdash; postal channels can no longer do so, commercial couriers can.</p>
+  <p>Tea grown in Asia and blended in Canada has to clear a tariff-shift test to be CUSMA-originating.
+  Steepware made in China answers differently. <b>Only a customs broker can rule on that, and we never
+  will.</b> What we can do is hold the data a broker needs &mdash; heading, origin, value, per-order duty
+  &mdash; and show you what the answer is worth before you pay for it.</p></div><div class="does"><b>What we would build</b>HS heading and country of origin as first-class fields on the product master, landed cost per SKU per destination, and a United States margin view that shows duty as a line rather than a mystery.</div></div></article><article class="find k"><div class="r">2</div><div><h3>Two storefronts, one catalogue, maintained twice</h3><div class="bd"><p>Every product on firebellytea.ca carries the tag <b>CA Market</b> and a SKU beginning <b>CA-</b>.
+  Your catalogue is already partitioned by market at the data level. What does not exist is anything that
+  reconciles the two sides: a price change, a new bundle, a description edit or a promotion is done twice,
+  and stock truth lives in a third place at the warehouse.</p>
+  <p>On the day we looked, the Canadian store carried <b>47 products in 156 variants</b>. Whether the
+  American catalogue matches is a question you can only answer today by exporting both and comparing by hand.</p></div><div class="does"><b>What we would build</b>One product and price master &mdash; SKUs, costs, bundle recipes, tax status, heading, origin &mdash; that pushes to both storefronts and reconciles against the warehouse, so a price change is one edit.</div></div></article><article class="find"><div class="r">3</div><div><h3>A quarter of your buyable variants were out of stock</h3><div class="bd"><p><b>41 of 156</b> variants were unavailable on the Canadian storefront when we measured it.
+  For most retailers that is a merchandising number. For a subscription business it is a retention number:
+  a subscriber whose tea is not there is a subscriber who cancels.</p>
+  <p>Reorder points that are driven by trailing sales cannot see that. Reorder points driven by
+  <b>committed subscriber shipments</b> can.</p></div><div class="does"><b>What we would build</b>Lot-level stock with the warehouse as a synced location, and cover calculated against subscription commitments rather than sales velocity.</div></div></article><article class="find"><div class="r">4</div><div><h3>Certified organic is a chain of custody, not a badge</h3><div class="bd"><p>The claim on the pack is an obligation: every lot needs a supplier certificate that was valid
+  <b>on the date of purchase</b>, produceable on demand. Tea is also agricultural &mdash; harvests are
+  seasonal and lead times are long, so a certificate that lapses is not a same-week problem.</p></div><div class="does"><b>What we would build</b>A supplier and lot register with certificate expiry alerts ninety days out, purchase orders, and landed cost captured per lot &mdash; which is what makes every margin figure downstream honest.</div></div></article><article class="find"><div class="r">5</div><div><h3>Bundles put zero-rated tea and taxable steepware in one box</h3><div class="bd"><p>Loose-leaf tea is zero-rated as a basic grocery in Canada; steepware is not. Your own FAQ says so.
+  But several of your best-selling products are bundles that contain both, and a mixed package falls under
+  the gift-basket rules in CRA GST/HST Memorandum 4-3 &mdash; where the answer is not simply to split by value.</p>
+  <p><b>Your accountant rules on this, not us.</b> What we can do is put the composition of every bundle
+  in front of them in a form they can act on in an afternoon.</p></div><div class="does"><b>What we would build</b>Tax status per SKU, explicit bundle composition, and a monthly reconciliation your accountant can read without asking anyone a question.</div></div></article><article class="find"><div class="r">6</div><div><h3>Business-to-business is three inboxes and a marketplace</h3><div class="bd"><p>Wholesale runs through a Faire listing and two email addresses. Faire owns the retailer relationship
+  and takes its cut &mdash; a fair price for discovery and an expensive one for a reorder. The two inboxes
+  have no account pricing, no reorder cadence and nobody assigned, so a hotel that ordered in March is not
+  asked again in September unless somebody happens to remember.</p>
+  <p>Corporate gifting is worse in one specific way: it is a two-month business, run out of an email address,
+  in the eight weeks of the year when everyone is busiest.</p></div><div class="does"><b>What we would build</b>A B2B ordering portal with account-level pricing and one-click reorder, plus enough of a pipeline to run the gifting season on a calendar rather than on memory.</div></div></article></section><section><div class="sh"><div class="n">02</div><h2>What gets built</h2><p>Six modules. Each one exists because of a finding above, not because it was on a list.</p></div><div class="scr"><table><thead><tr><th style="width:210px">Module</th><th>What it does for you</th><th class="n" style="width:96px">Answers</th></tr></thead><tbody><tr><td class="mod">Products &amp; catalogue</td><td class="why">One master for SKUs, prices, bundle recipes, tax status, tariff heading and origin. Pushes to both storefronts and reconciles the two.</td><td class="n">1, 2</td></tr><tr><td class="mod">Inventory &amp; warehouse</td><td class="why">Lot-level stock with your third-party warehouse as a synced location; reorder points that respect committed subscriber volume.</td><td class="n">3</td></tr><tr><td class="mod">Sourcing &amp; suppliers</td><td class="why">Supplier register, organic certificates with expiry alerts, purchase orders, and landed cost captured per lot.</td><td class="n">4</td></tr><tr><td class="mod">Finance &amp; accounting</td><td class="why">Cost of goods by SKU and lot, contribution margin by channel, duty as a line, warehouse invoice reconciliation, and the bundle tax output.</td><td class="n">1, 5</td></tr><tr><td class="mod">Reports</td><td class="why">The numbers that are not money: subscription cohorts and churn, stockout risk, channel mix, certificate runway.</td><td class="n">3, 5</td></tr><tr><td class="mod">Wholesale &amp; B2B</td><td class="why">Account pricing tiers, one-click reorder, and the corporate gifting pipeline on a calendar.</td><td class="n">6</td></tr></tbody><tfoot><tr><td colspan="2">Six modules, one system, unlimited seats</td><td class="n">&mdash;</td></tr></tfoot></table></div></section><section><div class="sh"><div class="n">03</div><h2>What we deliberately do not touch</h2>
+<p>Saying this out loud early matters more than anything else in this document.</p></div>
+<div class="ind"><ul class="pl">
+<li><b>Not your storefront, and not your checkout.</b> They work, your customers like them, and replacing them would be a bad idea for reasons that have nothing to do with software.</li>
+<li><b>Not your subscription billing.</b> We read the data. We never touch the charge.</li>
+<li><b>Not your warehouse.</b> Your third-party logistics partner keeps the building and the boxes. We hold the truth about cost, lot and certificate.</li>
+<li><b>Not an enterprise resource planning system.</b> This is six modules that answer six questions, and it stays that size unless you ask otherwise.</li>
+<li><b>No customs, tax or advertising rulings.</b> We surface the data and name the question. Your broker, your accountant and your counsel answer it.</li>
+</ul></div></section><section><div class="sh"><div class="n">04</div><h2>How it is delivered</h2>
+<p>Ten weeks, five sprints, a written progress note every week. Nothing is built before week two.</p></div>
+<div class="scr"><table><thead><tr><th style="width:96px">Sprint</th><th>What happens</th><th class="n" style="width:120px">You see</th></tr></thead><tbody>
+<tr><td class="mod">Week 1</td><td class="why">Discovery. Sessions with whoever runs operations, finance and the catalogue. We ask the twelve questions, look at real exports, and write the scope down before touching code.</td><td class="n">A written scope</td></tr>
+<tr><td class="mod">Weeks 2&ndash;3</td><td class="why">Product master and catalogue reconciliation. Both storefronts connected, read-only, with a parity report on day one.</td><td class="win n">Parity report</td></tr>
+<tr><td class="mod">Weeks 4&ndash;5</td><td class="why">Sourcing, lots, certificates and landed cost. Purchase orders. The warehouse as a synced location.</td><td class="n">Landed cost per SKU</td></tr>
+<tr><td class="mod">Weeks 6&ndash;7</td><td class="why">Finance: cost of goods, margin by channel, duty attribution, bundle tax composition, warehouse invoice reconciliation.</td><td class="n">Margin by channel</td></tr>
+<tr><td class="mod">Weeks 8&ndash;9</td><td class="why">Reports and subscriber cohorts. Stockout risk joined to subscription commitments.</td><td class="n">Cohort retention</td></tr>
+<tr><td class="mod">Week 10</td><td class="why">Wholesale and B2B portal, account tiers, gifting pipeline. Handover and training.</td><td class="n">Live</td></tr>
+</tbody></table></div>
+<div class="does" style="margin-top:18px"><b>The rhythm</b>Weekly written progress note, a working environment you can open at any time, and no invoice tied to anything you have not seen running.</div>
+</section><section><div class="sh"><div class="n">05</div><h2>What we would need from you</h2>
+<p>None of it is unusual, and none of it is needed before the first conversation.</p></div>
+<div class="ind"><ul class="pl">
+<li>A product export from each storefront, and read access to both.</li>
+<li>Whatever supplier cost sits behind the catalogue today &mdash; a spreadsheet is fine, and is what we usually get.</li>
+<li>The last three months of warehouse invoices, and a recent carrier invoice.</li>
+<li>The organic certificates you hold, however they are currently filed.</li>
+<li>An introduction to your accountant, and to your customs broker if you have one.</li>
+<li>One person on your side who can answer questions in the same week they are asked.</li>
+</ul></div></section><section><div class="sh"><div class="n">06</div><h2>Next step</h2></div>
+<div class="ind"><div class="bd"><p>A thirty-minute call, with nothing to present. We have twelve questions;
+the first four decide whether there is a project here at all. If the answers say there is not, we will say so.</p>
+<p>The demonstration linked at the top is built on your real catalogue and your real product names,
+with illustrative operating figures. It is not a mock-up of a generic system &mdash; it is what your
+version would look like.</p></div>
+<a class="cta" href="./fb-284137.html">Open the demonstration</a></div></section>
+<div class="foot">Prepared by Telaia &middot; 4 September 2026 &middot; Loom Tech Ltd., Vancouver, British Columbia<br>
+Catalogue counts, variant counts, out-of-stock counts, SKU strings, product names and shelf prices in the
+accompanying demonstration were measured on the live Firebelly Tea storefront on 4 September 2026.
+Order volumes, revenue, margins, duty totals, supplier names and subscriber figures are illustrative.
+Telaia is not affiliated with Firebelly Tea. Nothing here is customs, tax or legal advice.</div>
+</div></body></html>

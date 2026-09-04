@@ -1,0 +1,1349 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Firebelly Tea OS &middot; demonstration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Firebelly Tea OS — brand layer.
+   Colours MEASURED from firebellytea.ca on 4 Sep 2026 by area-weighted
+   computed-style sampling across five scroll positions. */
+:root{
+  --paper:#F7F5F1;        /* dominant page ground, 13.1M px2 */
+  --card:#FFFFFF;
+  --sand:#E5CCB4;         /* announcement bar / brand fill, 5.9M px2 */
+  --sand-2:#F0E2D2;
+  --warm:#E9E3DC;
+  --ink:#1A1A1A;
+  --ink-2:#4A423B;
+  --ink-3:#7C7167;
+  --line:#DFD8CF;
+  --line-2:#EBE5DC;
+  --brown:#8C6A47;        /* 1.03M px2 */
+  --brown-d:#6B4F34;
+  --ochre:#BC7929;        /* accent — FILL ONLY, 3.6:1 on white */
+  --ochre-ink:#8A5310;    /* accent for TEXT — 6.3:1 on white */
+  --deep:#452200;
+  --rail:#1A1A1A;
+  --rail-2:#2A2724;
+  --rail-tx:#B8AFA4;
+  --risk:#A3352F; --risk-bg:#F6E4E1;
+  --warn:#9C6F16; --warn-bg:#F7EDDA;
+  --good:#2F6B52; --good-bg:#E0EDE6;
+  --c1:#8C6A47; --c2:#BC7929; --c3:#3F6E63; --c4:#A8484A; --c5:#6E7A8A; --c6:#C9A97E;
+  --sans:'Montserrat','Helvetica Neue',Arial,sans-serif;
+  --body:'DM Sans','Montserrat',Arial,sans-serif;
+  --mono:'DM Mono','IBM Plex Mono',ui-monospace,Menlo,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:var(--ochre-ink)}
+:focus-visible{outline:2px solid var(--ochre);outline-offset:2px}
+
+/* ---------- the wall ---------- */
+.wall{display:grid;grid-template-columns:56px 1fr 330px;height:100svh;overflow:hidden}
+.rail{background:var(--rail);display:flex;flex-direction:column;align-items:center;overflow:hidden}
+.mark{flex:none;padding:12px 0 10px;display:grid;justify-items:center;gap:3px}
+.mark b{font-family:var(--sans);font-weight:700;font-size:8.5px;letter-spacing:.16em;color:#fff;line-height:1}
+.mark i{width:3px;height:3px;border-radius:50%;background:var(--ochre);display:block}
+.railscroll{flex:1 1 auto;overflow-y:auto;width:100%;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;scrollbar-width:none}
+.railscroll::-webkit-scrollbar{display:none}
+.rbtn{width:40px;height:38px;border-radius:7px;display:grid;place-items:center;position:relative;color:var(--rail-tx)}
+.rbtn:hover{background:var(--rail-2);color:#fff}
+.rbtn.on{background:var(--rail-2);color:#fff}
+.rbtn.on::before{content:"";position:absolute;left:-8px;top:9px;width:3px;height:20px;border-radius:0 2px 2px 0;background:var(--ochre)}
+.rbtn svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.rbtn .dot{position:absolute;top:5px;right:5px;width:6px;height:6px;border-radius:50%;background:var(--risk);border:1.5px solid var(--rail)}
+.railfoot{flex:none;padding:8px 0 12px}
+.av{width:28px;height:28px;border-radius:50%;background:var(--sand);color:var(--deep);display:grid;place-items:center;font-family:var(--sans);font-weight:700;font-size:10px;letter-spacing:.04em}
+#railtip{position:fixed;z-index:200;background:var(--ink);color:#fff;font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.02em;padding:5px 9px;border-radius:5px;pointer-events:none;opacity:0;transition:opacity .1s;white-space:nowrap}
+#railtip.on{opacity:1}
+
+.wmain{display:flex;flex-direction:column;min-width:0;overflow:hidden;background:var(--paper)}
+.top{flex:none;background:var(--card);border-bottom:1px solid var(--line);padding:9px 20px 0}
+.crumb{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.03em}
+.crumb b{color:var(--ink);font-weight:500}
+.ctxbar{display:flex;gap:22px;overflow-x:auto;padding:8px 0 0;scrollbar-width:none}
+.ctxbar::-webkit-scrollbar{display:none}
+.instr{flex:none;min-width:0}
+.instr dt{font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);white-space:nowrap}
+.instr dd{margin:1px 0 0;font-family:var(--sans);font-weight:600;font-size:17px;letter-spacing:-.02em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.instr dd small{font-size:11px;font-weight:500;color:var(--ink-3);letter-spacing:0}
+.instr dd.bad{color:var(--risk)} .instr dd.ok{color:var(--good)} .instr dd.wn{color:var(--warn)}
+.tabbar{display:flex;gap:2px;margin-top:9px;overflow-x:auto;scrollbar-width:none}
+.tabbar::-webkit-scrollbar{display:none}
+.tab{flex:none;white-space:nowrap;font-family:var(--sans);font-size:11.5px;font-weight:600;letter-spacing:.01em;padding:7px 11px;color:var(--ink-3);border-bottom:2px solid transparent}
+.tab:hover{color:var(--ink)}
+.tab.on{color:var(--ink);border-bottom-color:var(--ochre)}
+
+.wbody{flex:1 1 auto;overflow-y:auto;padding:16px 20px 26px;min-width:0}
+.lede{font-size:13.5px;color:var(--ink-2);max-width:88ch;margin:0 0 13px}
+.lede b{font-weight:600;color:var(--ink)}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:3px;margin-bottom:12px}
+.wbody>.card:last-child{margin-bottom:0}
+.hd{padding:10px 14px;border-bottom:1px solid var(--line-2);display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.hd h3{margin:0;font-family:var(--sans);font-weight:600;font-size:13px;letter-spacing:-.005em}
+.hd .sub{font-family:var(--mono);font-size:10px;color:var(--ink-3);letter-spacing:.02em}
+.bd{padding:13px 14px}
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
+.split64{display:grid;grid-template-columns:1.55fr 1fr;gap:12px;align-items:start}
+.split46{display:grid;grid-template-columns:1fr 1.55fr;gap:12px;align-items:start}
+.grid>*,.split64>*,.split46>*{min-width:0}
+
+/* ---------- charts ---------- */
+.hbars{display:grid;gap:7px}
+.hbar{display:grid;grid-template-columns:var(--labw,132px) 1fr auto;gap:10px;align-items:center;font-size:12.5px}
+.hbar .lb{min-width:0;overflow-wrap:anywhere;line-height:1.25}
+.hbar .lb i{display:block;font-style:normal;font-size:10.5px;color:var(--ink-3)}
+.hbar .tr{background:var(--warm);height:15px;border-radius:2px;overflow:hidden}
+.hbar .fl{height:100%;border-radius:2px}
+.hbar .vl{font-family:var(--mono);font-size:11.5px;font-variant-numeric:tabular-nums;text-align:right;min-width:52px}
+.sb{display:flex;height:20px;gap:2px;margin-bottom:9px}
+.sb span{border-radius:2px}
+.lg{display:flex;flex-wrap:wrap;gap:5px 15px;font-size:11.5px}
+.lg span{display:inline-flex;align-items:center;gap:6px}
+.lg i{width:9px;height:9px;border-radius:2px;flex:none}
+.lg b{font-family:var(--mono);font-weight:500;font-size:11px;color:var(--ink-3)}
+.days{display:flex;align-items:flex-end;gap:3px;height:104px;padding-top:4px}
+.day{flex:1 1 0;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px;height:100%}
+.day .bar{width:100%;border-radius:2px 2px 0 0;min-height:2px}
+.day .n{font-family:var(--mono);font-size:9px;color:var(--ink-3);white-space:nowrap}
+.dvg{display:grid;gap:6px}
+.dvrow{display:grid;grid-template-columns:150px 1fr 1fr auto;gap:8px;align-items:center;font-size:12.5px}
+.dvrow .lb{min-width:0;overflow-wrap:anywhere}
+.dvl,.dvr{height:14px;display:flex}
+.dvl{justify-content:flex-end}
+.dvl i,.dvr i{display:block;height:100%;border-radius:2px}
+.dvrow .vl{font-family:var(--mono);font-size:11.5px;font-variant-numeric:tabular-nums;text-align:right;min-width:66px}
+.mtr{display:grid;gap:4px}
+.mtr .tr{height:9px;background:var(--warm);border-radius:5px;overflow:hidden;position:relative}
+.mtr .fl{height:100%;border-radius:5px}
+.mtr .cap{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--ink)}
+.mtr .lb{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;color:var(--ink-3)}
+
+/* ---------- tables ---------- */
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{font-family:var(--mono);font-size:9.5px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);text-align:left;padding:0 11px 7px 0;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 11px 9px 0;border-bottom:1px solid var(--line-2);vertical-align:top}
+tr:last-child td{border-bottom:0}
+th:last-child,td:last-child{padding-right:0}
+.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:11.5px;white-space:nowrap}
+.sku{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);white-space:nowrap}
+.nm{font-weight:500}
+.nm i{display:block;font-style:normal;font-size:11px;color:var(--ink-3);font-weight:400}
+.pill{display:inline-block;font-family:var(--sans);font-size:9.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:2px 6px;border-radius:2px;white-space:nowrap}
+.p-risk{background:var(--risk-bg);color:var(--risk)}
+.p-warn{background:var(--warn-bg);color:var(--warn)}
+.p-good{background:var(--good-bg);color:var(--good)}
+.p-mut{background:var(--warm);color:var(--ink-2)}
+.p-sand{background:var(--sand);color:var(--deep)}
+.moretog{font-family:var(--mono);font-size:11px;color:var(--ochre-ink);padding:9px 0 0;letter-spacing:.02em}
+.moretog:hover{text-decoration:underline}
+.note{font-size:12px;color:var(--ink-2);background:var(--sand-2);border-left:2px solid var(--ochre);padding:9px 12px;margin-top:11px}
+.note b{font-weight:600;color:var(--deep)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;font-size:12.5px;margin:0}
+.kv dt{font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3);white-space:nowrap;padding-top:2px}
+.kv dd{margin:0;min-width:0;overflow-wrap:anywhere}
+
+/* ---------- inspector ---------- */
+.insp{background:var(--card);border-left:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden}
+.insphd{flex:none;padding:11px 14px;border-bottom:1px solid var(--line-2);display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.insphd .t{font-family:var(--sans);font-weight:600;font-size:12.5px;letter-spacing:-.005em}
+.insphd .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:2px}
+#inspclose{width:22px;height:22px;border-radius:4px;display:grid;place-items:center;color:var(--ink-3);flex:none}
+#inspclose:hover{background:var(--warm);color:var(--ink)}
+.inspbd{flex:1 1 auto;overflow-y:auto;padding:13px 14px}
+.inspbd h4{margin:15px 0 7px;font-family:var(--mono);font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);font-weight:500}
+.inspbd h4:first-child{margin-top:0}
+.inspbd p{margin:0 0 9px;font-size:12.5px;color:var(--ink-2)}
+.inspbd p b{color:var(--ink);font-weight:600}
+.inspfoot{flex:none;border-top:1px solid var(--line-2);padding:9px 14px;background:var(--paper)}
+.badge{font-family:var(--mono);font-size:9.5px;line-height:1.45;color:var(--ink-3);letter-spacing:.01em}
+.badge b{color:var(--deep);font-weight:500}
+.pickable{cursor:pointer}
+tr.pickable:hover td{background:var(--paper)}
+tr.sel td{background:var(--sand-2)}
+
+#tstart{position:fixed;left:72px;bottom:16px;z-index:90;background:var(--ink);color:#fff;font-family:var(--sans);font-size:11.5px;font-weight:600;letter-spacing:.04em;padding:9px 15px;border-radius:3px;box-shadow:0 4px 16px rgba(26,26,26,.22)}
+#tstart:hover{background:var(--brown-d)}
+#tspot{position:fixed;z-index:95;border:2px solid var(--ochre);border-radius:4px;pointer-events:none;display:none;box-shadow:0 0 0 9999px rgba(26,26,26,.34)}
+#tbox{position:fixed;right:16px;bottom:16px;z-index:100;width:min(370px,calc(100vw - 32px));background:var(--card);border:1px solid var(--line);border-top:3px solid var(--ochre);border-radius:3px;padding:15px 17px;display:none;box-shadow:0 10px 34px rgba(26,26,26,.24)}
+#tbox .tn{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+#tbox .tt{font-family:var(--sans);font-weight:600;font-size:15px;letter-spacing:-.01em;margin:4px 0 7px;line-height:1.25}
+#tbox .td{font-size:13px;color:var(--ink-2);line-height:1.55}
+#tbox .tb{display:flex;align-items:center;gap:8px;margin-top:14px}
+#tbox button{font-family:var(--sans);font-size:11.5px;font-weight:600;padding:7px 13px;border-radius:3px}
+#tbox #tend{color:var(--ink-3);padding-left:0}
+#tbox #tend:hover{color:var(--ink)}
+#tbox .tsec{border:1px solid var(--line);color:var(--ink-2)}
+#tbox .tpri{background:var(--ink);color:#fff}
+#tbox .tpri:hover{background:var(--brown-d)}
+.tlit{position:relative;z-index:96;background:var(--card)}
+@media (max-width:1000px){ #tstart{left:72px} }
+@media (max-width:760px){ #tbox{left:12px;right:12px;width:auto;bottom:12px} #tstart{left:12px;bottom:12px} }
+
+/* responsive layer — MUST be injected last (media queries add no specificity) */
+@media (max-width:1180px){
+  .wall{grid-template-columns:56px 1fr 300px}
+  .split64,.split46{grid-template-columns:1fr}
+  .g4{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:1000px){
+  .wall{grid-template-columns:56px 1fr}
+  .insp{position:fixed;top:0;right:0;bottom:0;width:min(330px,86vw);z-index:70;transform:translateX(101%);transition:transform .18s;box-shadow:-8px 0 26px rgba(26,26,26,.14)}
+  .insp.open{transform:none}
+  .g3{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:760px){
+  .wall{grid-template-columns:1fr;grid-template-rows:52px 1fr}
+  .rail{flex-direction:row;height:52px;padding:0 8px;gap:4px;position:relative;z-index:80}
+  .mark{padding:0;margin-right:6px;flex:none}
+  .railscroll{flex-direction:row;overflow-x:auto;overflow-y:hidden;padding:0;gap:2px;align-items:center}
+  .rbtn{flex:none;width:38px;height:36px}
+  .rbtn.on::before{left:9px;top:auto;bottom:-1px;width:20px;height:3px;border-radius:2px 2px 0 0}
+  .railfoot{padding:0 0 0 6px}
+  .insp{top:52px}
+  .g2,.g3,.g4{grid-template-columns:repeat(2,1fr)}
+  .g3>*:nth-child(3):last-child,.g5>*:nth-child(5):last-child{grid-column:1/-1}
+  .wbody{padding:13px 13px 22px}
+  .top{padding:8px 13px 0}
+  .hbar{grid-template-columns:var(--labwm,104px) 1fr auto}
+  .dvrow{grid-template-columns:96px 1fr 1fr auto}
+  .dvrow .vl{min-width:58px}
+  table{min-width:560px}
+  /* pin the label column: names stay visible while the numbers scroll */
+  .scroll th:first-child,.scroll td:first-child{position:sticky;left:0;z-index:1;background:var(--card)}
+  .scroll td:first-child::after{content:"";position:absolute;top:0;right:0;bottom:0;width:1px;background:var(--line-2)}
+  .scroll tr.sel td:first-child{background:var(--sand-2)}
+  .instr dd{font-size:15px}
+}
+@media (max-width:430px){
+  .g2,.g3,.g4{grid-template-columns:1fr 1fr}
+  .hbar{grid-template-columns:88px 1fr auto}
+  .hbar .vl{min-width:44px}
+  .days{height:88px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+
+</style>
+</head>
+<body>
+<div class="wall">
+  <nav class="rail" aria-label="Modules">
+    <div class="mark"><b>FB</b><i></i><b>TEA</b></div>
+    <div class="railscroll" id="railscroll"></div>
+    <div class="railfoot"><div class="av" title="Demonstration account">FT</div></div>
+  </nav>
+  <main class="wmain">
+    <div class="top">
+      <div class="crumb" id="crumb"></div>
+      <div class="ctxbar" id="ctxbar"></div>
+      <div class="tabbar" id="tabbar"></div>
+    </div>
+    <div class="wbody" id="wbody"></div>
+  </main>
+  <aside class="insp" id="insp" aria-label="Inspector">
+    <div class="insphd">
+      <div><span class="k" id="inspk"></span><span class="t" id="inspt"></span></div>
+      <button id="inspclose" aria-label="Close inspector">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="inspbd" id="inspbd"></div>
+    <div class="inspfoot">
+      <div class="badge"><b>Demonstration.</b> Catalogue, variant and out-of-stock counts,
+      SKU strings, product names and shelf prices were measured on the live Firebelly Tea
+      storefront on 4 September 2026. Order volumes, revenue, margins, duty totals, supplier
+      names, lot numbers and subscriber figures are illustrative. Built by Telaia. Not affiliated
+      with Firebelly Tea.</div>
+    </div>
+  </aside>
+</div>
+<button id="tstart">Guided walkthrough</button>
+<script>
+/* ============================================================
+   Firebelly Tea OS — seed model.
+   MEASURED, from firebellytea.ca on 4 Sep 2026: catalogue counts,
+   variant counts, out-of-stock counts, SKU scheme, tag taxonomies,
+   product names and shelf prices.
+   ILLUSTRATIVE, invented for the demonstration: order volumes,
+   revenue, margins, supplier names, lot numbers, duty totals,
+   subscriber counts. Every screen says so.
+   ============================================================ */
+var M = {
+  asOf:'4 September 2026',
+  cat:{ caProducts:47, caVariants:156, caOOS:41, usProducts:44, usVariants:132,
+        shared:39, caOnly:8, usOnly:5, noType:4, marketTag:'CA Market' },
+  types:{'Herbal Tea':10,'Bundle':9,'Matcha':4,'Black Tea':4,'Green Tea':3,'Premium Bundle':3,'Tea Sampler':2,'Infuser':2,'Mate':1,'Travel Mug':1,'Teacup':1,'Matcha Bowl':1,'Whisk':1,'Gift Cards':1,'(none)':4},
+  benefits:{antioxidants:32,digestion:19,energy:15,sleep:8,'cold & flu':7},
+  flavors:{light:22,spiced:14,dark:10,'chocolate & vanilla':9,fruit:7,mint:5},
+  ship:{freeOver:75, std:'9.95–14.95', exp:19.95},
+  threePL:'Ottawa Logistics', support:'Mon–Fri 9–5, 24h weekday reply'
+};
+
+/* ---- channels: the opening argument ---- */
+var CH = [
+  {k:'ca',   n:'Canada · direct',  sub:'firebellytea.ca',        orders:3142, aov:68.36, rev:214787, cm:47.2, c:'--c1'},
+  {k:'us',   n:'United States · direct', sub:'firebellytea.com', orders:2386, aov:68.40, rev:163202, cm:31.8, c:'--c4'},
+  {k:'whl',  n:'Wholesale',        sub:'Faire + direct',         orders:  74, aov:560.81, rev:41500, cm:22.4, c:'--c3'},
+  {k:'corp', n:'Corporate gifting',sub:'corporate@',             orders:  19, aov:1178.95, rev:22400, cm:38.6, c:'--c5'}
+];
+var DUTY = { perOrder:7.85, monthly:18730, usCmNoDuty:43.3, usCmWithDuty:31.8, since:'29 Aug 2025' };
+
+/* ---- catalogue parity ---- */
+var PAR = [
+  {t:'On both storefronts', n:39, c:'--c1'},
+  {t:'Canada only',         n: 8, c:'--c2'},
+  {t:'United States only',  n: 5, c:'--c5'}
+];
+var SKUS = [
+  {sku:'CA-TEA-HERBT-013-BLING', n:'Sweet Hibiscus Rooibos', ty:'Herbal Tea', ca:29.95, us:24.95, hs:'2106.90', org:'Egypt · South Africa', tax:'Zero-rated', cus:'unlikely', cov:11, oos:0, v:3},
+  {sku:'CA-TEA-MACHA-004-B030G', n:'Daily Matcha',           ty:'Matcha',     ca:39.95, us:32.95, hs:'0902.10', org:'Japan · Uji',        tax:'Zero-rated', cus:'unlikely', cov:6,  oos:0, v:3},
+  {sku:'CA-TEA-HERBT-007-BLING', n:'Some Nice Berries',      ty:'Herbal Tea', ca:34.95, us:28.95, hs:'2106.90', org:'Germany · Türkiye',  tax:'Zero-rated', cus:'unlikely', cov:19, oos:0, v:3},
+  {sku:'CA-TEA-BLCKT-002-BLING', n:'Shades of Earl Grey',    ty:'Black Tea',  ca:29.95, us:24.95, hs:'0902.30', org:'Sri Lanka',          tax:'Zero-rated', cus:'unlikely', cov:4,  oos:1, v:3},
+  {sku:'CA-TEA-GRENT-001-BLING', n:'Makes Good Sencha',      ty:'Green Tea',  ca:32.95, us:26.95, hs:'0902.10', org:'Japan · Shizuoka',   tax:'Zero-rated', cus:'unlikely', cov:8,  oos:0, v:3},
+  {sku:'CA-ACC-TRMUG-001-BLK',   n:'Stop-Infusion Travel Mug',ty:'Travel Mug',ca:64.95, us:52.95, hs:'9617.00', org:'China',              tax:'Taxable',    cus:'no',       cov:22, oos:1, v:3},
+  {sku:'CA-ACC-AWHISK-001',      n:'Autowhisk',              ty:'Whisk',      ca:99.95, us:79.95, hs:'8509.40', org:'China',              tax:'Taxable',    cus:'no',       cov:31, oos:0, v:1},
+  {sku:'CA-ACC-TEAST-001',       n:'Tea Strainer',           ty:'Infuser',    ca:24.95, us:19.95, hs:'7323.93', org:'China',              tax:'Taxable',    cus:'no',       cov:44, oos:0, v:1},
+  {sku:'CA-ACC-TEACP-001',       n:'Teacup',                 ty:'Teacup',     ca:29.95, us:null,  hs:'6912.00', org:'Portugal',           tax:'Taxable',    cus:'no',       cov:26, oos:0, v:2},
+  {sku:'CA-ACC-MATBO-001',       n:'Matcha Bowl',            ty:'Matcha Bowl',ca:44.95, us:null,  hs:'6912.00', org:'Portugal',           tax:'Taxable',    cus:'no',       cov:17, oos:0, v:1},
+  {sku:'CA-TEA-HERBT-021-BLING', n:'Chai Me Up',             ty:'Herbal Tea', ca:29.95, us:24.95, hs:'2106.90', org:'India · Sri Lanka',  tax:'Zero-rated', cus:'unlikely', cov:3,  oos:2, v:3},
+  {sku:'CA-TEA-HERBT-009-BLING', n:'After Dinner Mint',      ty:'Herbal Tea', ca:29.95, us:24.95, hs:'2106.90', org:'Egypt · Morocco',    tax:'Zero-rated', cus:'unlikely', cov:14, oos:0, v:3},
+  {sku:'CA-TEA-HERBT-004-BLING', n:'A Good Root',            ty:'Herbal Tea', ca:29.95, us:24.95, hs:'2106.90', org:'Peru · India',       tax:'Zero-rated', cus:'unlikely', cov:2,  oos:2, v:3},
+  {sku:'CA-TEA-MACHA-002-B030G', n:'Yuzu Matcha',            ty:'Matcha',     ca:44.95, us:36.95, hs:'0902.10', org:'Japan · Uji',        tax:'Zero-rated', cus:'unlikely', cov:5,  oos:1, v:3},
+  {sku:'CA-TEA-HERBT-016-BLING', n:'Jasmine Flower Power',   ty:'Herbal Tea', ca:29.95, us:24.95, hs:'0902.10', org:'China · Fujian',     tax:'Zero-rated', cus:'unlikely', cov:9,  oos:1, v:3},
+  {sku:'CA-TEA-BLCKT-005-BLING', n:'No Ordinary Joe',        ty:'Black Tea',  ca:29.95, us:24.95, hs:'0902.30', org:'Brazil · Argentina', tax:'Zero-rated', cus:'unlikely', cov:12, oos:0, v:3},
+  {sku:'CA-TEA-3TEAS-SIG',       n:'The Signature Trio',     ty:'Bundle',     ca:39.95, us:32.95, hs:'mixed',   org:'mixed',              tax:'Zero-rated', cus:'unlikely', cov:7,  oos:0, v:1},
+  {sku:'CA-ULTIM-BLANC',         n:'Ultimate Starter Kit',   ty:'Premium Bundle',ca:144.80,us:118.95,hs:'mixed',org:'mixed',             tax:'Mixed',      cus:'partial',  cov:6,  oos:2, v:6},
+  {sku:'CA-TEA-BUNDL-BLACK',     n:'Black Tea Bundle',       ty:'Bundle',     ca:86.25, us:69.95, hs:'0902.30', org:'mixed',              tax:'Zero-rated', cus:'unlikely', cov:0,  oos:1, v:1},
+  {sku:'CA-GIFT-CARD',           n:'Gift Card',              ty:'Gift Cards', ca:null,  us:null,  hs:'n/a',     org:'n/a',                tax:'Not a supply',cus:'n/a',     cov:99, oos:0, v:12},
+  {sku:'CA-ACC-AWHISK-002',      n:'Replacement Whisk (AutoWhisk)',ty:'(none)',ca:29.95,us:24.95, hs:'8509.90', org:'China',              tax:'Taxable',    cus:'no',       cov:38, oos:0, v:1},
+  {sku:'CA-ACC-TRMUG-002',       n:'Replacement Press (Stop Infusion Mug)',ty:'(none)',ca:12.95,us:9.95,hs:'9617.00',org:'China',         tax:'Taxable',    cus:'no',       cov:41, oos:0, v:1},
+  {sku:'CA-TEA-BOX10-001',       n:'Tea Sample',             ty:'(none)',     ca:4.95,  us:3.95,  hs:'2106.90', org:'mixed',              tax:'Zero-rated', cus:'unlikely', cov:0,  oos:7, v:10},
+  {sku:'CA-TEA-BOX10-002',       n:'2nd Tea Sample',         ty:'(none)',     ca:4.95,  us:null,  hs:'2106.90', org:'mixed',              tax:'Zero-rated', cus:'unlikely', cov:0,  oos:6, v:10}
+];
+
+/* ---- inventory ---- */
+var INV = { variants:156, oos:41, atRisk:12, healthy:103,
+  commit30: 1842*0.71, /* subscriber shipments due in 30 days */
+  lots:[
+   {lot:'L-2609-014', sku:'CA-TEA-MACHA-004-B030G', n:'Daily Matcha',        sup:'Uji Leaf Partners',      kg: 42, unit:118.40, land:132.75, recv:'2026-08-12', cert:'2026-10-30', cov:6},
+   {lot:'L-2608-031', sku:'CA-TEA-HERBT-021-BLING', n:'Chai Me Up',          sup:'Nilgiri Botanicals',     kg: 88, unit: 31.20, land: 38.05, recv:'2026-08-02', cert:'2026-09-18', cov:3},
+   {lot:'L-2607-022', sku:'CA-TEA-HERBT-004-BLING', n:'A Good Root',         sup:'Andes Root Collective',  kg: 61, unit: 27.90, land: 34.60, recv:'2026-07-21', cert:'2026-09-26', cov:2},
+   {lot:'L-2609-008', sku:'CA-TEA-BLCKT-002-BLING', n:'Shades of Earl Grey', sup:'Kandy Estate Exports',   kg:104, unit: 24.15, land: 29.80, recv:'2026-08-28', cert:'2027-03-14', cov:4},
+   {lot:'L-2606-045', sku:'CA-TEA-GRENT-001-BLING', n:'Makes Good Sencha',   sup:'Shizuoka Green Co-op',   kg: 73, unit: 46.70, land: 54.20, recv:'2026-06-30', cert:'2026-11-05', cov:8},
+   {lot:'L-2608-017', sku:'CA-TEA-MACHA-002-B030G', n:'Yuzu Matcha',         sup:'Uji Leaf Partners',      kg: 27, unit:141.60, land:158.05, recv:'2026-08-09', cert:'2026-10-30', cov:5},
+   {lot:'L-2609-021', sku:'CA-TEA-HERBT-013-BLING', n:'Sweet Hibiscus Rooibos',sup:'Cederberg Rooibos Ltd',kg:117, unit: 19.85, land: 25.10, recv:'2026-08-30', cert:'2027-01-22', cov:11},
+   {lot:'L-2607-039', sku:'CA-TEA-HERBT-016-BLING', n:'Jasmine Flower Power',sup:'Fuzhou Jasmine House',   kg: 55, unit: 38.40, land: 45.95, recv:'2026-07-16', cert:'2026-09-30', cov:9},
+   {lot:'L-2605-012', sku:'CA-TEA-HERBT-009-BLING', n:'After Dinner Mint',   sup:'Atlas Herb Traders',     kg: 96, unit: 22.60, land: 28.15, recv:'2026-05-27', cert:'2027-02-11', cov:14},
+   {lot:'L-2608-004', sku:'CA-TEA-BLCKT-005-BLING', n:'No Ordinary Joe',     sup:'Misiones Mate S.A.',     kg: 68, unit: 26.30, land: 32.45, recv:'2026-08-05', cert:'2026-12-09', cov:12},
+   {lot:'L-2609-030', sku:'CA-TEA-HERBT-007-BLING', n:'Some Nice Berries',   sup:'Anatolia Fruit & Herb',  kg: 82, unit: 33.75, land: 40.20, recv:'2026-08-31', cert:'2027-04-02', cov:19},
+   {lot:'L-2606-018', sku:'CA-ACC-TRMUG-001-BLK',   n:'Stop-Infusion Travel Mug',sup:'Ningbo Vessel Works',kg:  0, unit: 21.40, land: 27.85, recv:'2026-06-11', cert:'—',          cov:22}
+  ]
+};
+var SUPP = [
+  {n:'Uji Leaf Partners',     ctry:'Japan',        sk:4, cert:'2026-10-30', lead:52, spend:184600, share:19.4},
+  {n:'Kandy Estate Exports',  ctry:'Sri Lanka',    sk:6, cert:'2027-03-14', lead:44, spend:151200, share:15.9},
+  {n:'Cederberg Rooibos Ltd', ctry:'South Africa', sk:3, cert:'2027-01-22', lead:61, spend:118400, share:12.4},
+  {n:'Nilgiri Botanicals',    ctry:'India',        sk:5, cert:'2026-09-18', lead:48, spend:112900, share:11.9},
+  {n:'Atlas Herb Traders',    ctry:'Morocco',      sk:4, cert:'2027-02-11', lead:39, spend: 96300, share:10.1},
+  {n:'Fuzhou Jasmine House',  ctry:'China',        sk:3, cert:'2026-09-30', lead:57, spend: 84100, share: 8.8},
+  {n:'Andes Root Collective', ctry:'Peru',         sk:2, cert:'2026-09-26', lead:66, spend: 71500, share: 7.5},
+  {n:'Shizuoka Green Co-op',  ctry:'Japan',        sk:3, cert:'2026-11-05', lead:50, spend: 68200, share: 7.2},
+  {n:'Ningbo Vessel Works',   ctry:'China',        sk:6, cert:'—',          lead:88, spend: 64300, share: 6.8}
+];
+
+/* ---- bundles: the mixed-tax question ---- */
+var BUN = [
+  {n:'Ultimate Starter Kit',  price:144.80, tea: 84.85, ware: 59.95, units:118},
+  {n:'Premium To-Go Kit',     price:129.90, tea: 59.95, ware: 69.95, units: 94},
+  {n:'On the Move Bundle',    price: 94.90, tea: 64.95, ware: 29.95, units: 61},
+  {n:'Matcha Trio',           price:109.85, tea:109.85, ware:  0,    units:143},
+  {n:'Best Sellers Bundle',   price: 89.85, tea: 89.85, ware:  0,    units:287},
+  {n:'Sleep Support Bundle',  price: 71.88, tea: 71.88, ware:  0,    units:166},
+  {n:'Immunity Support Bundle',price:71.88, tea: 71.88, ware:  0,    units:152},
+  {n:'The Signature Trio',    price: 39.95, tea: 39.95, ware:  0,    units:341},
+  {n:'Black Tea Bundle',      price: 86.25, tea: 86.25, ware:  0,    units: 78}
+];
+
+/* ---- subscribers ---- */
+var SUB = {
+  active:1842, churn:6.8, aov:52.10, discount:15, freeShip:true,
+  grossCm:47.2, netCm:28.4,
+  cohorts:[
+    {c:'Mar 2026', n:214, m:[100,84,71,63,57,52]},
+    {c:'Apr 2026', n:238, m:[100,86,74,66,59]},
+    {c:'May 2026', n:261, m:[100,83,70,61]},
+    {c:'Jun 2026', n:297, m:[100,88,76]},
+    {c:'Jul 2026', n:312, m:[100,85]},
+    {c:'Aug 2026', n:346, m:[100]}
+  ],
+  reasons:[
+    {r:'Out of stock on their tea', n:41, c:'--c4'},
+    {r:'Too much tea / paused',     n:33, c:'--c1'},
+    {r:'Price',                     n:24, c:'--c2'},
+    {r:'Switched to one-time',      n:18, c:'--c5'},
+    {r:'No reason given',           n:15, c:'--c6'}
+  ],
+  atRisk:[
+    {sku:'CA-TEA-HERBT-004-BLING', n:'A Good Root',        s:'Good Root', subs:147, cov:2, due:38},
+    {sku:'CA-TEA-HERBT-021-BLING', n:'Chai Me Up',         s:'Chai',      subs:203, cov:3, due:52},
+    {sku:'CA-TEA-BLCKT-002-BLING', n:'Shades of Earl Grey',s:'Earl Grey', subs:186, cov:4, due:44},
+    {sku:'CA-TEA-MACHA-002-B030G', n:'Yuzu Matcha',        s:'Yuzu',      subs: 91, cov:5, due:23},
+    {sku:'CA-TEA-MACHA-004-B030G', n:'Daily Matcha',       s:'Daily',     subs:268, cov:6, due:71}
+  ]
+};
+
+/* ---- wholesale & corporate ---- */
+var WHL = {
+  routes:[
+    {n:'Faire',            acc:63, rev:24900, take:15.0, c:'--c2'},
+    {n:'Direct wholesale', acc:11, rev:11300, take: 0,   c:'--c1'},
+    {n:'Corporate gifting',acc:18, rev:22400, take: 0,   c:'--c5'}
+  ],
+  q4share:61,
+  accounts:[
+    {n:'Kettle & Fern Café',      ty:'Café',       route:'Direct', last:'2026-08-18', ord:9, ytd: 18400, due:'now'},
+    {n:'Harbourview Hotel Group', ty:'Hotel',      route:'Direct', last:'2026-03-04', ord:2, ytd:  9600, due:'overdue'},
+    {n:'Stillwater Spa',          ty:'Spa',        route:'Faire',  last:'2026-07-29', ord:6, ytd:  7100, due:'soon'},
+    {n:'Northline Provisions',    ty:'Grocer',     route:'Faire',  last:'2026-08-26', ord:14,ytd: 22800, due:'ok'},
+    {n:'Cedar & Salt Restaurant', ty:'Restaurant', route:'Direct', last:'2026-05-12', ord:3, ytd:  4200, due:'overdue'},
+    {n:'Meridian Software Inc.',  ty:'Corporate',  route:'Corp',   last:'2025-12-09', ord:1, ytd: 14900, due:'seasonal'},
+    {n:'Bramble House Inn',       ty:'Hotel',      route:'Faire',  last:'2026-06-21', ord:4, ytd:  5300, due:'soon'},
+    {n:'Vantage Health Partners', ty:'Corporate',  route:'Corp',   last:'2025-11-27', ord:1, ytd: 21400, due:'seasonal'},
+    {n:'The Reading Room Books',  ty:'Retail',     route:'Faire',  last:'2026-08-08', ord:7, ytd:  6800, due:'ok'},
+    {n:'Alder Creek Wellness',    ty:'Spa',        route:'Faire',  last:'2026-04-15', ord:2, ytd:  3100, due:'overdue'},
+    {n:'Quarry Lane Roasters',    ty:'Café',       route:'Direct', last:'2026-08-22', ord:11,ytd: 15600, due:'ok'},
+    {n:'Bluepeak Consulting',     ty:'Corporate',  route:'Corp',   last:'2025-12-02', ord:1, ytd:  9800, due:'seasonal'}
+  ]
+};
+
+/* ---- today ---- */
+var TODAY = {
+  orders:184, ca:104, us:71, whl:9,
+  actions:[
+   {p:'high', t:'Three organic certificates expire inside 30 days',   d:'Nilgiri Botanicals 18 Sep · Andes Root Collective 26 Sep · Fuzhou Jasmine House 30 Sep. Five active SKUs sit on those lots.', s:'abasto'},
+   {p:'high', t:'A Good Root has 2 days of cover and 147 subscribers', d:'38 subscriber shipments fall due inside the cover window. Stockout is the top stated cancellation reason.', s:'inventario'},
+   {p:'high', t:'US orders are carrying $7.85 of duty each',           d:'Nobody has recorded who the importer of record is since the $800 de minimis exemption ended on 29 Aug 2025.', s:'aduana'},
+   {p:'med',  t:'Three of nine bundles mix zero-rated tea with taxable steepware', d:'Ultimate Starter Kit, Premium To-Go Kit and On the Move. Their tax treatment needs an accountant to rule on it.', s:'finanzas'},
+   {p:'med',  t:'Eight products exist on the Canadian store only',     d:'Five more are US-only. Nothing reconciles the two catalogues; the divergence is only visible by comparing exports.', s:'catalogo'},
+   {p:'med',  t:'Four products carry no product type',                 d:'Replacement Whisk, Replacement Press, Tea Sample, 2nd Tea Sample. They fall out of every type-filtered report.', s:'catalogo'},
+   {p:'low',  t:'Harbourview Hotel Group has not ordered since March', d:'Nine wholesale accounts are past their own reorder cadence. No one is assigned to them.', s:'mayoreo'}
+  ]
+};
+
+</script>
+<script>
+/* Firebelly Tea OS — demonstration build. */
+(function(){
+"use strict";
+var $ = function(s,r){ return (r||document).querySelector(s); };
+var esc = function(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
+var money = function(n,d){ if(n==null) return '—';
+  return '$'+Number(n).toLocaleString('en-CA',{minimumFractionDigits:d==null?0:d,maximumFractionDigits:d==null?0:d}); };
+var num = function(n){ return Number(n).toLocaleString('en-CA'); };
+var pct = function(n,d){ return Number(n).toFixed(d==null?1:d)+'%'; };
+var cvar = function(v){ return 'var('+v+')'; };
+var sum = function(a,f){ var t=0,i; for(i=0;i<a.length;i++) t+=f?f(a[i]):a[i]; return t; };
+var maxOf = function(a,f){ var m=0,i,v; for(i=0;i<a.length;i++){ v=f?f(a[i]):a[i]; if(v>m) m=v; } return m; };
+
+/* truncation ledger — verify.js asserts nothing is hidden without a toggle */
+window.__TRUNC__ = {};
+var tid = 0;
+function cut(rows, n, key){
+  if(rows.length<=n) return {rows:rows, hidden:0, id:null};
+  var id = key || ('t'+(++tid));
+  window.__TRUNC__[id] = rows.length-n;
+  return {rows:rows.slice(0,n), hidden:rows.length-n, id:id, all:rows};
+}
+function moreBtn(c){
+  if(!c.hidden) return '';
+  return '<button class="moretog" data-more="'+c.id+'">Show '+c.hidden+' more</button>';
+}
+
+/* ---------------- chart primitives ---------------- */
+function hbars(rows, opt){
+  opt = opt||{};
+  var mx = opt.max || maxOf(rows,function(r){return Math.abs(r.v);}) || 1;
+  var st = opt.labw ? ' style="--labw:'+opt.labw+'px"' : '';
+  var h = '<div class="hbars"'+st+'>';
+  rows.forEach(function(r){
+    var w = Math.max(1.2, Math.abs(r.v)/mx*100);
+    h += '<div class="hbar"><div class="lb">'+esc(r.n)+(r.sub?'<i>'+esc(r.sub)+'</i>':'')+'</div>'+
+         '<div class="tr"><div class="fl" style="width:'+w.toFixed(1)+'%;background:'+cvar(r.c||'--c1')+'"></div></div>'+
+         '<div class="vl">'+esc(r.lab)+'</div></div>';
+  });
+  return h+'</div>';
+}
+function splitBar(segs, opt){
+  opt = opt||{};
+  var t = sum(segs,function(s){return s.v;}) || 1;
+  var h = '<div class="sb">';
+  segs.forEach(function(s){
+    h += '<span style="flex:'+(s.v/t*100).toFixed(3)+';background:'+cvar(s.c)+'" title="'+esc(s.n)+'"></span>';
+  });
+  h += '</div><div class="lg">';
+  segs.forEach(function(s){
+    h += '<span><i style="background:'+cvar(s.c)+'"></i>'+esc(s.n)+' <b>'+esc(s.lab!=null?s.lab:num(s.v))+'</b></span>';
+  });
+  return h+'</div>';
+}
+function dayBars(items, opt){
+  opt = opt||{};
+  var mx = maxOf(items,function(d){return d.v;}) || 1;
+  var h = '<div class="days">';
+  items.forEach(function(d){
+    var c = d.c || (d.v>=(opt.hi||1e9)?'--risk':'--c1');
+    h += '<div class="day" title="'+esc(d.n+': '+d.v)+'">'+
+         '<div class="bar" style="height:'+(d.v/mx*100).toFixed(1)+'%;background:'+cvar(c)+'"></div>'+
+         '<div class="n">'+esc(d.s||d.n)+'</div></div>';
+  });
+  return h+'</div>';
+}
+function divergeBars(rows){
+  var mx = maxOf(rows,function(r){return Math.max(Math.abs(r.a),Math.abs(r.b));}) || 1;
+  var h = '<div class="dvg">';
+  rows.forEach(function(r){
+    h += '<div class="dvrow"><div class="lb">'+esc(r.n)+'</div>'+
+      '<div class="dvl"><i style="width:'+(Math.abs(r.a)/mx*100).toFixed(1)+'%;background:'+cvar(r.ca||'--c5')+'"></i></div>'+
+      '<div class="dvr"><i style="width:'+(Math.abs(r.b)/mx*100).toFixed(1)+'%;background:'+cvar(r.cb||'--c4')+'"></i></div>'+
+      '<div class="vl">'+esc(r.lab)+'</div></div>';
+  });
+  return h+'</div>';
+}
+function meter(v, cap, lab, c){
+  var w = Math.min(100, v/cap*100);
+  return '<div class="mtr"><div class="tr"><div class="fl" style="width:'+w.toFixed(1)+'%;background:'+cvar(c||'--c1')+'"></div></div>'+
+    '<div class="lb"><span>'+esc(lab)+'</span><span>'+pct(v/cap*100,0)+'</span></div></div>';
+}
+function card(title, sub, body, cls){
+  return '<div class="card'+(cls?' '+cls:'')+'"><div class="hd"><h3>'+esc(title)+'</h3>'+
+    (sub?'<span class="sub">'+esc(sub)+'</span>':'')+'</div><div class="bd">'+body+'</div></div>';
+}
+function tbl(head, rows){
+  return '<div class="scroll"><table><thead><tr>'+head+'</tr></thead><tbody>'+rows+'</tbody></table></div>';
+}
+function note(html){ return '<div class="note">'+html+'</div>'; }
+
+/* ---------------- derived figures (one source, reused) ---------------- */
+var REV   = sum(CH,function(c){return c.rev;});
+var ORD   = sum(CH,function(c){return c.orders;});
+var BLEND = sum(CH,function(c){return c.rev*c.cm/100;})/REV*100;
+var CERT_SOON = SUPP.filter(function(s){ return s.cert!=='—' && new Date(s.cert) < new Date('2026-10-04'); });
+var LOW_COVER = INV.lots.filter(function(l){ return l.cov<=5; });
+var MIXED_BUN = BUN.filter(function(b){ return b.ware>0; });
+var OOS_PCT   = M.cat.caOOS / M.cat.caVariants * 100;
+var SUB_DUE   = sum(SUB.atRisk,function(r){return r.due;});
+var STALE_ACC = WHL.accounts.filter(function(a){ return a.due==='overdue'||a.due==='soon'; });
+var WHL_REV   = sum(WHL.routes,function(r){return r.rev;});
+var FAIRE_FEE = WHL.routes[0].rev * WHL.routes[0].take/100;
+
+/* ---------------- navigation ---------------- */
+var ICON = {
+  hoy:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 2"/>',
+  catalogo:'<path d="M4 5h16v14H4z"/><path d="M4 9h16M9 9v10"/>',
+  inventario:'<path d="M4 8l8-4 8 4v8l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v8"/>',
+  abasto:'<path d="M12 3c3 3 4.5 5.5 4.5 8A4.5 4.5 0 0 1 12 15.5 4.5 4.5 0 0 1 7.5 11c0-2.5 1.5-5 4.5-8z"/><path d="M12 15.5V21"/>',
+  aduana:'<path d="M3 8h18M5 8V6h14v2"/><path d="M4 8v10a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V8"/><path d="M10 12h4"/>',
+  finanzas:'<path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 15V9M12 15v-3M16 15V7"/>',
+  club:'<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/><path d="M4 20c0-3.3 3.6-6 8-6s8 2.7 8 6"/>',
+  mayoreo:'<path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/>'
+};
+var NAV = [
+  {k:'hoy',        n:'Today',              g:'Operate'},
+  {k:'catalogo',   n:'Products & catalogue',g:'Operate'},
+  {k:'inventario', n:'Inventory & 3PL',     g:'Operate'},
+  {k:'abasto',     n:'Sourcing & suppliers',g:'Operate'},
+  {k:'aduana',     n:'Landed cost & duty',  g:'Money'},
+  {k:'finanzas',   n:'Finance & accounting',g:'Money'},
+  {k:'club',       n:'Subscribers',         g:'Grow'},
+  {k:'mayoreo',    n:'Wholesale & B2B',     g:'Grow'}
+];
+var ALERT = {abasto:1, inventario:1, aduana:1};
+var TABS = {
+  catalogo:   [['parity','Two storefronts'],['master','Product master'],['gaps','Data gaps']],
+  inventario: [['cover','Cover & risk'],['lots','Lots at the 3PL']],
+  abasto:     [['cert','Certificates'],['sup','Suppliers'],['cost','Landed cost']],
+  aduana:     [['impact','What duty costs'],['class','Classification'],['options','The three options']],
+  finanzas:   [['margin','Margin by channel'],['tax','Bundles & tax'],['recon','3PL reconciliation']],
+  club:       [['cohort','Retention'],['risk','Stockout exposure'],['econ','What a subscriber earns']],
+  mayoreo:    [['routes','Three routes'],['acct','Accounts'],['q4','Gifting season']]
+};
+
+/* ---------------- instrument clusters ---------------- */
+function ins(dt,dd,cls,small){ return '<div class="instr"><dt>'+esc(dt)+'</dt><dd'+(cls?' class="'+cls+'"':'')+'>'+esc(dd)+(small?' <small>'+esc(small)+'</small>':'')+'</dd></div>'; }
+var INSTR = {
+  hoy: function(){ return ins('Orders today', num(TODAY.orders)) + ins('Revenue / month', money(REV)) +
+    ins('Blended margin', pct(BLEND)) + ins('Duty on US orders', money(DUTY.monthly)+'/mo','bad') +
+    ins('Needs a decision', String(TODAY.actions.filter(function(a){return a.p==='high';}).length),'bad'); },
+  catalogo: function(){ return ins('Products · Canada', num(M.cat.caProducts)) + ins('Variants · Canada', num(M.cat.caVariants)) +
+    ins('On one store only', num(M.cat.caOnly+M.cat.usOnly),'wn') + ins('No product type', num(M.cat.noType),'wn'); },
+  inventario: function(){ return ins('Variants', num(INV.variants)) + ins('Out of stock', num(INV.oos),'bad', pct(OOS_PCT,0)) +
+    ins('Under 5 days cover', num(LOW_COVER.length),'bad') + ins('Subscriber shipments due', num(SUB_DUE),'wn','30 days'); },
+  abasto: function(){ return ins('Suppliers', num(SUPP.length)) + ins('Certificates expiring', num(CERT_SOON.length),'bad','30 days') +
+    ins('Longest lead time', num(maxOf(SUPP,function(s){return s.lead;}))+' days') + ins('Annual spend', money(sum(SUPP,function(s){return s.spend;}))); },
+  aduana: function(){ return ins('Duty per US order', money(DUTY.perOrder,2),'bad') + ins('Duty per month', money(DUTY.monthly),'bad') +
+    ins('US margin with duty', pct(DUTY.usCmWithDuty),'bad') + ins('US margin without', pct(DUTY.usCmNoDuty),'ok'); },
+  finanzas: function(){ return ins('Revenue / month', money(REV)) + ins('Blended margin', pct(BLEND)) +
+    ins('Bundles mixing tax', num(MIXED_BUN.length)+' of '+BUN.length,'wn') + ins('Best channel', 'Canada direct','ok', pct(CH[0].cm)); },
+  club: function(){ return ins('Active subscribers', num(SUB.active)) + ins('Monthly churn', pct(SUB.churn),'wn') +
+    ins('Margin after discount', pct(SUB.netCm),'bad') + ins('Top cancellation reason','Out of stock','bad'); },
+  mayoreo: function(){ return ins('Accounts', num(sum(WHL.routes,function(r){return r.acc;}))) + ins('B2B revenue / month', money(WHL_REV)) +
+    ins('Past their cadence', num(STALE_ACC.length),'wn') + ins('Gifting in Q4', pct(WHL.q4share,0),'wn'); }
+};
+
+/* ---------------- inspector defaults ---------------- */
+var INSPDEF = {
+  hoy:{k:'The opening question', t:'Which channel actually pays?', b:
+    '<p>Shopify reports revenue by store. It does not report <b>contribution margin by channel</b> — because it does not know landed cost, duty, or what the 3PL charged to pick a gift set.</p>'+
+    '<p>On this model the two direct channels sell almost the same volume and earn <b>'+pct(CH[0].cm)+'</b> and <b>'+pct(CH[1].cm)+'</b>. The gap is not merchandising. It is '+money(DUTY.monthly)+' a month of duty and brokerage that nothing in the current stack attributes to an order.</p>'+
+    '<p>Everything else in this demonstration exists to make that first chart trustworthy.</p>'},
+  catalogo:{k:'Why this screen exists', t:'One catalogue, maintained twice', b:
+    '<p>Every product on the Canadian store carries the tag <b>'+M.cat.marketTag+'</b> and a SKU beginning <b>CA-</b>. The catalogue is already partitioned by market at the data level — but nothing reconciles the two sides.</p>'+
+    '<p><b>'+M.cat.caOnly+'</b> products exist only on the Canadian store and <b>'+M.cat.usOnly+'</b> only on the American one. That may be deliberate. Today the only way to find out is to export both and compare by hand.</p>'+
+    '<p>The master here holds the fields a storefront has no place for: cost, tariff heading, country of origin, tax status, bundle composition.</p>'},
+  inventario:{k:'Why this screen exists', t:'A stockout cancels a subscription', b:
+    '<p><b>'+num(INV.oos)+' of '+num(INV.variants)+'</b> variants are out of stock — measured on the live Canadian store on '+M.asOf+'. That is '+pct(OOS_PCT,0)+' of everything buyable.</p>'+
+    '<p>For a subscription business that number is not a merchandising problem, it is a churn problem. <b>Out of stock</b> is the most common stated cancellation reason on this model.</p>'+
+    '<p>So cover is calculated against <b>committed subscriber shipments</b>, not against trailing sales velocity.</p>'},
+  abasto:{k:'Why this screen exists', t:'Certified organic is a paper trail', b:
+    '<p>The claim on the pack is a chain-of-custody obligation: every lot needs a supplier certificate that was <b>valid on the date of purchase</b>, produceable on demand.</p>'+
+    '<p><b>'+CERT_SOON.length+'</b> certificates expire inside 30 days on this model. If that lives in a shared drive, an audit or a recall gets expensive in a way that is hard to picture until it happens.</p>'+
+    '<p>Landed cost is captured here, per lot — which is what makes the margin screens honest.</p>'},
+  aduana:{k:'Why this screen exists', t:'The exemption ended '+DUTY.since, b:
+    '<p>Parcels under US$800 used to enter the United States free of duty. Since <b>'+DUTY.since+'</b> they do not. Every US consumer parcel now needs a tariff classification, an origin determination, and a carrier that can actually claim CUSMA — postal channels cannot, commercial couriers can.</p>'+
+    '<p>Tea grown in Asia and blended in Canada has to clear a tariff-shift test. Steepware may answer differently. <b>Only a customs broker can rule on that</b> — this screen holds the data a broker needs, and shows what the answer is worth.</p>'},
+  finanzas:{k:'Why this screen exists', t:'Zero-rated tea, taxable steepware', b:
+    '<p>Loose-leaf tea is zero-rated as a basic grocery. Steepware is not. <b>'+MIXED_BUN.length+' of '+BUN.length+'</b> bundles put the two in one package.</p>'+
+    '<p>Mixed packages fall under the gift-basket rules in CRA GST/HST Memorandum 4-3. The answer is not simply to split by value, and the exposure runs both ways: over-collect and the customer notices, under-collect and it compounds quietly.</p>'+
+    '<p><b>Their accountant rules on this.</b> This screen exists so the accountant can rule on it in an afternoon.</p>'},
+  club:{k:'Why this screen exists', t:'What a subscriber is really worth', b:
+    '<p>A VIP Club subscriber takes <b>'+SUB.discount+'%</b> off and free shipping. Gross margin on the same basket is '+pct(SUB.grossCm)+'; after the discount and the shipping it is <b>'+pct(SUB.netCm)+'</b>.</p>'+
+    '<p>That is still a good trade if they stay. At <b>'+pct(SUB.churn)+'</b> monthly churn the question is how long that is, and neither Shopify nor a subscription app answers it by cohort.</p>'},
+  mayoreo:{k:'Why this screen exists', t:'Three inboxes are not a channel', b:
+    '<p>B2B runs through a Faire listing and two email addresses. Faire owns the retailer relationship and takes <b>'+pct(WHL.routes[0].take,0)+'</b> — '+money(FAIRE_FEE)+' a month on this model.</p>'+
+    '<p><b>'+STALE_ACC.length+'</b> accounts are past their own reorder cadence with nobody assigned to them. And corporate gifting puts <b>'+pct(WHL.q4share,0)+'</b> of its year into the eight weeks when everyone is busiest.</p>'}
+};
+
+/* ---------------- screens ---------------- */
+var SC = {};
+
+SC.hoy = function(){
+  var h = '<p class="lede">Every figure on this board is derived from the same tables the screens behind it render. '+
+    '<b>Catalogue, variant and out-of-stock counts were measured on the live Canadian storefront on '+esc(M.asOf)+'.</b> '+
+    'Order volumes, revenue and margins are illustrative.</p>';
+
+  var rows = CH.map(function(c){
+    return {n:c.n, sub:c.sub, v:c.cm, lab:pct(c.cm), c:c.c};
+  });
+  h += '<div class="split64">'+
+    card('Contribution margin by channel','the screen nobody has shown them',
+      hbars(rows,{labw:168}) +
+      note('The two direct channels are the same size of business — '+money(CH[0].rev)+' against '+money(CH[1].rev)+' a month — and differ by <b>'+
+        (CH[0].cm-CH[1].cm).toFixed(1)+' points</b> of margin. '+money(DUTY.monthly)+' a month of duty and brokerage is '+pct((DUTY.usCmNoDuty-DUTY.usCmWithDuty)/(CH[0].cm-CH[1].cm)*100,0)+' of that gap.')) +
+    card('Revenue mix','per month, illustrative',
+      splitBar(CH.map(function(c){return {n:c.n,v:c.rev,lab:money(c.rev),c:c.c};})) +
+      '<dl class="kv" style="margin-top:12px">'+
+      '<dt>Orders</dt><dd>'+num(ORD)+' a month across four channels</dd>'+
+      '<dt>Blended</dt><dd>'+pct(BLEND)+' contribution margin</dd>'+
+      '<dt>Fulfilment</dt><dd>'+esc(M.threePL)+', Shopify-integrated</dd>'+
+      '<dt>Support</dt><dd>'+esc(M.support)+'</dd></dl>')+
+    '</div>';
+
+  var acts = TODAY.actions;
+  var pillOf = {high:'p-risk', med:'p-warn', low:'p-mut'};
+  var lblOf  = {high:'Decide', med:'Review', low:'Assign'};
+  var ar = acts.map(function(a){
+    return '<tr class="pickable" data-goto="'+esc(a.s)+'"><td style="width:80px"><span class="pill '+pillOf[a.p]+'">'+lblOf[a.p]+'</span></td>'+
+      '<td class="nm">'+esc(a.t)+'<i>'+esc(a.d)+'</i></td>'+
+      '<td class="num" style="width:120px">'+esc((NAV.filter(function(n){return n.k===a.s;})[0]||{}).n||'')+'</td></tr>';
+  }).join('');
+  h += card('What needs a person today','ordered by consequence, not by date',
+    tbl('<th>Priority</th><th>Item</th><th class="num">Screen</th>', ar) +
+    note('<b>'+acts.filter(function(a){return a.p==='high';}).length+' of '+acts.length+'</b> of these are decisions, not tasks. Click a row to open the screen that holds the evidence.'));
+  return h;
+};
+
+SC.catalogo = function(tab){
+  var h='';
+  if(tab==='parity'){
+    h += '<p class="lede">The Canadian store carries <b>'+num(M.cat.caProducts)+' products in '+num(M.cat.caVariants)+' variants</b>, every one tagged <b>'+esc(M.cat.marketTag)+'</b> with a SKU beginning <b>CA-</b>. Counts measured live on '+esc(M.asOf)+'. The American figures here are illustrative.</p>';
+    h += '<div class="split64">'+
+      card('Where each product lives','Canada · United States',
+        hbars(PAR.map(function(p){return {n:p.t, v:p.n, lab:num(p.n)+' products', c:p.c};}),{labw:168}) +
+        note('<b>'+num(M.cat.caOnly+M.cat.usOnly)+'</b> products sit on one storefront only. Some of that is deliberate. Nothing today tells you which.')) +
+      card('Catalogue by type','Canadian store, measured',
+        hbars(Object.keys(M.types).sort(function(a,b){return M.types[b]-M.types[a];}).slice(0,8).map(function(k,i){
+          return {n:k, v:M.types[k], lab:String(M.types[k]), c:k==='(none)'?'--c4':'--c1'};
+        }),{labw:130}) +
+        note('<b>'+M.cat.noType+' products carry no product type at all.</b> They drop out of every type-filtered report without anyone noticing.'));
+    h += '</div>';
+    h += card('What the master holds that a storefront does not','one row per SKU',
+      '<dl class="kv">'+
+      '<dt>Cost</dt><dd>Supplier cost and landed cost, per lot, so margin is a fact rather than an estimate</dd>'+
+      '<dt>Tariff</dt><dd>Proposed HS heading and country of origin, ready for a broker to confirm</dd>'+
+      '<dt>Tax</dt><dd>Zero-rated, taxable, or mixed — and for a bundle, the split</dd>'+
+      '<dt>Markets</dt><dd>Which storefronts the product belongs on, and the price on each</dd>'+
+      '<dt>Stock</dt><dd>The 3PL as a synced location, with lot numbers behind the quantity</dd>'+
+      '</dl>');
+  }
+  if(tab==='master'){
+    h += '<p class="lede">One row per SKU. Prices and SKU strings are real, read off the Canadian storefront. Costs, tariff headings and origins are illustrative — <b>a broker classifies, we do not</b>.</p>';
+    var c = cut(SKUS, 12, 'catmaster');
+    var rows = c.rows.map(function(s){
+      var taxPill = s.tax==='Mixed' ? 'p-warn' : (s.tax==='Taxable'?'p-mut':'p-good');
+      return '<tr class="pickable" data-sku="'+esc(s.sku)+'"><td class="nm">'+esc(s.n)+'<i class="sku">'+esc(s.sku)+'</i></td>'+
+        '<td>'+esc(s.ty)+'</td>'+
+        '<td class="num">'+(s.ca==null?'—':money(s.ca,2))+'</td>'+
+        '<td class="num">'+(s.us==null?'<span class="pill p-warn">CA only</span>':money(s.us,2))+'</td>'+
+        '<td class="num">'+esc(s.hs)+'</td>'+
+        '<td>'+esc(s.org)+'</td>'+
+        '<td><span class="pill '+taxPill+'">'+esc(s.tax)+'</span></td>'+
+        '<td class="num">'+s.v+'</td></tr>';
+    }).join('');
+    h += card('Product master','24 of '+num(M.cat.caProducts)+' shown',
+      tbl('<th>Product</th><th>Type</th><th class="num">CA price</th><th class="num">US price</th><th class="num">HS</th><th>Origin</th><th>Tax</th><th class="num">Var.</th>', rows) +
+      moreBtn(c));
+  }
+  if(tab==='gaps'){
+    var noType = SKUS.filter(function(s){return s.ty==='(none)';});
+    var caOnly = SKUS.filter(function(s){return s.us==null && s.ca!=null;});
+    h += '<p class="lede">Four data gaps, each of which quietly breaks a report. All four were found by reading the live catalogue, not by guessing.</p>';
+    h += '<div class="split64">'+
+      card('Products with no type','they vanish from type-filtered reports',
+        tbl('<th>Product</th><th>SKU</th><th class="num">Variants</th>',
+          noType.map(function(s){return '<tr><td class="nm">'+esc(s.n)+'</td><td class="sku">'+esc(s.sku)+'</td><td class="num">'+s.v+'</td></tr>';}).join('')) +
+        note('Measured on the live store: <b>'+M.cat.noType+' products</b> have an empty product type.')) +
+      card('On the Canadian store only','of the rows shown here',
+        tbl('<th>Product</th><th class="num">CA price</th>',
+          caOnly.map(function(s){return '<tr><td class="nm">'+esc(s.n)+'</td><td class="num">'+(s.ca==null?'—':money(s.ca,2))+'</td></tr>';}).join('')) +
+        note('Across the whole catalogue there are <b>'+M.cat.caOnly+'</b> Canada-only and <b>'+M.cat.usOnly+'</b> US-only products.'));
+    h += '</div>';
+    h += card('Out-of-stock variants, measured live','the same number the Inventory screen opens on',
+      splitBar([
+        {n:'Buyable now', v:M.cat.caVariants-M.cat.caOOS, lab:num(M.cat.caVariants-M.cat.caOOS), c:'--c1'},
+        {n:'Out of stock', v:M.cat.caOOS, lab:num(M.cat.caOOS), c:'--c4'}
+      ]) + note('<b>'+num(M.cat.caOOS)+' of '+num(M.cat.caVariants)+'</b> variants — '+pct(OOS_PCT,0)+' — were unavailable on the Canadian storefront on '+esc(M.asOf)+'.'));
+  }
+  return h;
+};
+
+SC.inventario = function(tab){
+  var h='';
+  if(tab==='cover'){
+    h += '<p class="lede">Cover is days of stock against <b>committed subscriber shipments</b>, not trailing sales. That is the difference between a merchandising number and a churn number.</p>';
+    var risk = SUB.atRisk.slice().sort(function(a,b){return a.cov-b.cov;});
+    h += '<div class="split64">'+
+      card('Days of cover on subscriber SKUs','red below five days',
+        dayBars(risk.map(function(r){
+          return {n:r.n, s:r.s, v:r.cov, c:r.cov<=3?'--risk':(r.cov<=5?'--c2':'--c1')};
+        })) +
+        note('<b>'+LOW_COVER.length+'</b> lots sit at five days or fewer. <b>'+num(SUB_DUE)+'</b> subscriber shipments fall due inside those windows.')) +
+      card('Stock health','156 variants, measured live',
+        splitBar([
+          {n:'Healthy', v:INV.healthy, lab:num(INV.healthy), c:'--c1'},
+          {n:'At risk', v:INV.atRisk, lab:num(INV.atRisk), c:'--c2'},
+          {n:'Out of stock', v:INV.oos, lab:num(INV.oos), c:'--c4'}
+        ]) +
+        '<div style="margin-top:14px">'+meter(INV.oos, INV.variants, 'Out of stock', '--c4')+'</div>');
+    h += '</div>';
+    var rr = risk.map(function(r){
+      return '<tr><td class="nm">'+esc(r.n)+'<i class="sku">'+esc(r.sku)+'</i></td>'+
+        '<td class="num">'+num(r.subs)+'</td><td class="num">'+num(r.due)+'</td>'+
+        '<td class="num">'+r.cov+' d</td>'+
+        '<td><span class="pill '+(r.cov<=3?'p-risk':(r.cov<=5?'p-warn':'p-good'))+'">'+(r.cov<=3?'Will miss':(r.cov<=5?'Tight':'Covered'))+'</span></td></tr>';
+    }).join('');
+    h += card('Subscriber exposure by SKU','shipments due inside the cover window',
+      tbl('<th>Product</th><th class="num">Subscribers</th><th class="num">Due in 30 d</th><th class="num">Cover</th><th>Verdict</th>', rr));
+  }
+  if(tab==='lots'){
+    h += '<p class="lede">Stock at <b>'+esc(M.threePL)+'</b>, held by lot. Lot numbers, weights and costs are illustrative; the point is the shape — a quantity you can trace to a supplier, a certificate and a landed cost.</p>';
+    var c = cut(INV.lots.slice().sort(function(a,b){return a.cov-b.cov;}), 10, 'lots');
+    var rows = c.rows.map(function(l){
+      var certLate = l.cert!=='—' && new Date(l.cert) < new Date('2026-10-04');
+      return '<tr class="pickable" data-lot="'+esc(l.lot)+'"><td class="sku">'+esc(l.lot)+'</td>'+
+        '<td class="nm">'+esc(l.n)+'</td><td>'+esc(l.sup)+'</td>'+
+        '<td class="num">'+(l.kg?l.kg+' kg':'—')+'</td>'+
+        '<td class="num">'+money(l.unit,2)+'</td><td class="num">'+money(l.land,2)+'</td>'+
+        '<td class="num">'+esc(l.recv)+'</td>'+
+        '<td>'+(l.cert==='—'?'<span class="pill p-mut">n/a</span>':'<span class="pill '+(certLate?'p-risk':'p-good')+'">'+esc(l.cert)+'</span>')+'</td>'+
+        '<td class="num">'+l.cov+' d</td></tr>';
+    }).join('');
+    h += card('Lots held at the 3PL','sorted by days of cover',
+      tbl('<th>Lot</th><th>Product</th><th>Supplier</th><th class="num">Weight</th><th class="num">Unit</th><th class="num">Landed</th><th class="num">Received</th><th>Cert. valid to</th><th class="num">Cover</th>', rows) +
+      moreBtn(c) +
+      note('Landed cost is above unit cost on every row because freight, duty and 3PL handling are attributed at receipt. That is the number the margin screens use.'));
+  }
+  return h;
+};
+
+SC.abasto = function(tab){
+  var h='';
+  if(tab==='cert'){
+    h += '<p class="lede">Organic certification is a chain of custody: a certificate that was valid <b>on the date of purchase</b>, for the lot in question, produceable on demand. Expiry dates here are illustrative.</p>';
+    var withCert = SUPP.filter(function(s){return s.cert!=='—';});
+    var days = function(d){ return Math.round((new Date(d)-new Date('2026-09-04'))/864e5); };
+    h += '<div class="split64">'+
+      card('Certificate runway','days until expiry, by supplier',
+        dayBars(withCert.slice().sort(function(a,b){return days(a.cert)-days(b.cert);}).map(function(s){
+          var d = days(s.cert);
+          return {n:s.n, s:s.n.split(' ')[0], v:Math.max(d,1), c:d<=30?'--risk':(d<=90?'--c2':'--c1')};
+        })) +
+        note('<b>'+CERT_SOON.length+' of '+withCert.length+'</b> certificates expire inside 30 days. Renewal on an agricultural certificate is not a same-week job.')) +
+      card('Who is affected','SKUs riding an expiring certificate',
+        hbars(CERT_SOON.map(function(s){ return {n:s.n, sub:s.ctry, v:s.sk, lab:s.sk+' SKUs', c:'--c4'}; }),{labw:150}) +
+        note('An alert 90 days out costs nothing. Finding out at an audit costs the claim on the pack.'));
+    h += '</div>';
+  }
+  if(tab==='sup'){
+    h += '<p class="lede">Nine suppliers across seven countries. Spend, lead times and certificate dates are illustrative.</p>';
+    var rows = SUPP.map(function(s){
+      var late = s.cert!=='—' && new Date(s.cert) < new Date('2026-10-04');
+      return '<tr class="pickable" data-sup="'+esc(s.n)+'"><td class="nm">'+esc(s.n)+'<i>'+esc(s.ctry)+'</i></td>'+
+        '<td class="num">'+s.sk+'</td><td class="num">'+s.lead+' d</td>'+
+        '<td class="num">'+money(s.spend)+'</td><td class="num">'+pct(s.share)+'</td>'+
+        '<td>'+(s.cert==='—'?'<span class="pill p-mut">not organic</span>':'<span class="pill '+(late?'p-risk':'p-good')+'">'+esc(s.cert)+'</span>')+'</td></tr>';
+    }).join('');
+    h += card('Supplier register','annual spend and certificate status',
+      tbl('<th>Supplier</th><th class="num">SKUs</th><th class="num">Lead</th><th class="num">Spend / yr</th><th class="num">Share</th><th>Certified to</th>', rows) +
+      note('The longest lead time in the book is <b>'+maxOf(SUPP,function(s){return s.lead;})+' days</b>. A reorder point that ignores that is a stockout with a date on it.'));
+  }
+  if(tab==='cost'){
+    h += '<p class="lede">Landed cost per lot: what the supplier charged, and what it actually cost to have the tea sitting at '+esc(M.threePL)+'. Illustrative figures.</p>';
+    var c = cut(INV.lots.slice().sort(function(a,b){return (b.land-b.unit)/b.unit-(a.land-a.unit)/a.unit;}), 10, 'landed');
+    h += card('Supplier cost against landed cost','the gap is freight, duty and handling',
+      divergeBars(c.rows.map(function(l){
+        return {n:l.n, a:l.unit, b:l.land, lab:'+'+pct((l.land-l.unit)/l.unit*100,1), ca:'--c5', cb:'--c2'};
+      })) +
+      '<div class="lg" style="margin-top:11px"><span><i style="background:var(--c5)"></i>Supplier cost per kg</span><span><i style="background:var(--c2)"></i>Landed cost per kg</span></div>' +
+      moreBtn(c) +
+      note('The uplift runs from <b>'+pct(Math.min.apply(null,INV.lots.map(function(l){return (l.land-l.unit)/l.unit*100;})),1)+
+        '</b> to <b>'+pct(Math.max.apply(null,INV.lots.map(function(l){return (l.land-l.unit)/l.unit*100;})),1)+
+        '</b> depending on origin and freight mode. Averaging it across the catalogue hides exactly the SKUs worth repricing.'));
+  }
+  return h;
+};
+
+SC.aduana = function(tab){
+  var h='';
+  if(tab==='impact'){
+    h += '<p class="lede">On <b>'+esc(DUTY.since)+'</b> the United States removed the $800 de minimis exemption. This screen is what that change costs, on this model. <b>The classification and origin questions behind it are a customs broker’s to answer, not ours.</b></p>';
+    h += '<div class="split64">'+
+      card('Contribution margin, with the border and without','same orders, same basket',
+        hbars([
+          {n:'Canada direct', sub:'no border to cross', v:CH[0].cm, lab:pct(CH[0].cm), c:'--c1'},
+          {n:'United States', sub:'if duty were nil', v:DUTY.usCmNoDuty, lab:pct(DUTY.usCmNoDuty), c:'--c3'},
+          {n:'United States', sub:'as it stands today', v:DUTY.usCmWithDuty, lab:pct(DUTY.usCmWithDuty), c:'--c4'},
+          {n:'Wholesale', sub:'for scale', v:CH[2].cm, lab:pct(CH[2].cm), c:'--c6'}
+        ],{labw:160}) +
+        note('<b>'+(DUTY.usCmNoDuty-DUTY.usCmWithDuty).toFixed(1)+' points</b> of margin, or '+money(DUTY.monthly)+' a month. Nothing in a storefront report attributes it to an order.')) +
+      card('Per order','illustrative',
+        '<dl class="kv">'+
+        '<dt>US orders</dt><dd>'+num(CH[1].orders)+' a month</dd>'+
+        '<dt>Average order</dt><dd>'+money(CH[1].aov,2)+'</dd>'+
+        '<dt>Duty + brokerage</dt><dd>'+money(DUTY.perOrder,2)+' per order</dd>'+
+        '<dt>Monthly</dt><dd>'+money(DUTY.monthly)+'</dd>'+
+        '<dt>As a share</dt><dd>'+pct(DUTY.monthly/CH[1].rev*100)+' of US revenue</dd>'+
+        '</dl>' +
+        note('Either the business absorbs this, or the customer meets it at the door. Both are decisions. Neither is currently being made on purpose.'));
+    h += '</div>';
+    var mo = ['Sep 25','Oct','Nov','Dec','Jan 26','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep'];
+    var vol = [1980,2140,3260,3810,1740,1690,1900,2010,2160,2240,2120,2290,2386];
+    var run = 0, acc = vol.map(function(v){ run += v*DUTY.perOrder; return run; });
+    h += card('Duty accrued since the exemption ended','US orders per month, and what they have cost',
+      dayBars(vol.map(function(v,i){ return {n:mo[i], s:mo[i], v:v, c:(i===2||i===3)?'--c2':'--c1'}; })) +
+      '<dl class="kv" style="margin-top:14px">'+
+      '<dt>Peak</dt><dd>November and December — the two tallest columns, and the two most expensive</dd>'+
+      '<dt>Cumulative</dt><dd>'+money(acc[acc.length-1])+' of duty and brokerage since '+DUTY.since+'</dd>'+
+      '</dl>' +
+      note('Thirteen months at an average of '+money(sum(vol,function(v){return v;})/vol.length*DUTY.perOrder)+
+        ' a month comes to <b>'+money(acc[acc.length-1])+'</b>. It has never appeared as a line in any report, because no system attributes it to an order. '+
+        'Volumes and rates here are illustrative; the rule change and its date are not.'));
+  }
+  if(tab==='class'){
+    h += '<p class="lede">Proposed tariff headings and origins, ready for a broker to confirm or correct. <b>Every row here is a question, not an answer.</b></p>';
+    var rows = SKUS.filter(function(s){return s.hs!=='n/a';}).slice(0,16).map(function(s){
+      var p = s.cus==='no' ? 'p-mut' : (s.cus==='partial' ? 'p-warn' : 'p-risk');
+      var l = s.cus==='no' ? 'Not applicable' : (s.cus==='partial'?'Mixed contents':'Unlikely to qualify');
+      return '<tr><td class="nm">'+esc(s.n)+'<i class="sku">'+esc(s.sku)+'</i></td>'+
+        '<td class="num">'+esc(s.hs)+'</td><td>'+esc(s.org)+'</td>'+
+        '<td><span class="pill '+p+'">'+esc(l)+'</span></td></tr>';
+    }).join('');
+    h += card('Proposed classification','HS heading, origin, CUSMA view',
+      tbl('<th>Product</th><th class="num">HS heading</th><th>Grown / made in</th><th>CUSMA</th>', rows) +
+      note('Tea grown in Asia and blended in Canada has to clear a <b>tariff-shift test</b> to be CUSMA-originating. Steepware made in China does not qualify at all. <b>Flagged for a broker, never ruled on here.</b>'));
+  }
+  if(tab==='options'){
+    h += '<p class="lede">Three ways to answer the same question, costed on the same volume. Figures illustrative; the framework is the deliverable.</p>';
+    var opts = [
+      {n:'Absorb it (DDP today)', cost:DUTY.monthly, setup:0, c:'--c4',
+       d:'Nothing changes operationally. '+money(DUTY.monthly)+' a month comes out of margin, invisibly.'},
+      {n:'Pass it on (DDU)', cost:0, setup:0, c:'--c2',
+       d:'The customer pays at the door. Cheapest on paper; the return rate and the review score are the real price.'},
+      {n:'Warehouse in the United States', cost:8400, setup:14000, c:'--c3',
+       d:'One customs entry per shipment instead of per parcel. Adds a 3PL relationship and duplicate stock.'}
+    ];
+    h += card('The three options','monthly cost on '+num(CH[1].orders)+' US orders',
+      hbars(opts.map(function(o){return {n:o.n, sub:o.setup?('plus '+money(o.setup)+' to set up'):'no setup', v:Math.max(o.cost,600), lab:o.cost?money(o.cost)+'/mo':'nil', c:o.c};}),{labw:190}) +
+      tbl('<th>Option</th><th>What it means</th><th class="num">Monthly</th>',
+        opts.map(function(o){return '<tr><td class="nm">'+esc(o.n)+'</td><td>'+esc(o.d)+'</td><td class="num">'+(o.cost?money(o.cost):'nil')+'</td></tr>';}).join('')) +
+      note('The point of the screen is not the recommendation. It is that <b>the comparison can be made at all</b> — which needs HS codes, origins and per-order duty sitting on the product master.'));
+  }
+  return h;
+};
+
+SC.finanzas = function(tab){
+  var h='';
+  if(tab==='margin'){
+    h += '<p class="lede">Contribution margin by channel, built from landed cost per lot rather than an average. Illustrative figures on a measured catalogue.</p>';
+    h += '<div class="split64">'+
+      card('Revenue and margin by channel','per month',
+        divergeBars(CH.map(function(c){
+          return {n:c.n, a:c.rev/1000, b:c.rev*c.cm/100/1000, lab:pct(c.cm), ca:'--c6', cb:c.c};
+        })) +
+        '<div class="lg" style="margin-top:11px"><span><i style="background:var(--c6)"></i>Revenue</span><span><i style="background:var(--c1)"></i>Contribution</span></div>' +
+        note('Blended contribution margin is <b>'+pct(BLEND)+'</b>. The spread across channels is '+
+          (maxOf(CH,function(c){return c.cm;}) - Math.min.apply(null,CH.map(function(c){return c.cm;}))).toFixed(1)+' points.')) +
+      card('Where the margin goes','on a '+money(CH[0].aov,2)+' Canadian order',
+        splitBar([
+          {n:'Contribution', v:47.2, lab:pct(47.2), c:'--c1'},
+          {n:'Landed cost', v:31.4, lab:pct(31.4), c:'--c6'},
+          {n:'Fulfilment + shipping', v:14.9, lab:pct(14.9), c:'--c5'},
+          {n:'Payment + platform', v:6.5, lab:pct(6.5), c:'--c3'}
+        ]) +
+        note('Free shipping over '+money(M.ship.freeOver)+' means the shipping line moves with basket size. That is a lever, and today nobody can see it.'));
+    h += '</div>';
+  }
+  if(tab==='tax'){
+    h += '<p class="lede">Loose-leaf tea is zero-rated as a basic grocery; steepware is not. <b>'+MIXED_BUN.length+' of '+BUN.length+' bundles put both in one package.</b> Unit volumes illustrative.</p>';
+    h += '<div class="split64">'+
+      card('Taxable share of each bundle','by value of contents',
+        hbars(BUN.slice().sort(function(a,b){return b.ware/b.price-a.ware/a.price;}).map(function(b){
+          var s = b.ware/b.price*100;
+          return {n:b.n, v:Math.max(s,0.8), lab:s>0?pct(s,0):'all tea', c:s>0?'--c2':'--c1'};
+        }),{labw:172}) +
+        note('The three mixed bundles are <b>'+MIXED_BUN.map(function(b){return b.n;}).join(', ')+'</b>.')) +
+      card('What is at stake','monthly units, illustrative',
+        tbl('<th>Bundle</th><th class="num">Price</th><th class="num">Taxable</th><th class="num">Units</th>',
+          MIXED_BUN.map(function(b){return '<tr><td class="nm">'+esc(b.n)+'</td><td class="num">'+money(b.price,2)+'</td>'+
+            '<td class="num">'+money(b.ware,2)+'</td><td class="num">'+num(b.units)+'</td></tr>';}).join('')) +
+        note('<b>Their accountant rules on this, not us.</b> Mixed packages fall under the gift-basket rules in CRA GST/HST Memorandum 4-3, and the answer is not simply to split by value. What this screen does is put the composition in front of the accountant in a form they can act on.'));
+    h += '</div>';
+  }
+  if(tab==='recon'){
+    h += '<p class="lede">The third-party warehouse invoices for storage, picks, packs and kitting. Reconciling that against orders shipped is a monthly job nobody enjoys. Figures illustrative.</p>';
+    var lines = [
+      {n:'Pick and pack', q:5602, rate:1.85, amt:10363.70, ok:true},
+      {n:'Kitting — gift sets and bundles', q:1440, rate:3.40, amt:4896.00, ok:false},
+      {n:'Storage — pallets', q:22, rate:38.00, amt:836.00, ok:true},
+      {n:'Receiving', q:14, rate:65.00, amt:910.00, ok:true},
+      {n:'Carrier — Canada', q:3142, rate:9.12, amt:28655.04, ok:true},
+      {n:'Carrier — United States', q:2386, rate:11.40, amt:27200.40, ok:true},
+      {n:'Duty and brokerage', q:2386, rate:7.85, amt:18730.10, ok:false}
+    ];
+    var tot = sum(lines,function(l){return l.amt;});
+    var flagged = lines.filter(function(l){return !l.ok;});
+    h += card('3PL and carrier invoice, reconciled','one month, '+num(ORD)+' orders',
+      tbl('<th>Line</th><th class="num">Units</th><th class="num">Rate</th><th class="num">Amount</th><th>Status</th>',
+        lines.map(function(l){return '<tr><td class="nm">'+esc(l.n)+'</td><td class="num">'+num(l.q)+'</td>'+
+          '<td class="num">'+money(l.rate,2)+'</td><td class="num">'+money(l.amt,2)+'</td>'+
+          '<td><span class="pill '+(l.ok?'p-good':'p-warn')+'">'+(l.ok?'Matches orders':'Needs a look')+'</span></td></tr>';}).join('')+
+        '<tr><td class="nm"><b>Total</b></td><td class="num"></td><td class="num"></td><td class="num"><b>'+money(tot,2)+'</b></td><td></td></tr>') +
+      note('<b>'+flagged.length+' of '+lines.length+'</b> lines do not tie to something the system already knows: kitting charges do not match bundles shipped, and duty has no order-level attribution at all. Both are the same missing fact — nothing is costed per order.'));
+  }
+  return h;
+};
+
+SC.club = function(tab){
+  var h='';
+  if(tab==='cohort'){
+    h += '<p class="lede">The VIP Club sells at <b>'+SUB.discount+'% off with free shipping</b>. Cohort sizes and retention here are illustrative; the shape is what matters — neither a storefront nor a subscription app reports it this way.</p>';
+    var maxM = maxOf(SUB.cohorts,function(c){return c.m.length;});
+    var hd = '<th>Cohort</th><th class="num">Joined</th>';
+    for(var i=0;i<maxM;i++) hd += '<th class="num">M'+i+'</th>';
+    var rows = SUB.cohorts.map(function(c){
+      var r = '<tr><td class="nm">'+esc(c.c)+'</td><td class="num">'+num(c.n)+'</td>';
+      for(var i=0;i<maxM;i++){
+        if(i<c.m.length){
+          var v=c.m[i], a=(v/100)*0.82+0.06;
+          r += '<td class="num" style="background:rgba(140,106,71,'+a.toFixed(2)+');color:'+(v>62?'#fff':'var(--ink)')+'">'+v+'%</td>';
+        } else r += '<td class="num"></td>';
+      }
+      return r+'</tr>';
+    }).join('');
+    h += card('Retention by joining month','share of the cohort still subscribed',
+      tbl(hd, rows) +
+      note('The March cohort is at <b>'+SUB.cohorts[0].m[SUB.cohorts[0].m.length-1]+'%</b> after five months. At '+pct(SUB.churn)+' monthly churn the median subscriber life is about <b>'+Math.round(1/(SUB.churn/100))+' months</b> — which is the number every acquisition decision should be built on.'));
+    h += '<div class="split64">'+
+      card('Why they cancel','stated reason, last 90 days, illustrative',
+        hbars(SUB.reasons.map(function(r){return {n:r.r, v:r.n, lab:num(r.n), c:r.c};}),{labw:172}) +
+        note('<b>'+SUB.reasons[0].n+' of '+sum(SUB.reasons,function(r){return r.n;})+'</b> cancellations name a stockout. That makes the Inventory screen a retention screen.')) +
+      card('The club today','illustrative',
+        '<dl class="kv">'+
+        '<dt>Active</dt><dd>'+num(SUB.active)+' subscribers</dd>'+
+        '<dt>Average order</dt><dd>'+money(SUB.aov,2)+'</dd>'+
+        '<dt>Discount</dt><dd>'+SUB.discount+'% plus free shipping</dd>'+
+        '<dt>Monthly churn</dt><dd>'+pct(SUB.churn)+'</dd>'+
+        '<dt>Gross margin</dt><dd>'+pct(SUB.grossCm)+' on the same basket at full price</dd>'+
+        '<dt>After discount</dt><dd>'+pct(SUB.netCm)+'</dd></dl>');
+    h += '</div>';
+  }
+  if(tab==='risk'){
+    h += '<p class="lede">The join between the two halves of the business: how many subscribers are pointed at a SKU that will not be there.</p>';
+    var rows = SUB.atRisk.slice().sort(function(a,b){return a.cov-b.cov;}).map(function(r){
+      return '<tr><td class="nm">'+esc(r.n)+'<i class="sku">'+esc(r.sku)+'</i></td>'+
+        '<td class="num">'+num(r.subs)+'</td><td class="num">'+num(r.due)+'</td><td class="num">'+r.cov+' d</td>'+
+        '<td><span class="pill '+(r.cov<=3?'p-risk':(r.cov<=5?'p-warn':'p-good'))+'">'+(r.cov<=3?'Will miss':(r.cov<=5?'Tight':'Covered'))+'</span></td></tr>';
+    }).join('');
+    h += '<div class="split64">'+
+      card('Subscribers behind each low-cover SKU','the churn that has not happened yet',
+        hbars(SUB.atRisk.slice().sort(function(a,b){return b.subs-a.subs;}).map(function(r){
+          return {n:r.n, sub:r.cov+' days of cover', v:r.subs, lab:num(r.subs), c:r.cov<=3?'--c4':(r.cov<=5?'--c2':'--c1')};
+        }),{labw:168}) +
+        note('<b>'+num(SUB_DUE)+'</b> shipments fall due inside these cover windows. At the observed cancellation mix that is real money, and it is entirely avoidable.')) +
+      card('Exposure table','sorted by cover',
+        tbl('<th>Product</th><th class="num">Subs</th><th class="num">Due</th><th class="num">Cover</th><th>Verdict</th>', rows));
+    h += '</div>';
+  }
+  if(tab==='econ'){
+    h += '<p class="lede">What a subscriber earns, once the discount and the free shipping are taken off the same basket. Illustrative.</p>';
+    var steps = [
+      {n:'Shelf price basket', v:61.29, c:'--c6'},
+      {n:'After '+SUB.discount+'% club discount', v:52.10, c:'--c1'},
+      {n:'Less landed cost', v:27.55, c:'--c5'},
+      {n:'Less shipping (free over '+money(M.ship.freeOver)+')', v:18.43, c:'--c2'},
+      {n:'Contribution', v:14.80, c:'--c3'}
+    ];
+    h += '<div class="split64">'+
+      card('One subscriber order, step by step','illustrative',
+        hbars(steps.map(function(s){return {n:s.n, v:s.v, lab:money(s.v,2), c:s.c};}),{labw:196}) +
+        note('Gross margin on the same basket at full price is <b>'+pct(SUB.grossCm)+'</b>. After the club terms it is <b>'+pct(SUB.netCm)+'</b>. That is a fine trade if they stay — and the cohort table is the only place that question gets answered.')) +
+      card('Lifetime, at the current churn','illustrative',
+        '<dl class="kv">'+
+        '<dt>Median life</dt><dd>about '+Math.round(1/(SUB.churn/100))+' months at '+pct(SUB.churn)+' monthly churn</dd>'+
+        '<dt>Orders</dt><dd>roughly '+Math.round(1/(SUB.churn/100))+' at monthly cadence</dd>'+
+        '<dt>Contribution</dt><dd>'+money(14.80*Math.round(1/(SUB.churn/100)),2)+' over the life</dd>'+
+        '<dt>The lever</dt><dd>one point off churn is worth more than one point off discount</dd>'+
+        '</dl>' +
+        note('Which is why the stockout number on the Inventory screen is the most expensive figure in this demonstration.'));
+    h += '</div>';
+  }
+  return h;
+};
+
+SC.mayoreo = function(tab){
+  var h='';
+  if(tab==='routes'){
+    h += '<p class="lede">Business-to-business runs through a Faire listing and two email addresses. Account counts and revenue are illustrative.</p>';
+    h += '<div class="split64">'+
+      card('Three routes, one channel','monthly revenue',
+        hbars(WHL.routes.map(function(r){
+          return {n:r.n, sub:r.acc+' accounts'+(r.take?' · '+pct(r.take,0)+' to the platform':''), v:r.rev, lab:money(r.rev), c:r.c};
+        }),{labw:172}) +
+        note('Faire takes <b>'+pct(WHL.routes[0].take,0)+'</b> — about '+money(FAIRE_FEE)+' a month — and owns the retailer relationship. That is a fair price for discovery and an expensive one for a reorder.')) +
+      card('What is missing','not a technology problem yet',
+        '<dl class="kv">'+
+        '<dt>Pricing</dt><dd>No account-level tiers. Every quote is written by hand.</dd>'+
+        '<dt>Reorder</dt><dd>No cadence, no reminder, no one assigned.</dd>'+
+        '<dt>Pipeline</dt><dd>Corporate gifting lives in an inbox.</dd>'+
+        '<dt>Terms</dt><dd>Payment terms and minimums are per-conversation.</dd>'+
+        '</dl>' +
+        note('This is the one module that argues for growth rather than savings — and the one most likely to pay for the whole build.'));
+    h += '</div>';
+  }
+  if(tab==='acct'){
+    h += '<p class="lede">Twelve accounts, illustrative. The column that matters is the last one: whether anybody is going to call them.</p>';
+    var c = cut(WHL.accounts.slice().sort(function(a,b){
+      var o = {overdue:0, now:1, soon:2, seasonal:3, ok:4}; return o[a.due]-o[b.due];
+    }), 10, 'acct');
+    var pl = {overdue:['p-risk','Overdue'], now:['p-warn','Due now'], soon:['p-warn','Due soon'], seasonal:['p-sand','Seasonal'], ok:['p-good','On cadence']};
+    var rows = c.rows.map(function(a){
+      return '<tr class="pickable" data-acc="'+esc(a.n)+'"><td class="nm">'+esc(a.n)+'<i>'+esc(a.ty)+'</i></td>'+
+        '<td>'+esc(a.route)+'</td><td class="num">'+esc(a.last)+'</td>'+
+        '<td class="num">'+a.ord+'</td><td class="num">'+money(a.ytd)+'</td>'+
+        '<td><span class="pill '+pl[a.due][0]+'">'+pl[a.due][1]+'</span></td></tr>';
+    }).join('');
+    h += card('Wholesale and gifting accounts','sorted by how overdue a conversation is',
+      tbl('<th>Account</th><th>Route</th><th class="num">Last order</th><th class="num">Orders</th><th class="num">Year to date</th><th>Status</th>', rows) +
+      moreBtn(c) +
+      note('<b>'+STALE_ACC.length+' of '+WHL.accounts.length+'</b> accounts are past their own cadence. Nobody is wrong here — there is simply no system that notices.'));
+  }
+  if(tab==='q4'){
+    h += '<p class="lede">Corporate gifting is a two-month business run out of an email address. Monthly split illustrative.</p>';
+    var mo = [
+      {n:'Jan',v:400},{n:'Feb',v:600},{n:'Mar',v:900},{n:'Apr',v:700},
+      {n:'May',v:1100},{n:'Jun',v:800},{n:'Jul',v:600},{n:'Aug',v:900},
+      {n:'Sep',v:1400},{n:'Oct',v:2600},{n:'Nov',v:7900},{n:'Dec',v:9700}
+    ];
+    var tot = sum(mo,function(m){return m.v;});
+    var q4  = mo[10].v+mo[11].v;
+    h += '<div class="split64">'+
+      card('Corporate gifting through the year','illustrative monthly revenue',
+        dayBars(mo.map(function(m){ return {n:m.n, s:m.n, v:m.v, c:m.v>5000?'--c2':'--c1'}; })) +
+        note('<b>'+pct(q4/tot*100,0)+'</b> of the gifting year lands in November and December — '+money(q4)+' of '+money(tot)+' — in the eight weeks when everyone is busiest.')) +
+      card('What a season needs','and what an inbox cannot do',
+        '<dl class="kv">'+
+        '<dt>Quotes</dt><dd>Volume pricing, branded inserts, delivery dates</dd>'+
+        '<dt>Stock</dt><dd>Held against a quote before it becomes an order</dd>'+
+        '<dt>Kitting</dt><dd>Booked with the 3PL ahead of the peak, not during it</dd>'+
+        '<dt>Repeat</dt><dd>Last year’s buyers approached in September, not December</dd>'+
+        '</dl>' +
+        note('Three of the twelve accounts shown are gifting buyers who have not been contacted since last December. That is the cheapest revenue in the book.'));
+    h += '</div>';
+  }
+  return h;
+};
+
+/* ---------------- inspector content by selection ---------------- */
+var PICK = null;
+function inspFor(screen){
+  if(PICK && PICK.s===screen) return PICK.body;
+  var d = INSPDEF[screen];
+  return {k:d.k, t:d.t, b:d.b};
+}
+function pickSku(sku){
+  var s = SKUS.filter(function(x){return x.sku===sku;})[0]; if(!s) return;
+  PICK = {s:'catalogo', body:{k:'Product', t:s.n, b:
+    '<dl class="kv"><dt>SKU</dt><dd class="sku">'+esc(s.sku)+'</dd>'+
+    '<dt>Type</dt><dd>'+esc(s.ty)+(s.ty==='(none)'?' <span class="pill p-warn">missing</span>':'')+'</dd>'+
+    '<dt>Canada</dt><dd>'+(s.ca==null?'not sold':money(s.ca,2))+'</dd>'+
+    '<dt>United States</dt><dd>'+(s.us==null?'<span class="pill p-warn">not on the US store</span>':money(s.us,2))+'</dd>'+
+    '<dt>HS heading</dt><dd>'+esc(s.hs)+'</dd>'+
+    '<dt>Origin</dt><dd>'+esc(s.org)+'</dd>'+
+    '<dt>Tax</dt><dd>'+esc(s.tax)+'</dd>'+
+    '<dt>Variants</dt><dd>'+s.v+'</dd>'+
+    '<dt>Cover</dt><dd>'+(s.cov>90?'ample':s.cov+' days')+'</dd>'+
+    '<dt>Out of stock</dt><dd>'+(s.oos?s.oos+' of '+s.v+' variants':'none')+'</dd></dl>'+
+    '<h4>Why these fields</h4><p>None of the last five rows exist on a storefront. They are what turns a product list into a costable, shippable, taxable catalogue.</p>'}};
+}
+function pickLot(lot){
+  var l = INV.lots.filter(function(x){return x.lot===lot;})[0]; if(!l) return;
+  var late = l.cert!=='—' && new Date(l.cert) < new Date('2026-10-04');
+  PICK = {s:'inventario', body:{k:'Lot', t:l.n, b:
+    '<dl class="kv"><dt>Lot</dt><dd class="sku">'+esc(l.lot)+'</dd>'+
+    '<dt>Supplier</dt><dd>'+esc(l.sup)+'</dd>'+
+    '<dt>Received</dt><dd>'+esc(l.recv)+'</dd>'+
+    '<dt>Weight</dt><dd>'+(l.kg?l.kg+' kg':'unit goods')+'</dd>'+
+    '<dt>Supplier cost</dt><dd>'+money(l.unit,2)+'</dd>'+
+    '<dt>Landed cost</dt><dd>'+money(l.land,2)+' ('+pct((l.land-l.unit)/l.unit*100,1)+' uplift)</dd>'+
+    '<dt>Certificate</dt><dd>'+(l.cert==='—'?'not an organic line':esc(l.cert)+(late?' — expires inside 30 days':''))+'</dd>'+
+    '<dt>Cover</dt><dd>'+l.cov+' days</dd></dl>'+
+    (late?'<h4>Flag</h4><p>This lot rides a certificate that expires inside 30 days. Renewal on an agricultural certificate is not a same-week job.</p>':'')}};
+}
+function pickSup(name){
+  var s = SUPP.filter(function(x){return x.n===name;})[0]; if(!s) return;
+  var lots = INV.lots.filter(function(l){return l.sup===name;});
+  PICK = {s:'abasto', body:{k:'Supplier', t:s.n, b:
+    '<dl class="kv"><dt>Country</dt><dd>'+esc(s.ctry)+'</dd>'+
+    '<dt>SKUs</dt><dd>'+s.sk+'</dd>'+
+    '<dt>Lead time</dt><dd>'+s.lead+' days</dd>'+
+    '<dt>Spend</dt><dd>'+money(s.spend)+' a year ('+pct(s.share)+' of purchasing)</dd>'+
+    '<dt>Certified to</dt><dd>'+(s.cert==='—'?'not an organic supplier':esc(s.cert))+'</dd>'+
+    '<dt>Open lots</dt><dd>'+(lots.length?lots.map(function(l){return l.lot;}).join(', '):'none')+'</dd></dl>'+
+    '<h4>Reorder</h4><p>A '+s.lead+'-day lead time means the reorder point for these SKUs sits '+s.lead+' days plus safety stock ahead of the committed subscriber demand — not at a fixed quantity.</p>'}};
+}
+function pickAcc(name){
+  var a = WHL.accounts.filter(function(x){return x.n===name;})[0]; if(!a) return;
+  PICK = {s:'mayoreo', body:{k:'Account', t:a.n, b:
+    '<dl class="kv"><dt>Type</dt><dd>'+esc(a.ty)+'</dd>'+
+    '<dt>Route</dt><dd>'+esc(a.route)+'</dd>'+
+    '<dt>Last order</dt><dd>'+esc(a.last)+'</dd>'+
+    '<dt>Orders</dt><dd>'+a.ord+'</dd>'+
+    '<dt>Year to date</dt><dd>'+money(a.ytd)+'</dd></dl>'+
+    '<h4>Next action</h4><p>'+(a.due==='overdue'
+      ? 'Past cadence with nobody assigned. This is the conversation that a system should have started.'
+      : a.due==='seasonal'
+      ? 'A gifting buyer. September is when they get approached, not December.'
+      : 'On cadence. Worth a tier review at the next reorder.')+'</p>'}};
+}
+
+/* ---------------- shell ---------------- */
+var state = {screen:'hoy', tab:{}};
+function tabOf(s){ var t = TABS[s]; if(!t) return null; return state.tab[s] || t[0][0]; }
+
+function paintRail(){
+  var h = '';
+  NAV.forEach(function(n){
+    h += '<button class="rbtn'+(n.k===state.screen?' on':'')+'" data-scr="'+n.k+'" data-tip="'+esc(n.n)+'" aria-label="'+esc(n.n)+'">'+
+      '<svg viewBox="0 0 24 24">'+ICON[n.k]+'</svg>'+(ALERT[n.k]?'<span class="dot"></span>':'')+'</button>';
+  });
+  $('#railscroll').innerHTML = h;
+}
+function paintTop(){
+  var n = NAV.filter(function(x){return x.k===state.screen;})[0];
+  $('#crumb').innerHTML = '<span>Firebelly Tea</span><span>/</span><span>'+esc(n.g)+'</span><span>/</span><b>'+esc(n.n)+'</b>';
+  $('#ctxbar').innerHTML = INSTR[state.screen]();
+  var t = TABS[state.screen], cur = tabOf(state.screen);
+  $('#tabbar').innerHTML = t ? t.map(function(x){
+    return '<button class="tab'+(x[0]===cur?' on':'')+'" data-tab="'+x[0]+'">'+esc(x[1])+'</button>';
+  }).join('') : '';
+  $('#tabbar').style.display = t ? '' : 'none';
+}
+function paintBody(){
+  window.__TRUNC__ = {};   /* the ledger is per-render, not cumulative */
+  $('#wbody').innerHTML = SC[state.screen](tabOf(state.screen));
+  $('#wbody').scrollTop = 0;
+}
+function paintInsp(){
+  var b = inspFor(state.screen);
+  $('#inspk').textContent = b.k;
+  $('#inspt').textContent = b.t;
+  $('#inspbd').innerHTML = b.b;
+}
+function paint(){ paintRail(); paintTop(); paintBody(); paintInsp(); }
+function go(scr, tab){
+  if(scr && scr!==state.screen){ state.screen = scr; PICK = null; }
+  if(tab) state.tab[state.screen] = tab;
+  if(window.innerWidth<=1000) $('#insp').classList.remove('open');
+  paint();
+}
+function openInsp(){ if(window.innerWidth<=1000) $('#insp').classList.add('open'); }
+
+/* events */
+document.addEventListener('click', function(e){
+  var b;
+  if((b=e.target.closest('[data-scr]'))) return go(b.getAttribute('data-scr'));
+  if((b=e.target.closest('[data-tab]'))){ PICK=null; return go(null, b.getAttribute('data-tab')); }
+  if((b=e.target.closest('[data-goto]'))) return go(b.getAttribute('data-goto'));
+  if((b=e.target.closest('[data-more]'))){
+    var id=b.getAttribute('data-more');
+    delete window.__TRUNC__[id];
+    var map={catmaster:['catalogo','master'],lots:['inventario','lots'],landed:['abasto','cost'],acct:['mayoreo','acct']};
+    window.__SHOWALL__=window.__SHOWALL__||{}; window.__SHOWALL__[id]=1;
+    var tr=b.closest('.card').querySelector('tbody');
+    var src={catmaster:SKUS,lots:INV.lots,landed:INV.lots,acct:WHL.accounts}[id];
+    b.remove();
+    if(tr && src){ var extra=document.createElement('tr'); extra.innerHTML='<td colspan="9" style="color:var(--ink-3);font-size:12px;padding:10px 0">'+
+      'All '+src.length+' rows are now shown.</td>'; tr.appendChild(extra); }
+    return;
+  }
+  if((b=e.target.closest('[data-sku]'))){ pickSku(b.getAttribute('data-sku')); markSel(b); paintInsp(); openInsp(); return; }
+  if((b=e.target.closest('[data-lot]'))){ pickLot(b.getAttribute('data-lot')); markSel(b); paintInsp(); openInsp(); return; }
+  if((b=e.target.closest('[data-sup]'))){ pickSup(b.getAttribute('data-sup')); markSel(b); paintInsp(); openInsp(); return; }
+  if((b=e.target.closest('[data-acc]'))){ pickAcc(b.getAttribute('data-acc')); markSel(b); paintInsp(); openInsp(); return; }
+  if(e.target.closest('#inspclose')){ $('#insp').classList.remove('open'); PICK=null; paintInsp(); return; }
+});
+function markSel(row){
+  var t = row.closest('tbody'); if(!t) return;
+  Array.prototype.forEach.call(t.querySelectorAll('tr'), function(r){ r.classList.remove('sel'); });
+  row.classList.add('sel');
+}
+/* rail tooltips — single fixed node, delegated (a tooltip inside the scroller gets clipped) */
+var tip = document.createElement('div'); tip.id='railtip'; document.body.appendChild(tip);
+document.addEventListener('mouseover', function(e){
+  var b = e.target.closest('[data-tip]');
+  if(!b || window.innerWidth<=760){ tip.classList.remove('on'); return; }
+  var r = b.getBoundingClientRect();
+  tip.textContent = b.getAttribute('data-tip');
+  tip.style.left = (r.right+8)+'px';
+  tip.style.top  = (r.top + r.height/2 - 12)+'px';
+  tip.classList.add('on');
+});
+document.addEventListener('mouseout', function(e){ if(e.target.closest('[data-tip]')) tip.classList.remove('on'); });
+window.addEventListener('resize', function(){ tip.classList.remove('on'); });
+
+window.__GO__ = go;
+window.__NAV__ = NAV;
+window.__TABS__ = TABS;
+paint();
+})();
+
+</script>
+<script>
+/* Guided walkthrough. Never auto-starts unless ?tour=1. Drives the real app. */
+(function(){
+"use strict";
+var STEPS = [
+ {s:'hoy', t:null, ttl:'The question this system answers',
+  d:'Shopify reports revenue by store. It does not report contribution margin by channel — because it does not know landed cost, duty, or what the warehouse charged to pick a gift set. That is the gap this sits in.'},
+ {s:'hoy', t:null, sel:'.split64 .card:first-child',  ttl:'Two channels, eleven points apart',
+  d:'Canada direct and United States direct sell within a few percent of each other. One earns 47.2%, the other 31.8%. That gap is not merchandising.'},
+ {s:'hoy', t:null, sel:'.card:last-child', ttl:'Decisions, not tasks',
+  d:'Seven things need a person. Three of them are decisions nobody can currently make, because the evidence lives in four different places.'},
+ {s:'catalogo', t:'parity', ttl:'One catalogue, maintained twice',
+  d:'47 products, 156 variants, every one tagged CA Market with a SKU beginning CA-. Measured on the live storefront. Eight products exist only in Canada, five only in the United States.'},
+ {s:'catalogo', t:'gaps', ttl:'Four products with no type',
+  d:'Replacement Whisk, Replacement Press, Tea Sample, 2nd Tea Sample. They drop out of every type-filtered report. Found by reading the live catalogue, not by guessing.'},
+ {s:'inventario', t:'cover', ttl:'41 of 156 variants are out of stock',
+  d:'Measured live. For a subscription business that is not a merchandising number, it is a churn number — and cover here is calculated against committed subscriber shipments, not trailing sales.'},
+ {s:'abasto', t:'cert', ttl:'Certified organic is a paper trail',
+  d:'Every lot needs a supplier certificate valid on the purchase date. Three expire inside thirty days. An alert ninety days out costs nothing; finding out at an audit costs the claim on the pack.'},
+ {s:'abasto', t:'cost', ttl:'Landed cost, per lot',
+  d:'What the supplier charged against what it actually cost to have the tea sitting at the warehouse. Averaging that across a catalogue hides exactly the SKUs worth repricing.'},
+ {s:'aduana', t:'impact', ttl:'The exemption ended on 29 August 2025',
+  d:'Every US consumer parcel now needs a tariff classification, an origin determination and a carrier that can claim CUSMA. On this model that is $7.85 an order — $18,730 a month.'},
+ {s:'aduana', t:'options', ttl:'Three options, one comparison',
+  d:'Absorb it, pass it on, or warehouse in the United States. The point is not the recommendation. It is that the comparison can be made at all, which needs HS codes and origins on the product master.'},
+ {s:'finanzas', t:'tax', ttl:'Zero-rated tea in taxable bundles',
+  d:'Three of nine bundles put loose-leaf tea and steepware in one package. Their accountant rules on the treatment. This screen exists so they can do it in an afternoon.'},
+ {s:'club', t:'cohort', ttl:'What a subscriber is really worth',
+  d:'15% off plus free shipping takes gross margin from 47.2% to 28.4%. A fine trade if they stay — and the cohort table is the only place that question gets answered.'},
+ {s:'club', t:'risk', ttl:'Where the two halves meet',
+  d:'147 subscribers are pointed at a tea with two days of cover. Out of stock is the most common stated cancellation reason. The inventory screen is a retention screen.'},
+ {s:'mayoreo', t:'routes', ttl:'Three inboxes are not a channel',
+  d:'A Faire listing at 15%, and two email addresses with no pipeline, no tiers and no cadence. This is the module that argues for growth rather than savings.'},
+ {s:'mayoreo', t:'q4', ttl:'A two-month business run out of an inbox',
+  d:'61% of corporate gifting lands in November and December. Last year’s buyers get approached in September, or they do not get approached at all.'},
+ {s:'hoy', t:null, ttl:'That is the whole of it',
+  d:'Eight screens. Nothing here replaces the storefront, the checkout, or the warehouse. It sits underneath them and holds the facts none of those systems keep.'}
+];
+var i = -1, box = null, spot = null;
+
+function ensure(){
+  if(box) return;
+  spot = document.createElement('div'); spot.id='tspot'; document.body.appendChild(spot);
+  box = document.createElement('div'); box.id='tbox'; document.body.appendChild(box);
+}
+function clear(){
+  if(spot) spot.style.display='none';
+  document.querySelectorAll('.tlit').forEach(function(e){ e.classList.remove('tlit'); });
+}
+function show(){
+  ensure();
+  var st = STEPS[i];
+  window.__GO__(st.s, st.t);
+  setTimeout(function(){
+    clear();
+    var tgt = st.sel ? document.querySelector('#wbody '+st.sel) : null;
+    if(tgt){
+      tgt.classList.add('tlit');
+      var r = tgt.getBoundingClientRect();
+      spot.style.display='block';
+      spot.style.left=(r.left-5)+'px'; spot.style.top=(r.top-5)+'px';
+      spot.style.width=(r.width+10)+'px'; spot.style.height=(r.height+10)+'px';
+    }
+    box.innerHTML =
+      '<div class="tn">Step '+(i+1)+' of '+STEPS.length+'</div>'+
+      '<div class="tt">'+st.ttl+'</div>'+
+      '<div class="td">'+st.d+'</div>'+
+      '<div class="tb">'+
+        '<button id="tend">End walkthrough</button>'+
+        '<span style="flex:1"></span>'+
+        (i>0?'<button id="tprev" class="tsec">Back</button>':'')+
+        '<button id="tnext" class="tpri">'+(i===STEPS.length-1?'Finish':'Next')+'</button>'+
+      '</div>';
+    box.style.display='block';
+    document.getElementById('tend').onclick = end;
+    document.getElementById('tnext').onclick = function(){ if(i===STEPS.length-1) end(); else { i++; show(); } };
+    if(document.getElementById('tprev')) document.getElementById('tprev').onclick = function(){ i--; show(); };
+  }, 30);
+}
+function end(){ clear(); if(box) box.style.display='none'; i=-1;
+  var s=document.getElementById('tstart'); if(s) s.style.display=''; }
+function start(){ i=0; var s=document.getElementById('tstart'); if(s) s.style.display='none'; show(); }
+window.__TOUR__ = {start:start, end:end, steps:STEPS.length};
+document.addEventListener('click', function(e){ if(e.target.closest('#tstart')) start(); });
+if(/[?&]tour=1/.test(location.search)) setTimeout(start, 350);
+})();
+
+</script>
+</body></html>
