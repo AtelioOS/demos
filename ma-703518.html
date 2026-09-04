@@ -1,0 +1,1932 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mosaic Avenue Construction — Tender OS</title>
+<meta name="description" content="A working demonstration of the two-agent tendering workflow:
+invite, chase, level, recommend — with every decision still made by a person.">
+<style>/* ── Mosaic Avenue Construction · brand tokens ─────────────────── */
+:root{
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --display:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+
+  --ink:#141B45;        /* deep navy — rail, headings */
+  --navy:#1E2761;       /* primary action */
+  --pale:#CADCFC;       /* pale blue — chart fill */
+  --palebg:#EEF3FD;
+  --paleline:#D5E0F5;
+  --gold:#C97B1E;       /* Mosaic ochre — accent, human steps */
+  --teal:#14504D;       /* agent steps */
+  --bg:#F5F7FB;
+  --paper:#FFFFFF;
+  --line:#E2E7F1;
+  --line2:#EDF0F7;
+  --hov:#F7F9FD;
+  --mut:#7B84A0;
+  --mut2:#4B5474;
+  --red:#B4402C;
+  --amber:#E0A33C;
+  --amberd:#8A5A10;
+  --green:#1E7A57;
+}
+
+/* ── Mosaic tender OS · base layer ─────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:var(--sans);font-size:14px;line-height:1.5;
+  color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility}
+img{max-width:100%}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+table{border-collapse:collapse;width:100%}
+h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-.01em}
+p{margin:0}
+a{color:var(--navy)}
+::selection{background:var(--pale);color:var(--ink)}
+
+/* ── shell ─────────────────────────────────────────────────────── */
+.app{display:grid;grid-template-columns:236px 1fr;height:100vh;overflow:hidden}
+.side{background:var(--ink);color:#E7EAF4;display:flex;flex-direction:column;min-height:0}
+.brandbar{padding:16px 16px 13px;border-bottom:1px solid rgba(255,255,255,.09);flex:none}
+.logo{display:flex;align-items:center;gap:9px}
+.logomark{width:26px;height:26px;flex:none}
+.logotext{font-family:var(--display);font-size:14.5px;font-weight:600;letter-spacing:.005em;color:#fff;line-height:1.15}
+.logosub{font-size:10.5px;color:#8C96B8;letter-spacing:.06em;text-transform:uppercase;margin-top:2px}
+.railscroll{flex:1 1 auto;overflow-y:auto;padding:9px 9px 4px;min-height:0;scrollbar-width:thin}
+.railscroll::-webkit-scrollbar{width:6px}
+.railscroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:3px}
+.navgrp{font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:#727CA0;
+  padding:12px 8px 5px;font-weight:600}
+.navgrp:first-child{padding-top:3px}
+.nb{display:flex;align-items:center;gap:9px;width:100%;text-align:left;padding:7px 9px;
+  border-radius:7px;color:#C3CADF;font-size:13px;position:relative;transition:background .12s,color .12s}
+.nb:hover{background:rgba(255,255,255,.06);color:#fff}
+.nb.on{background:var(--navy);color:#fff;font-weight:500}
+.nb.on::before{content:'';position:absolute;left:-9px;top:6px;bottom:6px;width:3px;
+  background:var(--gold);border-radius:0 2px 2px 0}
+.nb .ni{width:15px;height:15px;flex:none;opacity:.85}
+.nb.on .ni{opacity:1}
+.nb .nct{margin-left:auto;font-size:10.5px;font-variant-numeric:tabular-nums;
+  background:rgba(255,255,255,.12);padding:1px 5px;border-radius:9px;color:#DDE3F2}
+.nb .nct.hot{background:var(--red);color:#fff}
+.railfoot{flex:none;padding:9px;border-top:1px solid rgba(255,255,255,.09)}
+.who{display:flex;align-items:center;gap:8px;padding:6px 7px;border-radius:7px;font-size:12px}
+.who:hover{background:rgba(255,255,255,.06)}
+.av{width:25px;height:25px;border-radius:50%;background:var(--gold);color:#2A1B05;flex:none;
+  display:grid;place-items:center;font-size:10.5px;font-weight:700}
+.whon{color:#fff;font-size:12.5px;line-height:1.25}
+.whor{color:#8C96B8;font-size:10.5px}
+
+.main{display:flex;flex-direction:column;min-width:0;min-height:0;background:var(--bg)}
+.top{flex:none;background:var(--paper);border-bottom:1px solid var(--line);
+  padding:11px 22px;display:flex;align-items:center;gap:14px}
+.topt{font-family:var(--display);font-size:17px;font-weight:600;letter-spacing:-.015em}
+.topc{font-size:11.5px;color:var(--mut);margin-top:1px}
+.topr{margin-left:auto;display:flex;align-items:center;gap:8px}
+.pjsel{display:flex;align-items:center;gap:7px;background:var(--bg);border:1px solid var(--line);
+  border-radius:8px;padding:5px 10px;font-size:12.5px}
+.pjsel .tok{font-family:var(--mono);font-size:11px;background:var(--ink);color:#fff;
+  padding:1.5px 5px;border-radius:4px;letter-spacing:.01em}
+.pjsel select{border:0;background:none;font:inherit;color:var(--ink);cursor:pointer;outline:none;max-width:190px}
+.ibtn{width:31px;height:31px;border-radius:8px;border:1px solid var(--line);background:var(--paper);
+  display:grid;place-items:center;color:var(--mut)}
+.ibtn:hover{background:var(--bg);color:var(--ink)}
+
+.wrap{flex:1 1 auto;overflow-y:auto;min-height:0}
+.wbody{padding:16px 22px 26px;max-width:1360px}
+
+/* ── context bar ───────────────────────────────────────────────── */
+.ctxbar{display:flex;gap:9px;overflow-x:auto;padding-bottom:2px;margin-bottom:13px;scrollbar-width:none}
+.ctxbar::-webkit-scrollbar{display:none}
+.inst{flex:1 1 0;min-width:158px;background:var(--paper);border:1px solid var(--line);
+  border-radius:11px;padding:11px 13px}
+.inst .il{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--mut);font-weight:600}
+.inst .iv{font-family:var(--display);font-size:23px;font-weight:600;letter-spacing:-.02em;
+  margin-top:4px;line-height:1;font-variant-numeric:tabular-nums}
+.inst .is{font-size:11.5px;color:var(--mut);margin-top:5px;line-height:1.35}
+.inst.warn .iv{color:var(--amberd)} .inst.bad .iv{color:var(--red)} .inst.good .iv{color:var(--green)}
+
+/* ── cards ─────────────────────────────────────────────────────── */
+.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;
+  margin-bottom:12px;overflow:hidden}
+.wbody>.card:last-child{margin-bottom:0}
+.hd{padding:10px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:9px}
+.hd h3{font-size:13.5px;font-weight:600}
+.hd .sub{font-size:11.5px;color:var(--mut)}
+.hd .rt{margin-left:auto;display:flex;align-items:center;gap:7px}
+.bd{padding:13px 14px}
+.bd.tight{padding:0}
+.lede{font-size:13.5px;color:var(--mut2);line-height:1.55;margin-bottom:13px;max-width:78ch}
+.lede b{color:var(--ink);font-weight:600}
+
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.split64{display:grid;grid-template-columns:1.55fr 1fr;gap:12px;align-items:start}
+.split46{display:grid;grid-template-columns:1fr 1.55fr;gap:12px;align-items:start}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.grid>*,.split>*,.split64>*,.split46>*{min-width:0}
+
+/* ── tables ────────────────────────────────────────────────────── */
+.scroll{overflow-x:auto;scrollbar-width:thin}
+table.dt{font-size:13px;min-width:560px}
+table.dt th{text-align:left;font-size:10px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--mut);font-weight:600;padding:8px 11px;border-bottom:1px solid var(--line);
+  background:var(--bg);white-space:nowrap;position:sticky;top:0;z-index:2}
+table.dt td{padding:9px 11px;border-bottom:1px solid var(--line2);vertical-align:middle}
+table.dt tbody tr:last-child td{border-bottom:0}
+table.dt tbody tr.clik{cursor:pointer}
+table.dt tbody tr.clik:hover{background:var(--hov)}
+table.dt tbody tr.sel{background:var(--palebg)}
+.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12px}
+.mono{font-family:var(--mono);font-size:11.5px}
+.tname{font-weight:500}
+.tsub{font-size:11px;color:var(--mut);margin-top:1px}
+.moretog{display:block;width:100%;padding:9px;font-size:12px;color:var(--navy);
+  background:var(--bg);border-top:1px solid var(--line);font-weight:500}
+.moretog:hover{background:var(--palebg)}
+.empty{padding:26px 14px;text-align:center;color:var(--mut);font-size:12.5px}
+
+/* ── chips / badges ────────────────────────────────────────────── */
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;
+  padding:2px 7px;border-radius:20px;white-space:nowrap;line-height:1.5}
+.tag .dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex:none}
+.t-grey{background:#EDEFF4;color:#5A6076} .t-blue{background:#E4EAF7;color:#2E3A73}
+.t-green{background:#DCEFE6;color:#166B4C} .t-amber{background:#FBEDD6;color:#8A5A10}
+.t-red{background:#FBE4E1;color:#A32E1E} .t-teal{background:#DCEBEA;color:#14504D}
+.t-gold{background:#F7E9D2;color:#6B4A15} .t-plum{background:#EFE4F0;color:#66346B}
+
+.tabbar{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;
+  border-bottom:1px solid var(--line);margin-bottom:14px}
+.tabbar::-webkit-scrollbar{display:none}
+.tb{padding:8px 13px;font-size:13px;color:var(--mut);white-space:nowrap;flex:none;
+  border-bottom:2px solid transparent;margin-bottom:-1px;font-weight:500}
+.tb:hover{color:var(--ink)}
+.tb.on{color:var(--ink);border-bottom-color:var(--gold);font-weight:600}
+.tb .tbn{font-size:10.5px;color:var(--mut);margin-left:5px;font-variant-numeric:tabular-nums}
+
+.pills{display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.pills::-webkit-scrollbar{display:none}
+.pill{padding:4px 11px;border-radius:20px;border:1px solid var(--line);font-size:12px;
+  color:var(--mut2);background:var(--paper);white-space:nowrap;flex:none}
+.pill:hover{border-color:var(--mut)}
+.pill.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:500}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:8px;
+  font-size:12.5px;font-weight:600;background:var(--navy);color:#fff;white-space:nowrap}
+.btn:hover{background:var(--ink)}
+.btn.gh{background:var(--paper);color:var(--ink);border:1px solid var(--line)}
+.btn.gh:hover{background:var(--bg)}
+.btn.gold{background:var(--gold);color:#2A1B05}
+.btn.gold:hover{filter:brightness(.94)}
+.btn.sm{padding:4px 9px;font-size:11.5px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+
+/* ── human-in-the-loop marker ──────────────────────────────────── */
+.hstep{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;
+  letter-spacing:.05em;text-transform:uppercase;color:#6B4A15;background:#F7E9D2;
+  border:1px solid #E4CDA6;padding:2px 7px;border-radius:5px;white-space:nowrap}
+.astep{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;
+  letter-spacing:.05em;text-transform:uppercase;color:#14504D;background:#DCEBEA;
+  border:1px solid #B9D5D3;padding:2px 7px;border-radius:5px;white-space:nowrap}
+
+/* ── notes / callouts ──────────────────────────────────────────── */
+.note{border-radius:10px;padding:11px 13px;font-size:12.5px;line-height:1.55;
+  background:var(--palebg);border:1px solid var(--paleline);color:var(--mut2)}
+.note b{color:var(--ink)}
+.note.gold{background:#FDF6EA;border-color:#EAD9BC}
+.note.red{background:#FDEDEA;border-color:#F2CFC8}
+.note.teal{background:#E9F3F2;border-color:#C6DEDC}
+.notet{font-weight:700;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--mut);margin-bottom:5px}
+
+/* ── key-value ─────────────────────────────────────────────────── */
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:12.5px;margin:0}
+.kv dt{color:var(--mut);white-space:nowrap}
+.kv dd{margin:0;min-width:0;overflow-wrap:anywhere;font-weight:500}
+
+/* ── charts ────────────────────────────────────────────────────── */
+.chart{position:relative}
+.daybars{display:flex;align-items:flex-end;gap:3px;height:104px;padding-top:15px}
+.daybars .col{flex:1 1 0;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;
+  align-items:center;gap:3px;height:100%;position:relative}
+.daybars .bar{width:100%;border-radius:3px 3px 0 0;background:var(--pale);min-height:2px;transition:height .3s}
+.daybars .bar.hot{background:var(--red)} .daybars .bar.warm{background:var(--amber)}
+.daybars .bar.ok{background:var(--navy)} .daybars .bar.dim{background:#D7DCE8}
+.daybars .cv{font-size:10px;color:var(--mut);font-variant-numeric:tabular-nums;position:absolute;
+  top:0;left:0;right:0;text-align:center}
+.daybars .cl{font-size:9.5px;color:var(--mut);white-space:nowrap}
+.axl{display:flex;gap:3px;margin-top:5px}
+.axl>span{flex:1 1 0;min-width:0;text-align:center;font-size:9.5px;color:var(--mut);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.hbars{display:flex;flex-direction:column;gap:9px}
+.hbrow{display:grid;grid-template-columns:minmax(96px,150px) 1fr auto;gap:10px;align-items:center;font-size:12.5px}
+.hbrow .hl{min-width:0;overflow:hidden}
+.hbrow .hl .hn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.hbrow .hl .hs{font-size:10.5px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hbtrack{background:var(--bg);border-radius:5px;height:19px;position:relative;overflow:hidden}
+.hbfill{position:absolute;left:0;top:0;bottom:0;border-radius:5px;background:var(--navy);transition:width .35s}
+.hbfill.gold{background:var(--gold)} .hbfill.red{background:var(--red)}
+.hbfill.green{background:var(--green)} .hbfill.teal{background:var(--teal)}
+.hbfill.pale{background:var(--pale)}
+.hbv{font-family:var(--mono);font-size:11.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+.sbar{display:flex;height:24px;border-radius:6px;overflow:hidden;gap:2px;background:transparent}
+.sbar>span{min-width:3px;display:grid;place-items:center;font-size:10.5px;font-weight:700;color:#fff;transition:flex-basis .35s}
+.slegend{display:flex;flex-wrap:wrap;gap:5px 14px;margin-top:9px;font-size:11.5px;color:var(--mut2)}
+.slegend i{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:5px;vertical-align:-1px}
+
+.pipe{display:flex;gap:5px;align-items:stretch}
+.pstage{flex:1 1 0;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:9px;
+  padding:9px 10px;position:relative}
+.pstage.done{background:#F0F6F3;border-color:#CFE4DA}
+.pstage.now{background:var(--palebg);border-color:var(--navy);box-shadow:0 0 0 1px var(--navy) inset}
+.pstage .pn{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:600}
+.pstage .pv{font-family:var(--display);font-size:19px;font-weight:600;margin-top:3px;line-height:1}
+.pstage .ps{font-size:10.5px;color:var(--mut);margin-top:3px;line-height:1.3}
+
+.meter{height:9px;border-radius:5px;background:var(--bg);position:relative;overflow:hidden}
+.meter i{position:absolute;left:0;top:0;bottom:0;border-radius:5px;background:var(--navy)}
+.meter i.over{background:var(--red)}
+.mrk{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink)}
+
+/* ── matrix ────────────────────────────────────────────────────── */
+table.mx{font-size:12.5px;min-width:760px}
+table.mx th{text-align:left;font-size:10px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--mut);font-weight:600;padding:8px 9px;border-bottom:1px solid var(--line);
+  background:var(--bg);position:sticky;top:0;z-index:2}
+table.mx th.b{text-align:center;min-width:112px}
+table.mx td{padding:0;border-bottom:1px solid var(--line2)}
+table.mx td.sc{padding:8px 11px;vertical-align:top}
+table.mx td.c{text-align:center;vertical-align:middle;padding:6px 5px}
+table.mx tbody tr:hover{background:var(--hov)}
+table.mx tbody tr.gaprow{background:#FDEDEA}
+table.mx tbody tr.gaprow:hover{background:#FBE4E1}
+.mcell{display:inline-grid;place-items:center;width:26px;height:22px;border-radius:5px;
+  font-size:11px;font-weight:700;font-family:var(--mono)}
+.m-in{background:#DCEFE6;color:#166B4C} .m-ex{background:#FBEDD6;color:#8A5A10}
+.m-na{background:#FBE4E1;color:#A32E1E} .m-al{background:#E4EAF7;color:#2E3A73}
+.scit{font-weight:500;line-height:1.35}
+.scref{font-family:var(--mono);font-size:10.5px;color:var(--mut);margin-top:2px}
+.stkc{position:sticky;left:0;background:var(--paper);z-index:1}
+table.mx tbody tr:hover .stkc{background:var(--hov)}
+table.mx tbody tr.gaprow .stkc{background:#FDEDEA}
+th.stkc{background:var(--bg);z-index:3}
+
+/* ── inbox / thread ────────────────────────────────────────────── */
+.mail{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--paper)}
+.mailh{padding:9px 12px;background:var(--bg);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.msubj{font-family:var(--mono);font-size:11.5px;color:var(--ink);font-weight:600}
+.mailb{padding:12px 14px;font-size:12.5px;line-height:1.6;color:var(--mut2)}
+.mailb p{margin:0 0 9px} .mailb p:last-child{margin-bottom:0}
+.mailb .sig{color:var(--mut);font-size:11.5px}
+.mailf{padding:9px 12px;border-top:1px solid var(--line);display:flex;align-items:center;
+  gap:8px;flex-wrap:wrap;background:var(--bg)}
+.attach{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--mut2);
+  background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:3px 8px}
+
+.tl{position:relative;padding-left:19px}
+.tl::before{content:'';position:absolute;left:5px;top:5px;bottom:5px;width:2px;background:var(--line)}
+.tli{position:relative;padding-bottom:13px}
+.tli:last-child{padding-bottom:0}
+.tli::before{content:'';position:absolute;left:-17px;top:4px;width:9px;height:9px;border-radius:50%;
+  background:var(--paper);border:2px solid var(--pale)}
+.tli.a::before{border-color:var(--teal)} .tli.h::before{border-color:var(--gold)}
+.tli.r::before{border-color:var(--red)}
+.tlt{font-size:12.5px;font-weight:500;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.tld{font-size:11.5px;color:var(--mut);margin-top:2px;line-height:1.45}
+.tlw{font-size:10.5px;color:var(--mut);font-family:var(--mono)}
+
+/* ── inspector drawer ──────────────────────────────────────────── */
+.insp{position:fixed;top:0;right:0;bottom:0;width:400px;max-width:92vw;background:var(--paper);
+  border-left:1px solid var(--line);box-shadow:-14px 0 40px rgba(20,27,69,.13);z-index:70;
+  display:flex;flex-direction:column;transform:translateX(100%);transition:transform .22s ease}
+.insp.open{transform:translateX(0)}
+.insph{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:10px;flex:none}
+.insph h4{font-family:var(--display);font-size:15px;font-weight:600;line-height:1.25}
+.insph .isub{font-size:11.5px;color:var(--mut);margin-top:3px}
+#inspclose{margin-left:auto;width:28px;height:28px;border-radius:7px;display:grid;place-items:center;
+  color:var(--mut);flex:none}
+#inspclose:hover{background:var(--bg);color:var(--ink)}
+.inspb{flex:1 1 auto;overflow-y:auto;padding:13px 14px;min-height:0}
+.inspb .card{box-shadow:none}
+.scrim{position:fixed;inset:0;background:rgba(20,27,69,.24);z-index:69;opacity:0;
+  pointer-events:none;transition:opacity .22s}
+.scrim.on{opacity:1;pointer-events:auto}
+
+/* ── tour ──────────────────────────────────────────────────────── */
+.tourbar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:90;
+  background:var(--ink);color:#fff;border-radius:13px;padding:12px 15px;width:min(560px,calc(100vw - 26px));
+  box-shadow:0 14px 42px rgba(20,27,69,.34);display:none}
+.tourbar.on{display:block}
+.tourn{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--gold);font-weight:700}
+.tourt{font-size:14px;font-weight:600;margin-top:4px;line-height:1.35}
+.tourd{font-size:12.5px;color:#BFC7DE;margin-top:5px;line-height:1.5}
+.tourf{display:flex;align-items:center;gap:8px;margin-top:11px}
+.tourp{flex:1 1 auto;height:3px;border-radius:2px;background:rgba(255,255,255,.16);overflow:hidden}
+.tourp i{display:block;height:100%;background:var(--gold);transition:width .25s}
+.tbtn{padding:5px 12px;border-radius:7px;font-size:12px;font-weight:600;
+  background:rgba(255,255,255,.12);color:#fff}
+.tbtn:hover{background:rgba(255,255,255,.2)}
+.tbtn.pri{background:var(--gold);color:#2A1B05}
+.tbtn.pri:hover{filter:brightness(.94)}
+.spot{position:fixed;border-radius:11px;box-shadow:0 0 0 3px var(--gold),0 0 0 9999px rgba(20,27,69,.42);
+  z-index:88;pointer-events:none;transition:all .25s ease;display:none}
+.spot.on{display:block}
+
+/* ── misc ──────────────────────────────────────────────────────── */
+.rowflex{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.spacer{flex:1 1 auto}
+.hint{font-size:11.5px;color:var(--mut);line-height:1.45}
+.dband{background:var(--ink);color:#C3CADF;font-size:11.5px;padding:7px 22px;
+  display:flex;align-items:center;gap:9px;flex-wrap:wrap;flex:none}
+.dband b{color:#fff;font-weight:600}
+.dband .btn{margin-left:auto}
+.nav-toggle{display:none}
+
+/* ── closing timeline ──────────────────────────────────────────── */
+.gantt{display:flex;flex-direction:column;gap:9px}
+.gr{display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:12px;align-items:center;font-size:12.5px}
+.gr .gl{min-width:0}
+.gr .gl .hn{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gr .gl .hs{font-size:10.5px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gtrack{position:relative;height:22px;background:var(--bg);border-radius:5px;overflow:hidden}
+.gt{position:absolute;top:0;bottom:0;width:1px;background:var(--line);z-index:0}
+.gbar{position:absolute;left:0;top:0;bottom:0;border-radius:5px;background:var(--navy);
+  transition:width .35s;z-index:1}
+.gbar.hot{background:var(--red)} .gbar.warm{background:var(--amber)} .gbar.ok{background:var(--navy)}
+.gcap{position:absolute;top:50%;transform:translate(7px,-50%);font-size:10.5px;
+  font-family:var(--mono);color:var(--mut2);white-space:nowrap;z-index:2}
+.gaxis{display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:12px;margin-top:3px}
+.gaxis .gtrack{background:none;height:14px;overflow:visible}
+.gx{position:absolute;top:0;font-size:9.5px;color:var(--mut);transform:translateX(-2px);white-space:nowrap}
+.bd.wideL .hbrow{grid-template-columns:minmax(150px,240px) 1fr auto}
+.pjsel .tok{white-space:nowrap}
+table.mx td.sc{padding:7px 11px}
+
+/* ── responsive layer · injected LAST ──────────────────────────── */
+@media (max-width:1180px){
+  .app{grid-template-columns:206px 1fr}
+  .split64,.split46{grid-template-columns:1fr}
+  .g4{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:1000px){
+  .app{grid-template-columns:1fr;grid-template-rows:auto 1fr;height:100vh}
+  .side{flex-direction:row;align-items:center;padding:0 12px;height:52px;
+    background:var(--ink);backdrop-filter:none;position:sticky;top:0;z-index:80;overflow:visible}
+  .brandbar{border:0;padding:0;flex:1 1 auto;min-width:0}
+  .logosub{display:none}
+  .railscroll{position:fixed;left:0;right:0;top:52px;bottom:0;background:var(--ink);
+    padding:12px;overflow-y:auto;display:none;z-index:79}
+  .railscroll.open{display:block}
+  .railfoot{border:0;padding:0;flex:none;order:3}
+  .who{padding:3px} .whon,.whor{display:none}
+  .nav-toggle{display:grid;place-items:center;width:34px;height:34px;border-radius:8px;
+    color:#fff;order:2;flex:none;background:rgba(255,255,255,.1)}
+  .top{padding:9px 14px;flex-wrap:wrap;gap:9px}
+  .topr{width:100%;margin-left:0}
+  .pjsel{flex:1 1 auto} .pjsel select{max-width:none;width:100%}
+  .wbody{padding:13px 14px 22px}
+  .grid.g3,.grid.g2,.split{grid-template-columns:1fr}
+  .insp{top:52px;width:100%;max-width:none}
+  .dband{padding:7px 14px}
+  .pipe{overflow-x:auto;scrollbar-width:none} .pstage{min-width:118px;flex:none}
+}
+@media (max-width:1000px){
+  .hd{flex-wrap:wrap}
+  .hd .rt{flex-wrap:wrap;margin-left:0;width:100%}
+  .hd .rt:first-child{width:auto}
+  .btn{white-space:normal;text-align:left}
+}
+@media (max-width:640px){
+  .inst{min-width:142px;padding:9px 11px}
+  .inst .iv{font-size:20px}
+  .g4,.g3,.g2{grid-template-columns:repeat(2,1fr)}
+  .g3>*:nth-child(3):last-child,.g5>*:nth-child(5):last-child{grid-column:1/-1}
+  .hbrow,.bd.wideL .hbrow{grid-template-columns:minmax(86px,124px) 1fr auto;font-size:12px}
+  .gr,.gaxis{grid-template-columns:minmax(86px,124px) 1fr;gap:9px}
+  .gcap{display:none}
+  .top{padding:8px 12px} .topt{font-size:15.5px}
+  .wbody{padding:12px 12px 20px}
+  .tourbar{bottom:10px;padding:11px 13px}
+  .card{border-radius:10px}
+  table.dt{font-size:12.5px}
+  table.dt th{padding:7px 9px} table.dt td{padding:8px 9px}
+  .scroll table.dt th:first-child,.scroll table.dt td:first-child{position:sticky;left:0;
+    background:var(--paper);z-index:1}
+  .scroll table.dt th:first-child{background:var(--bg);z-index:3}
+  .scroll table.dt th:first-child::after,.scroll table.dt td:first-child::after{
+    content:'';position:absolute;right:0;top:0;bottom:0;width:1px;background:var(--line)}
+  table.dt tbody tr.sel td:first-child{background:var(--palebg)}
+}
+</style>
+</head><body>
+<div id="app-root"></div>
+<script>/* ═══ Mosaic tender OS — demo application ═══════════════════════════
+   Fictional project data. Structure is real; the numbers are not.     */
+var D = {"today":"2026-09-10","projects":[{"tok":"4021-STR","name":"Stoneridge","full":"Stoneridge Townhomes — Phase 2","type":"Townhome","skill":"scope-townhome","folder":"/Stoneridge/Tenders","coord":"Aaron","cm":"Dale Ferreira","loc":"Surrey, BC","detail":"48 units · 6 buildings · wood-frame over slab","value":28400000,"log":"/Stoneridge/Tenders/tender-log.xlsx","est":"/Stoneridge/Estimate/4021-budget.xlsx"},{"tok":"4012-WWN","name":"Westwood North Tower","full":"Westwood North Tower","type":"Concrete tower","skill":"scope-concrete-tower","folder":"/Westwood/Tenders","coord":"Priya Sandhu","cm":"Dale Ferreira","loc":"Coquitlam, BC","detail":"31 storeys · 214 units · cast-in-place","value":112000000,"log":"/Westwood/Tenders/tender-log.xlsx","est":"/Westwood/Estimate/4012-budget.xlsx"},{"tok":"2894-LTS","name":"Lynn Trailside","full":"Lynn Trailside","type":"Wood-frame midrise","skill":"scope-wood-midrise","folder":"/LynnTrailside/Tenders","coord":"Dan Kowalchuk","cm":"Marcy Boulter","loc":"North Vancouver, BC","detail":"6 storeys · 96 units · encapsulated mass timber","value":44800000,"log":"/LynnTrailside/Tenders/tender-log.xlsx","est":"/LynnTrailside/Estimate/2894-budget.xlsx"}],"firms":{"COA":{"name":"Coastline Interiors Ltd.","city":"Langley","contact":"Marguerite Bevan","email":"mbevan@coastlineinteriors.example"},"PWS":{"name":"Pacific Wall Systems Inc.","city":"Richmond","contact":"Tomas Elgersma","email":"t.elgersma@pacificwall.example"},"RDP":{"name":"Ridgeline Drywall & Painting","city":"Abbotsford","contact":"Harjit Bassi","email":"harjit@ridgelinedp.example"},"FFG":{"name":"Fraser Finishing Group","city":"New Westminster","contact":"Noor Haddadi","email":"noor@fraserfinishing.example"},"DIS":{"name":"Delta Interior Systems","city":"Delta","contact":"Ken Oyama","email":"ken@deltainterior.example"},"NMW":{"name":"Nine Mile Wall & Ceiling","city":"Maple Ridge","contact":"Cassidy Roelofs","email":"office@ninemilewall.example"},"BPC":{"name":"Burrard Painting Co.","city":"Burnaby","contact":"Elias Petrakis","email":"e.petrakis@burrardpainting.example"},"SUM":{"name":"Summit Formwork Ltd.","city":"Surrey","contact":"Rui Marchetti","email":"rui@summitformwork.example"},"KIN":{"name":"Kingsway Concrete Services","city":"Burnaby","contact":"Wendy Achterberg","email":"w.achterberg@kingswayconcrete.example"},"TBC":{"name":"Tri-Base Concrete","city":"Port Coquitlam","contact":"Sam Ogunleye","email":"sam@tribaseconcrete.example"},"GRV":{"name":"Graveline Placing & Finishing","city":"Aldergrove","contact":"Denise Trudel","email":"denise@graveline.example"},"CBC":{"name":"Cedarbank Concrete","city":"Chilliwack","contact":"Marek Zielinski","email":"marek@cedarbank.example"},"ALP":{"name":"Alpenway Placing","city":"Mission","contact":"Beau Fontenot","email":"beau@alpenway.example"},"TIM":{"name":"Timberline Framing Ltd.","city":"Langley","contact":"Garrett Halliwell","email":"g.halliwell@timberlineframing.example"},"WCF":{"name":"West Coast Frameworks","city":"Surrey","contact":"Ingrid Vasquez","email":"ingrid@wcframeworks.example"},"MCA":{"name":"McAllister Carpentry","city":"Cloverdale","contact":"Ross McAllister","email":"ross@mcallistercarpentry.example"},"PGF":{"name":"Panorama Ridge Framing","city":"Surrey","contact":"Yusuf Karadeniz","email":"yusuf@panoramaridge.example"},"STV":{"name":"Stave Valley Structures","city":"Mission","contact":"Colleen Fairweather","email":"colleen@stavevalley.example"},"HWD":{"name":"Hardwood & Post Framing","city":"Abbotsford","contact":"Devin Braathen","email":"devin@hardwoodpost.example"},"NRF":{"name":"Northridge Framing Co.","city":"Maple Ridge","contact":"Priyanka Deol","email":"p.deol@northridgeframing.example"},"OKF":{"name":"Oak & Kerf Contracting","city":"Pitt Meadows","contact":"Milo Castellano","email":"milo@oakandkerf.example"},"BRC":{"name":"Bracket Structural","city":"Langley","contact":"Hana Sugiyama","email":"hana@bracketstructural.example"},"ENV":{"name":"Envelope Sciences BC","city":"Vancouver","contact":"Aidan Lockhart","email":"aidan@envelopesciences.example"},"SEA":{"name":"Seaboard Cladding Systems","city":"Richmond","contact":"Farrah Nasrallah","email":"farrah@seaboardcladding.example"},"RAI":{"name":"Rainshield Exteriors","city":"Coquitlam","contact":"Petra Lindqvist","email":"petra@rainshield.example"},"CWX":{"name":"Cascade Wall & Exterior","city":"Port Moody","contact":"Nnamdi Okafor","email":"n.okafor@cascadewx.example"},"TDE":{"name":"Tidewater Envelope Ltd.","city":"North Vancouver","contact":"Solveig Bratland","email":"solveig@tidewaterenvelope.example"},"STC":{"name":"Stormcoat Building Systems","city":"Surrey","contact":"Reza Amirkhani","email":"reza@stormcoat.example"},"GAB":{"name":"Gable & Batten Exteriors","city":"Langley","contact":"Trish Vanderhoek","email":"trish@gableandbatten.example"},"HAR":{"name":"Harbourfront Weatherline","city":"Delta","contact":"Owen Mbeki","email":"owen@harbourfrontwl.example"},"VLT":{"name":"Voltaic Electrical Contractors","city":"Surrey","contact":"Jaskaran Gill","email":"j.gill@voltaicelectrical.example"},"MER":{"name":"Meridian Power Systems","city":"Burnaby","contact":"Lucia Ferreira","email":"lucia@meridianpower.example"},"AMP":{"name":"Amperage Contracting","city":"Abbotsford","contact":"Chase Delacroix","email":"chase@amperagecontracting.example"},"NCE":{"name":"Northcoast Electric Ltd.","city":"Coquitlam","contact":"Bianca Rothwell","email":"bianca@northcoastelectric.example"},"SPK":{"name":"Sparkline Installations","city":"Maple Ridge","contact":"Umar Chaudhry","email":"umar@sparkline.example"},"CIR":{"name":"Circuit West Electrical","city":"Langley","contact":"Elodie Tremblay","email":"elodie@circuitwest.example"},"GRD":{"name":"Grid & Conduit Co.","city":"Chilliwack","contact":"Nate Boisvert","email":"nate@gridconduit.example"},"THM":{"name":"Thermaflow Mechanical","city":"Surrey","contact":"Alina Kovalenko","email":"alina@thermaflow.example"},"PMS":{"name":"Peninsula Mechanical Services","city":"Delta","contact":"Grant Iwasaki","email":"grant@peninsulamech.example"},"AIR":{"name":"Airstream HVAC Ltd.","city":"Burnaby","contact":"Marcus Delacour","email":"marcus@airstreamhvac.example"},"IRO":{"name":"Ironvale Structural Steel","city":"Surrey","contact":"Dagny Halvorsen","email":"d.halvorsen@ironvale.example"},"STL":{"name":"Steelhead Fabricators","city":"Port Kells","contact":"Ravi Shanmugam","email":"ravi@steelheadfab.example"},"BLT":{"name":"Boltworks Erectors Ltd.","city":"Langley","contact":"Anneke Visser","email":"anneke@boltworks.example"},"CWG":{"name":"Clearwater Glazing Systems","city":"Richmond","contact":"Hugo Marchesi","email":"hugo@clearwaterglazing.example"},"FAC":{"name":"Facade North Curtainwall","city":"Burnaby","contact":"Ingrid Solheim","email":"ingrid@facadenorth.example"},"VER":{"name":"Vertex Curtain Wall","city":"Delta","contact":"Kwame Asante","email":"kwame@vertexcw.example"},"ASC":{"name":"Ascentia Elevator Co.","city":"Vancouver","contact":"Renata Bilodeau","email":"renata@ascentia.example"},"LFT":{"name":"Liftway Vertical Systems","city":"Burnaby","contact":"Peter Nkemdirim","email":"peter@liftway.example"},"MTB":{"name":"Mass Timber Builders BC","city":"North Vancouver","contact":"Sigrid Aaltonen","email":"sigrid@masstimberbc.example"},"CLT":{"name":"Cross Laminated Contracting","city":"Squamish","contact":"Tomasz Wierzbicki","email":"tomasz@crosslam.example"},"TRB":{"name":"Trailhead Timberworks","city":"North Vancouver","contact":"Josie Kanagawa","email":"josie@trailheadtw.example"},"AQD":{"name":"Aqueduct Plumbing Ltd.","city":"Coquitlam","contact":"Faisal Rahmani","email":"faisal@aqueductplumbing.example"},"HDR":{"name":"Headwater Mechanical","city":"North Vancouver","contact":"Blythe Ashcroft","email":"blythe@headwatermech.example"},"PIP":{"name":"Pipeline Services West","city":"Burnaby","contact":"Oskar Lindgren","email":"oskar@pipelinesw.example"}},"packages":[{"id":"P03","proj":"4021-STR","div":"03","title":"Cast-in-place concrete","short":"Div 03 — Concrete","issued":"2026-08-20","close":"2026-09-11","status":"closing","budget":3640000,"scope":"scope-townhome / division-03","bidders":[{"code":"SUM","state":"quote","replied":"2026-09-08","quote":3512000,"opened":"2026-08-20","note":"","touches":[{"day":"2026-08-20","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-20","kind":"open","text":"Package opened by Rui Marchetti"},{"day":"2026-08-28","kind":"chase","text":"Follow-up sent — 14 days to close"},{"day":"2026-09-04","kind":"chase","text":"Follow-up sent — 7 days to close"},{"day":"2026-09-08","kind":"chase","text":"Follow-up sent — 3 days to close"},{"day":"2026-09-08","kind":"quote","text":"Quote received and filed to the project folder"}],"firm":"Summit Formwork Ltd.","city":"Surrey","contact":"Rui Marchetti","email":"rui@summitformwork.example"},{"code":"KIN","state":"quote","replied":"2026-09-09","quote":3688400,"opened":"2026-08-20","note":"","touches":[{"day":"2026-08-20","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-20","kind":"open","text":"Package opened by Wendy Achterberg"},{"day":"2026-08-28","kind":"chase","text":"Follow-up sent — 14 days to close"},{"day":"2026-09-04","kind":"chase","text":"Follow-up sent — 7 days to close"},{"day":"2026-09-08","kind":"chase","text":"Follow-up sent — 3 days to close"},{"day":"2026-09-09","kind":"quote","text":"Quote received and filed to the project folder"}],"firm":"Kingsway Concrete Services","city":"Burnaby","contact":"Wendy Achterberg","email":"w.achterberg@kingswayconcrete.example"},{"code":"TBC","state":"quote","replied":"2026-09-09","quote":3591750,"opened":"2026-08-21","note":"","touches":[{"day":"2026-08-20","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-21","kind":"open","text":"Package opened by Sam Ogunleye"},{"day":"2026-08-28","kind":"chase","text":"Follow-up sent — 14 days to close"},{"day":"2026-09-04","kind":"chase","text":"Follow-up sent — 7 days to close"},{"day":"2026-09-08","kind":"chase","text":"Follow-up sent — 3 days to close"},{"day":"2026-09-09","kind":"quote","text":"Quote received and filed to the project folder"}],"firm":"Tri-Base Concrete","city":"Port Coquitlam","contact":"Sam Ogunleye","email":"sam@tribaseconcrete.example"},{"code":"GRV","state":"bidding","replied":"2026-08-27","quote":null,"opened":"2026-08-20","note":"confirmed bidding, quote not in","touches":[{"day":"2026-08-20","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-20","kind":"open","text":"Package opened by Denise Trudel"},{"day":"2026-08-27","kind":"bidding","text":"Reply read and classified: intends to bid"},{"day":"2026-08-28","kind":"chase","text":"Follow-up sent — 14 days to close"},{"day":"2026-09-04","kind":"chase","text":"Follow-up sent — 7 days to close"},{"day":"2026-09-08","kind":"chase","text":"Follow-up sent — 3 days to close"},{"day":"2026-09-10","kind":"chase","text":"Follow-up sent — 1 day to close"}],"firm":"Graveline Placing & Finishing","city":"Aldergrove","contact":"Denise Trudel","email":"denise@graveline.example"},{"code":"CBC","state":"bidding","replied":"2026-09-02","quote":null,"opened":"2026-08-22","note":"confirmed bidding, quote not in","touches":[{"day":"2026-08-20","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-22","kind":"open","text":"Package opened by Marek Zielinski"},{"day":"2026-08-28","kind":"chase","text":"Follow-up sent — 14 days to close"},{"day":"2026-09-02","kind":"bidding","text":"Reply read and classified: intends to bid"},{"day":"2026-09-04","kind":"chase","text":"Follow-up sent — 7 days to close"},{"day":"2026-09-08","kind":"chase","text":"Follow-up sent — 3 days to close"},{"day":"2026-09-10","kind":"chase","text":"Follow-up sent — 1 day to close"}],"firm":"Cedarbank Concrete","city":"Chilliwack","contact":"Marek Zielinski","email":"marek@cedarbank.example"},{"code":"ALP","state":"nobid","replied":"2026-08-25","quote":null,"opened":"2026-08-20","note":"no capacity until Q1","touches":[{"day":"2026-08-20","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-20","kind":"open","text":"Package opened by Beau Fontenot"},{"day":"2026-08-25","kind":"nobid","text":"Reply read and classified: no-bid — no capacity until Q1"}],"firm":"Alpenway Placing","city":"Mission","contact":"Beau Fontenot","email":"beau@alpenway.example"}],"nInvited":6,"nQuote":3,"nBidding":2,"nNoBid":1,"nSilent":0,"dleft":1,"project":"Stoneridge"},{"id":"P06","proj":"4021-STR","div":"06","title":"Rough carpentry & framing","short":"Div 06 — Framing","issued":"2026-08-27","close":"2026-09-18","status":"open","budget":5180000,"scope":"scope-townhome / division-06","bidders":[{"code":"TIM","state":"quote","replied":"2026-09-07","quote":4998000,"opened":"2026-08-27","note":"","touches":[{"day":"2026-08-27","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-27","kind":"open","text":"Package opened by Garrett Halliwell"},{"day":"2026-09-04","kind":"chase","text":"Follow-up sent — 14 days to close"},{"day":"2026-09-07","kind":"quote","text":"Quote received and filed to the project folder"}],"firm":"Timberline Framing Ltd.","city":"Langley","contact":"Garrett Halliwell","email":"g.halliwell@timberlineframing.example"},{"code":"WCF","state":"quote","replied":"2026-09-09","quote":5244500,"opened":"2026-08-27","note":"","touches":[{"day":"2026-08-27","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-27","kind":"open","text":"Package opened by Ingrid Vasquez"},{"day":"2026-09-04","kind":"chase","text":"Follow-up sent — 14 days to close"},{"day":"2026-09-09","kind":"quote","text":"Quote received and filed to the project folder"}],"firm":"West Coast Frameworks","city":"Surrey","contact":"Ingrid Vasquez","email":"ingrid@wcframeworks.example"},{"code":"MCA","state":"bidding","replied":"2026-08-29","quote":null,"opened":"2026-08-27","note":"","touches":[{"day":"2026-08-27","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-27","kind":"open","text":"Package opened by Ross McAllister"},{"day":"2026-08-29","kind":"bidding","text":"Reply read and classified: intends to bid"},{"day":"2026-09-04","kind":"chase","text":"Follow-up sent — 14 days to close"}],"firm":"McAllister Carpentry","city":"Cloverdale","contact":"Ross McAllister","email":"ross@mcallistercarpentry.example"},{"code":"PGF","state":"bidding","replied":"2026-09-01","quote":null,"opened":"2026-08-28","note":"","touches":[{"day":"2026-08-27","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-28","kind":"open","text":"Package opened by Yusuf Karadeniz"},{"day":"2026-09-01","kind":"bidding","text":"Reply read and classified: intends to bid"},{"day":"2026-09-04","kind":"chase","text":"Follow-up sent — 14 days to close"}],"firm":"Panorama Ridge Framing","city":"Surrey","contact":"Yusuf Karadeniz","email":"yusuf@panoramaridge.example"},{"code":"STV","state":"question","replied":"2026-09-08","quote":null,"opened":"2026-08-27","note":"asked about hardware supply split","touches":[{"day":"2026-08-27","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-27","kind":"open","text":"Package opened by Colleen Fairweather"},{"day":"2026-09-04","kind":"chase","text":"Follow-up sent — 14 days to close"},{"day":"2026-09-08","kind":"question","text":"Reply read and classified: scope question — routed to the CM"}],"firm":"Stave Valley Structures","city":"Mission","contact":"Colleen Fairweather","email":"colleen@stavevalley.example"},{"code":"HWD","state":"bidding","replied":"2026-09-03","quote":null,"opened":"2026-08-29","note":"","touches":[{"day":"2026-08-27","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-29","kind":"open","text":"Package opened by Devin Braathen"},{"day":"2026-09-03","kind":"bidding","text":"Reply read and classified: intends to bid"},{"day":"2026-09-04","kind":"chase","text":"Follow-up sent — 14 days to close"}],"firm":"Hardwood & Post Framing","city":"Abbotsford","contact":"Devin Braathen","email":"devin@hardwoodpost.example"},{"code":"NRF","state":"nobid","replied":"2026-08-30","quote":null,"opened":"2026-08-27","note":"bidding a competing job, same close","touches":[{"day":"2026-08-27","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-27","kind":"open","text":"Package opened by Priyanka Deol"},{"day":"2026-08-30","kind":"nobid","text":"Reply read and classified: no-bid — bidding a competing job, same close"}],"firm":"Northridge Framing Co.","city":"Maple Ridge","contact":"Priyanka Deol","email":"p.deol@northridgeframing.example"},{"code":"OKF","state":"silent","replied":null,"quote":null,"opened":"2026-08-28","note":"opened twice, no reply — one follow-up sent","touches":[{"day":"2026-08-27","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-28","kind":"open","text":"Package opened by Milo Castellano"},{"day":"2026-09-04","kind":"chase","text":"Follow-up sent — 14 days to close"}],"firm":"Oak & Kerf Contracting","city":"Pitt Meadows","contact":"Milo Castellano","email":"milo@oakandkerf.example"},{"code":"BRC","state":"invited","replied":null,"quote":null,"opened":null,"note":"invitation not opened","touches":[{"day":"2026-08-27","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-04","kind":"chase","text":"Follow-up sent — 14 days to close"}],"firm":"Bracket Structural","city":"Langley","contact":"Hana Sugiyama","email":"hana@bracketstructural.example"}],"nInvited":9,"nQuote":2,"nBidding":4,"nNoBid":1,"nSilent":2,"dleft":8,"project":"Stoneridge"},{"id":"P07","proj":"4021-STR","div":"07","title":"Building envelope","short":"Div 07 — Envelope","issued":"2026-09-03","close":"2026-09-23","status":"open","budget":4260000,"scope":"scope-townhome / division-07","bidders":[{"code":"ENV","state":"quote","replied":"2026-09-09","quote":4188000,"opened":"2026-09-03","note":"","touches":[{"day":"2026-09-03","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-03","kind":"open","text":"Package opened by Aidan Lockhart"},{"day":"2026-09-09","kind":"chase","text":"Follow-up sent — 14 days to close"},{"day":"2026-09-09","kind":"quote","text":"Quote received and filed to the project folder"}],"firm":"Envelope Sciences BC","city":"Vancouver","contact":"Aidan Lockhart","email":"aidan@envelopesciences.example"},{"code":"SEA","state":"bidding","replied":"2026-09-05","quote":null,"opened":"2026-09-03","note":"","touches":[{"day":"2026-09-03","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-03","kind":"open","text":"Package opened by Farrah Nasrallah"},{"day":"2026-09-05","kind":"bidding","text":"Reply read and classified: intends to bid"},{"day":"2026-09-09","kind":"chase","text":"Follow-up sent — 14 days to close"}],"firm":"Seaboard Cladding Systems","city":"Richmond","contact":"Farrah Nasrallah","email":"farrah@seaboardcladding.example"},{"code":"RAI","state":"bidding","replied":"2026-09-04","quote":null,"opened":"2026-09-03","note":"","touches":[{"day":"2026-09-03","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-03","kind":"open","text":"Package opened by Petra Lindqvist"},{"day":"2026-09-04","kind":"bidding","text":"Reply read and classified: intends to bid"},{"day":"2026-09-09","kind":"chase","text":"Follow-up sent — 14 days to close"}],"firm":"Rainshield Exteriors","city":"Coquitlam","contact":"Petra Lindqvist","email":"petra@rainshield.example"},{"code":"CWX","state":"bidding","replied":"2026-09-08","quote":null,"opened":"2026-09-04","note":"","touches":[{"day":"2026-09-03","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-04","kind":"open","text":"Package opened by Nnamdi Okafor"},{"day":"2026-09-08","kind":"bidding","text":"Reply read and classified: intends to bid"},{"day":"2026-09-09","kind":"chase","text":"Follow-up sent — 14 days to close"}],"firm":"Cascade Wall & Exterior","city":"Port Moody","contact":"Nnamdi Okafor","email":"n.okafor@cascadewx.example"},{"code":"TDE","state":"bidding","replied":"2026-09-06","quote":null,"opened":"2026-09-03","note":"","touches":[{"day":"2026-09-03","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-03","kind":"open","text":"Package opened by Solveig Bratland"},{"day":"2026-09-06","kind":"bidding","text":"Reply read and classified: intends to bid"},{"day":"2026-09-09","kind":"chase","text":"Follow-up sent — 14 days to close"}],"firm":"Tidewater Envelope Ltd.","city":"North Vancouver","contact":"Solveig Bratland","email":"solveig@tidewaterenvelope.example"},{"code":"STC","state":"question","replied":"2026-09-09","quote":null,"opened":"2026-09-05","note":"asked which rainscreen detail governs","touches":[{"day":"2026-09-03","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-05","kind":"open","text":"Package opened by Reza Amirkhani"},{"day":"2026-09-09","kind":"chase","text":"Follow-up sent — 14 days to close"},{"day":"2026-09-09","kind":"question","text":"Reply read and classified: scope question — routed to the CM"}],"firm":"Stormcoat Building Systems","city":"Surrey","contact":"Reza Amirkhani","email":"reza@stormcoat.example"},{"code":"GAB","state":"silent","replied":null,"quote":null,"opened":"2026-09-04","note":"","touches":[{"day":"2026-09-03","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-04","kind":"open","text":"Package opened by Trish Vanderhoek"},{"day":"2026-09-09","kind":"chase","text":"Follow-up sent — 14 days to close"}],"firm":"Gable & Batten Exteriors","city":"Langley","contact":"Trish Vanderhoek","email":"trish@gableandbatten.example"},{"code":"HAR","state":"invited","replied":null,"quote":null,"opened":null,"note":"","touches":[{"day":"2026-09-03","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-09","kind":"chase","text":"Follow-up sent — 14 days to close"}],"firm":"Harbourfront Weatherline","city":"Delta","contact":"Owen Mbeki","email":"owen@harbourfrontwl.example"}],"nInvited":8,"nQuote":1,"nBidding":5,"nNoBid":0,"nSilent":2,"dleft":13,"project":"Stoneridge"},{"id":"P09","proj":"4021-STR","div":"09","title":"Drywall, taping & painting","short":"Div 09 — Drywall & paint","issued":"2026-08-14","close":"2026-09-04","status":"levelled","budget":1320000,"scope":"scope-townhome / division-09","bidders":[{"code":"COA","state":"quote","replied":"2026-09-03","quote":1284500,"opened":"2026-08-14","note":"","touches":[{"day":"2026-08-14","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-14","kind":"open","text":"Package opened by Marguerite Bevan"},{"day":"2026-08-21","kind":"chase","text":"Follow-up sent — 14 days to close"},{"day":"2026-08-28","kind":"chase","text":"Follow-up sent — 7 days to close"},{"day":"2026-09-01","kind":"chase","text":"Follow-up sent — 3 days to close"},{"day":"2026-09-03","kind":"chase","text":"Follow-up sent — 1 day to close"},{"day":"2026-09-03","kind":"quote","text":"Quote received and filed to the project folder"}],"firm":"Coastline Interiors Ltd.","city":"Langley","contact":"Marguerite Bevan","email":"mbevan@coastlineinteriors.example"},{"code":"PWS","state":"quote","replied":"2026-09-04","quote":1196000,"opened":"2026-08-14","note":"","touches":[{"day":"2026-08-14","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-14","kind":"open","text":"Package opened by Tomas Elgersma"},{"day":"2026-08-21","kind":"chase","text":"Follow-up sent — 14 days to close"},{"day":"2026-08-28","kind":"chase","text":"Follow-up sent — 7 days to close"},{"day":"2026-09-01","kind":"chase","text":"Follow-up sent — 3 days to close"},{"day":"2026-09-03","kind":"chase","text":"Follow-up sent — 1 day to close"},{"day":"2026-09-04","kind":"quote","text":"Quote received and filed to the project folder"}],"firm":"Pacific Wall Systems Inc.","city":"Richmond","contact":"Tomas Elgersma","email":"t.elgersma@pacificwall.example"},{"code":"RDP","state":"quote","replied":"2026-09-04","quote":1341200,"opened":"2026-08-15","note":"","touches":[{"day":"2026-08-14","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-15","kind":"open","text":"Package opened by Harjit Bassi"},{"day":"2026-08-21","kind":"chase","text":"Follow-up sent — 14 days to close"},{"day":"2026-08-28","kind":"chase","text":"Follow-up sent — 7 days to close"},{"day":"2026-09-01","kind":"chase","text":"Follow-up sent — 3 days to close"},{"day":"2026-09-03","kind":"chase","text":"Follow-up sent — 1 day to close"},{"day":"2026-09-04","kind":"quote","text":"Quote received and filed to the project folder"}],"firm":"Ridgeline Drywall & Painting","city":"Abbotsford","contact":"Harjit Bassi","email":"harjit@ridgelinedp.example"},{"code":"FFG","state":"quote","replied":"2026-09-02","quote":1309750,"opened":"2026-08-14","note":"","touches":[{"day":"2026-08-14","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-14","kind":"open","text":"Package opened by Noor Haddadi"},{"day":"2026-08-21","kind":"chase","text":"Follow-up sent — 14 days to close"},{"day":"2026-08-28","kind":"chase","text":"Follow-up sent — 7 days to close"},{"day":"2026-09-01","kind":"chase","text":"Follow-up sent — 3 days to close"},{"day":"2026-09-02","kind":"quote","text":"Quote received and filed to the project folder"}],"firm":"Fraser Finishing Group","city":"New Westminster","contact":"Noor Haddadi","email":"noor@fraserfinishing.example"},{"code":"DIS","state":"nobid","replied":"2026-08-19","quote":null,"opened":"2026-08-14","note":"at capacity through November","touches":[{"day":"2026-08-14","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-14","kind":"open","text":"Package opened by Ken Oyama"},{"day":"2026-08-19","kind":"nobid","text":"Reply read and classified: no-bid — at capacity through November"}],"firm":"Delta Interior Systems","city":"Delta","contact":"Ken Oyama","email":"ken@deltainterior.example"},{"code":"BPC","state":"withdrew","replied":"2026-09-04","quote":null,"opened":"2026-08-14","note":"withdrew morning of close","touches":[{"day":"2026-08-14","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-14","kind":"open","text":"Package opened by Elias Petrakis"},{"day":"2026-08-21","kind":"chase","text":"Follow-up sent — 14 days to close"},{"day":"2026-08-28","kind":"chase","text":"Follow-up sent — 7 days to close"},{"day":"2026-09-01","kind":"chase","text":"Follow-up sent — 3 days to close"},{"day":"2026-09-03","kind":"chase","text":"Follow-up sent — 1 day to close"},{"day":"2026-09-04","kind":"withdrew","text":"Withdrew — withdrew morning of close"}],"firm":"Burrard Painting Co.","city":"Burnaby","contact":"Elias Petrakis","email":"e.petrakis@burrardpainting.example"},{"code":"NMW","state":"silent","replied":null,"quote":null,"opened":"2026-08-16","note":"never replied — escalated to the coordinator","touches":[{"day":"2026-08-14","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-16","kind":"open","text":"Package opened by Cassidy Roelofs"},{"day":"2026-08-21","kind":"chase","text":"Follow-up sent — 14 days to close"},{"day":"2026-08-28","kind":"chase","text":"Follow-up sent — 7 days to close"},{"day":"2026-08-29","kind":"escalate","text":"No reply after two follow-ups — escalated to the coordinator on Teams. The agent never decides a trade is out."},{"day":"2026-09-01","kind":"chase","text":"Follow-up sent — 3 days to close"},{"day":"2026-09-03","kind":"chase","text":"Follow-up sent — 1 day to close"}],"firm":"Nine Mile Wall & Ceiling","city":"Maple Ridge","contact":"Cassidy Roelofs","email":"office@ninemilewall.example"}],"nInvited":7,"nQuote":4,"nBidding":0,"nNoBid":2,"nSilent":1,"dleft":-6,"project":"Stoneridge"},{"id":"P26","proj":"4021-STR","div":"26","title":"Electrical","short":"Div 26 — Electrical","issued":"2026-09-08","close":"2026-09-29","status":"open","budget":3910000,"scope":"scope-townhome / division-26","bidders":[{"code":"VLT","state":"bidding","replied":"2026-09-09","quote":null,"opened":"2026-09-08","note":"","touches":[{"day":"2026-09-08","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-08","kind":"open","text":"Package opened by Jaskaran Gill"},{"day":"2026-09-09","kind":"bidding","text":"Reply read and classified: intends to bid"}],"firm":"Voltaic Electrical Contractors","city":"Surrey","contact":"Jaskaran Gill","email":"j.gill@voltaicelectrical.example"},{"code":"MER","state":"bidding","replied":"2026-09-09","quote":null,"opened":"2026-09-08","note":"","touches":[{"day":"2026-09-08","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-08","kind":"open","text":"Package opened by Lucia Ferreira"},{"day":"2026-09-09","kind":"bidding","text":"Reply read and classified: intends to bid"}],"firm":"Meridian Power Systems","city":"Burnaby","contact":"Lucia Ferreira","email":"lucia@meridianpower.example"},{"code":"AMP","state":"bidding","replied":"2026-09-10","quote":null,"opened":"2026-09-09","note":"","touches":[{"day":"2026-09-08","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-09","kind":"open","text":"Package opened by Chase Delacroix"},{"day":"2026-09-10","kind":"bidding","text":"Reply read and classified: intends to bid"}],"firm":"Amperage Contracting","city":"Abbotsford","contact":"Chase Delacroix","email":"chase@amperagecontracting.example"},{"code":"NCE","state":"bidding","replied":"2026-09-09","quote":null,"opened":"2026-09-08","note":"","touches":[{"day":"2026-09-08","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-08","kind":"open","text":"Package opened by Bianca Rothwell"},{"day":"2026-09-09","kind":"bidding","text":"Reply read and classified: intends to bid"}],"firm":"Northcoast Electric Ltd.","city":"Coquitlam","contact":"Bianca Rothwell","email":"bianca@northcoastelectric.example"},{"code":"SPK","state":"nobid","replied":"2026-09-09","quote":null,"opened":"2026-09-08","note":"outside their unit-count range","touches":[{"day":"2026-09-08","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-08","kind":"open","text":"Package opened by Umar Chaudhry"},{"day":"2026-09-09","kind":"nobid","text":"Reply read and classified: no-bid — outside their unit-count range"}],"firm":"Sparkline Installations","city":"Maple Ridge","contact":"Umar Chaudhry","email":"umar@sparkline.example"},{"code":"CIR","state":"invited","replied":null,"quote":null,"opened":"2026-09-09","note":"","touches":[{"day":"2026-09-08","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-09","kind":"open","text":"Package opened by Elodie Tremblay"}],"firm":"Circuit West Electrical","city":"Langley","contact":"Elodie Tremblay","email":"elodie@circuitwest.example"},{"code":"GRD","state":"invited","replied":null,"quote":null,"opened":null,"note":"","touches":[{"day":"2026-09-08","kind":"invite","text":"Invitation to bid issued, package attached"}],"firm":"Grid & Conduit Co.","city":"Chilliwack","contact":"Nate Boisvert","email":"nate@gridconduit.example"}],"nInvited":7,"nQuote":0,"nBidding":4,"nNoBid":1,"nSilent":2,"dleft":19,"project":"Stoneridge"},{"id":"P23","proj":"4021-STR","div":"23","title":"Mechanical / HVAC","short":"Div 23 — Mechanical","issued":"2026-08-06","close":"2026-09-01","status":"awarded","budget":2980000,"scope":"scope-townhome / division-23","awarded":"THM","award_val":2936400,"bidders":[{"code":"THM","state":"quote","replied":"2026-08-31","quote":2936400,"opened":"2026-08-06","note":"","touches":[{"day":"2026-08-06","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-06","kind":"open","text":"Package opened by Alina Kovalenko"},{"day":"2026-08-18","kind":"chase","text":"Follow-up sent — 14 days to close"},{"day":"2026-08-25","kind":"chase","text":"Follow-up sent — 7 days to close"},{"day":"2026-08-29","kind":"chase","text":"Follow-up sent — 3 days to close"},{"day":"2026-08-31","kind":"chase","text":"Follow-up sent — 1 day to close"},{"day":"2026-08-31","kind":"quote","text":"Quote received and filed to the project folder"}],"firm":"Thermaflow Mechanical","city":"Surrey","contact":"Alina Kovalenko","email":"alina@thermaflow.example"},{"code":"PMS","state":"quote","replied":"2026-09-01","quote":3074900,"opened":"2026-08-06","note":"","touches":[{"day":"2026-08-06","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-06","kind":"open","text":"Package opened by Grant Iwasaki"},{"day":"2026-08-18","kind":"chase","text":"Follow-up sent — 14 days to close"},{"day":"2026-08-25","kind":"chase","text":"Follow-up sent — 7 days to close"},{"day":"2026-08-29","kind":"chase","text":"Follow-up sent — 3 days to close"},{"day":"2026-08-31","kind":"chase","text":"Follow-up sent — 1 day to close"},{"day":"2026-09-01","kind":"quote","text":"Quote received and filed to the project folder"}],"firm":"Peninsula Mechanical Services","city":"Delta","contact":"Grant Iwasaki","email":"grant@peninsulamech.example"},{"code":"AIR","state":"nobid","replied":"2026-08-12","quote":null,"opened":"2026-08-06","note":"","touches":[{"day":"2026-08-06","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-06","kind":"open","text":"Package opened by Marcus Delacour"},{"day":"2026-08-12","kind":"nobid","text":"Reply read and classified: no-bid — no reason given"}],"firm":"Airstream HVAC Ltd.","city":"Burnaby","contact":"Marcus Delacour","email":"marcus@airstreamhvac.example"}],"nInvited":3,"nQuote":2,"nBidding":0,"nNoBid":1,"nSilent":0,"dleft":-9,"project":"Stoneridge"},{"id":"W05","proj":"4012-WWN","div":"05","title":"Structural steel — supply and erect","short":"Div 05 — Structural steel","issued":"2026-09-02","close":"2026-09-25","status":"open","budget":8740000,"scope":"scope-concrete-tower / division-05","bidders":[{"code":"IRO","state":"bidding","replied":"2026-09-05","quote":null,"opened":"2026-09-02","note":"","touches":[{"day":"2026-09-02","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-02","kind":"open","text":"Package opened by Dagny Halvorsen"},{"day":"2026-09-05","kind":"bidding","text":"Reply read and classified: intends to bid"}],"firm":"Ironvale Structural Steel","city":"Surrey","contact":"Dagny Halvorsen","email":"d.halvorsen@ironvale.example"},{"code":"STL","state":"quote","replied":"2026-09-09","quote":8612000,"opened":"2026-09-02","note":"","touches":[{"day":"2026-09-02","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-02","kind":"open","text":"Package opened by Ravi Shanmugam"},{"day":"2026-09-09","kind":"quote","text":"Quote received and filed to the project folder"}],"firm":"Steelhead Fabricators","city":"Port Kells","contact":"Ravi Shanmugam","email":"ravi@steelheadfab.example"},{"code":"BLT","state":"bidding","replied":"2026-09-08","quote":null,"opened":"2026-09-03","note":"","touches":[{"day":"2026-09-02","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-03","kind":"open","text":"Package opened by Anneke Visser"},{"day":"2026-09-08","kind":"bidding","text":"Reply read and classified: intends to bid"}],"firm":"Boltworks Erectors Ltd.","city":"Langley","contact":"Anneke Visser","email":"anneke@boltworks.example"},{"code":"BRC","state":"silent","replied":null,"quote":null,"opened":"2026-09-04","note":"","touches":[{"day":"2026-09-02","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-04","kind":"open","text":"Package opened by Hana Sugiyama"}],"firm":"Bracket Structural","city":"Langley","contact":"Hana Sugiyama","email":"hana@bracketstructural.example"}],"nInvited":4,"nQuote":1,"nBidding":2,"nNoBid":0,"nSilent":1,"dleft":15,"project":"Westwood North Tower"},{"id":"W08","proj":"4012-WWN","div":"08","title":"Curtain wall and glazing","short":"Div 08 — Curtain wall","issued":"2026-09-01","close":"2026-10-02","status":"open","budget":14200000,"scope":"scope-concrete-tower / division-08","bidders":[{"code":"CWG","state":"bidding","replied":"2026-09-04","quote":null,"opened":"2026-09-01","note":"","touches":[{"day":"2026-09-01","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-01","kind":"open","text":"Package opened by Hugo Marchesi"},{"day":"2026-09-04","kind":"bidding","text":"Reply read and classified: intends to bid"}],"firm":"Clearwater Glazing Systems","city":"Richmond","contact":"Hugo Marchesi","email":"hugo@clearwaterglazing.example"},{"code":"FAC","state":"bidding","replied":"2026-09-07","quote":null,"opened":"2026-09-01","note":"","touches":[{"day":"2026-09-01","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-01","kind":"open","text":"Package opened by Ingrid Solheim"},{"day":"2026-09-07","kind":"bidding","text":"Reply read and classified: intends to bid"}],"firm":"Facade North Curtainwall","city":"Burnaby","contact":"Ingrid Solheim","email":"ingrid@facadenorth.example"},{"code":"VER","state":"question","replied":"2026-09-09","quote":null,"opened":"2026-09-02","note":"asked about the podium transition detail","touches":[{"day":"2026-09-01","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-02","kind":"open","text":"Package opened by Kwame Asante"},{"day":"2026-09-09","kind":"question","text":"Reply read and classified: scope question — routed to the CM"}],"firm":"Vertex Curtain Wall","city":"Delta","contact":"Kwame Asante","email":"kwame@vertexcw.example"},{"code":"SEA","state":"nobid","replied":"2026-09-05","quote":null,"opened":"2026-09-01","note":"tower glazing outside their range","touches":[{"day":"2026-09-01","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-01","kind":"open","text":"Package opened by Farrah Nasrallah"},{"day":"2026-09-05","kind":"nobid","text":"Reply read and classified: no-bid — tower glazing outside their range"}],"firm":"Seaboard Cladding Systems","city":"Richmond","contact":"Farrah Nasrallah","email":"farrah@seaboardcladding.example"}],"nInvited":4,"nQuote":0,"nBidding":3,"nNoBid":1,"nSilent":0,"dleft":22,"project":"Westwood North Tower"},{"id":"W14","proj":"4012-WWN","div":"14","title":"Elevators","short":"Div 14 — Elevators","issued":"2026-08-18","close":"2026-09-15","status":"closing","budget":4980000,"scope":"scope-concrete-tower / division-14","bidders":[{"code":"ASC","state":"quote","replied":"2026-09-08","quote":4902500,"opened":"2026-08-18","note":"","touches":[{"day":"2026-08-18","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-18","kind":"open","text":"Package opened by Renata Bilodeau"},{"day":"2026-09-01","kind":"chase","text":"Follow-up sent — 14 days to close"},{"day":"2026-09-08","kind":"chase","text":"Follow-up sent — 7 days to close"},{"day":"2026-09-08","kind":"quote","text":"Quote received and filed to the project folder"}],"firm":"Ascentia Elevator Co.","city":"Vancouver","contact":"Renata Bilodeau","email":"renata@ascentia.example"},{"code":"LFT","state":"bidding","replied":"2026-08-25","quote":null,"opened":"2026-08-19","note":"","touches":[{"day":"2026-08-18","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-19","kind":"open","text":"Package opened by Peter Nkemdirim"},{"day":"2026-08-25","kind":"bidding","text":"Reply read and classified: intends to bid"},{"day":"2026-09-01","kind":"chase","text":"Follow-up sent — 14 days to close"},{"day":"2026-09-08","kind":"chase","text":"Follow-up sent — 7 days to close"}],"firm":"Liftway Vertical Systems","city":"Burnaby","contact":"Peter Nkemdirim","email":"peter@liftway.example"}],"nInvited":2,"nQuote":1,"nBidding":1,"nNoBid":0,"nSilent":0,"dleft":5,"project":"Westwood North Tower"},{"id":"L06","proj":"2894-LTS","div":"06","title":"Mass timber supply and erection","short":"Div 06 — Mass timber","issued":"2026-09-04","close":"2026-09-30","status":"open","budget":9360000,"scope":"scope-wood-midrise / division-06","bidders":[{"code":"MTB","state":"bidding","replied":"2026-09-08","quote":null,"opened":"2026-09-04","note":"","touches":[{"day":"2026-09-04","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-04","kind":"open","text":"Package opened by Sigrid Aaltonen"},{"day":"2026-09-08","kind":"bidding","text":"Reply read and classified: intends to bid"}],"firm":"Mass Timber Builders BC","city":"North Vancouver","contact":"Sigrid Aaltonen","email":"sigrid@masstimberbc.example"},{"code":"CLT","state":"bidding","replied":"2026-09-07","quote":null,"opened":"2026-09-04","note":"","touches":[{"day":"2026-09-04","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-04","kind":"open","text":"Package opened by Tomasz Wierzbicki"},{"day":"2026-09-07","kind":"bidding","text":"Reply read and classified: intends to bid"}],"firm":"Cross Laminated Contracting","city":"Squamish","contact":"Tomasz Wierzbicki","email":"tomasz@crosslam.example"},{"code":"TRB","state":"invited","replied":null,"quote":null,"opened":"2026-09-05","note":"","touches":[{"day":"2026-09-04","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-09-05","kind":"open","text":"Package opened by Josie Kanagawa"}],"firm":"Trailhead Timberworks","city":"North Vancouver","contact":"Josie Kanagawa","email":"josie@trailheadtw.example"}],"nInvited":3,"nQuote":0,"nBidding":2,"nNoBid":0,"nSilent":1,"dleft":20,"project":"Lynn Trailside"},{"id":"L22","proj":"2894-LTS","div":"22","title":"Plumbing","short":"Div 22 — Plumbing","issued":"2026-08-28","close":"2026-09-24","status":"open","budget":3120000,"scope":"scope-wood-midrise / division-22","bidders":[{"code":"AQD","state":"quote","replied":"2026-09-09","quote":3048000,"opened":"2026-08-28","note":"","touches":[{"day":"2026-08-28","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-28","kind":"open","text":"Package opened by Faisal Rahmani"},{"day":"2026-09-09","kind":"quote","text":"Quote received and filed to the project folder"}],"firm":"Aqueduct Plumbing Ltd.","city":"Coquitlam","contact":"Faisal Rahmani","email":"faisal@aqueductplumbing.example"},{"code":"HDR","state":"bidding","replied":"2026-09-02","quote":null,"opened":"2026-08-28","note":"","touches":[{"day":"2026-08-28","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-28","kind":"open","text":"Package opened by Blythe Ashcroft"},{"day":"2026-09-02","kind":"bidding","text":"Reply read and classified: intends to bid"},{"day":"2026-09-10","kind":"chase","text":"Follow-up sent — 14 days to close"}],"firm":"Headwater Mechanical","city":"North Vancouver","contact":"Blythe Ashcroft","email":"blythe@headwatermech.example"},{"code":"PIP","state":"silent","replied":null,"quote":null,"opened":"2026-08-30","note":"","touches":[{"day":"2026-08-28","kind":"invite","text":"Invitation to bid issued, package attached"},{"day":"2026-08-30","kind":"open","text":"Package opened by Oskar Lindgren"},{"day":"2026-09-10","kind":"chase","text":"Follow-up sent — 14 days to close"}],"firm":"Pipeline Services West","city":"Burnaby","contact":"Oskar Lindgren","email":"oskar@pipelinesw.example"}],"nInvited":3,"nQuote":1,"nBidding":1,"nNoBid":0,"nSilent":1,"dleft":14,"project":"Lynn Trailside"}],"scope09":[{"ref":"C-09.01","title":"Steel stud framing — interior partitions, all levels","note":"Load-bearing and non-load-bearing, per S-series","carry":0},{"ref":"C-09.02","title":"Type X gypsum board — walls","note":"Suites, corridors, amenity","carry":0},{"ref":"C-09.03","title":"Ceiling board, bulkheads and soffits","note":"Including drop bulkheads at mechanical runs","carry":0},{"ref":"C-09.04","title":"Level 5 finish — lobby and amenity","note":"Per Addendum 02, extent revised","carry":0},{"ref":"C-09.05","title":"Level 4 finish — suites","note":"","carry":0},{"ref":"C-09.06","title":"Acoustic insulation — party walls, STC 50","note":"Batt supply and install","carry":0},{"ref":"C-09.07","title":"Firestopping at Div 09 penetrations","note":"ULC listed assemblies, Div 09 scope only","carry":22500},{"ref":"C-09.08","title":"Shaft wall assemblies","note":"Elevator and mechanical shafts, 2h rated","carry":48000},{"ref":"C-09.09","title":"Corner bead, trims and reveals","note":"","carry":0},{"ref":"C-09.10","title":"Access panels — supply and install","note":"Coordinated with Div 22 / 23","carry":9400},{"ref":"C-09.11","title":"Prime and two finish coats — suites","note":"","carry":0},{"ref":"C-09.12","title":"Paint — corridors, stairs and amenity","note":"","carry":0},{"ref":"C-09.13","title":"Parkade line marking and wayfinding paint","note":"Scope split with Div 32 unresolved","carry":14200},{"ref":"C-09.14","title":"Deficiency touch-up after walkthrough","note":"Two passes, per schedule","carry":16000},{"ref":"C-09.15","title":"Suite entry door frame make-good","note":"Per Addendum 01","carry":0},{"ref":"C-09.16","title":"Elevator lobby feature wall — specialty finish","note":"Level 5 plus specified plaster finish","carry":31000},{"ref":"C-09.17","title":"Hoisting and site distribution of materials","note":"","carry":18600},{"ref":"C-09.18","title":"Daily clean-up and debris removal to bin","note":"","carry":0},{"ref":"C-09.19","title":"Winter heat and hoarding — allowance","note":"Nov through Mar, per general conditions","carry":26800},{"ref":"C-09.20","title":"Mock-up suite — one of each unit type","note":"For consultant review prior to production","carry":12500}],"mx09":{"COA":["IN","IN","IN","IN","IN","IN","IN","IN","IN","IN","IN","IN","NA","IN","IN","IN","IN","IN","EX","AL"],"PWS":["IN","IN","IN","IN","IN","IN","NA","EX","IN","NA","IN","IN","NA","IN","IN","IN","IN","IN","EX","NA"],"RDP":["IN","IN","IN","IN","IN","IN","IN","IN","IN","IN","IN","IN","NA","IN","IN","IN","IN","IN","AL","IN"],"FFG":["IN","IN","IN","IN","IN","IN","IN","IN","IN","IN","IN","IN","NA","NA","IN","IN","EX","IN","AL","IN"]},"quote09":{"COA":1284500,"PWS":1196000,"RDP":1341200,"FFG":1309750},"budget09":1320000,"levelled":[{"code":"COA","firm":"Coastline Interiors Ltd.","base":1284500,"carry":41000,"adj":1325500,"items":[{"ref":"C-09.13","title":"Parkade line marking and wayfinding paint","st":"NA","carry":14200},{"ref":"C-09.19","title":"Winter heat and hoarding — allowance","st":"EX","carry":26800}],"nin":17,"nex":1,"nna":1,"nal":1},{"code":"PWS","firm":"Pacific Wall Systems Inc.","base":1196000,"carry":133400,"adj":1329400,"items":[{"ref":"C-09.07","title":"Firestopping at Div 09 penetrations","st":"NA","carry":22500},{"ref":"C-09.08","title":"Shaft wall assemblies","st":"EX","carry":48000},{"ref":"C-09.10","title":"Access panels — supply and install","st":"NA","carry":9400},{"ref":"C-09.13","title":"Parkade line marking and wayfinding paint","st":"NA","carry":14200},{"ref":"C-09.19","title":"Winter heat and hoarding — allowance","st":"EX","carry":26800},{"ref":"C-09.20","title":"Mock-up suite — one of each unit type","st":"NA","carry":12500}],"nin":14,"nex":2,"nna":4,"nal":0},{"code":"RDP","firm":"Ridgeline Drywall & Painting","base":1341200,"carry":14200,"adj":1355400,"items":[{"ref":"C-09.13","title":"Parkade line marking and wayfinding paint","st":"NA","carry":14200}],"nin":18,"nex":0,"nna":1,"nal":1},{"code":"FFG","firm":"Fraser Finishing Group","base":1309750,"carry":48800,"adj":1358550,"items":[{"ref":"C-09.13","title":"Parkade line marking and wayfinding paint","st":"NA","carry":14200},{"ref":"C-09.14","title":"Deficiency touch-up after walkthrough","st":"NA","carry":16000},{"ref":"C-09.17","title":"Hoisting and site distribution of materials","st":"EX","carry":18600}],"nin":16,"nex":1,"nna":2,"nal":1}],"gaps":[{"ref":"C-09.13","title":"Parkade line marking and wayfinding paint","note":"Scope split with Div 32 unresolved","carry":14200,"priced":0,"of":4,"sts":{"COA":"NA","PWS":"NA","RDP":"NA","FFG":"NA"},"sev":"high"},{"ref":"C-09.19","title":"Winter heat and hoarding — allowance","note":"Nov through Mar, per general conditions","carry":26800,"priced":2,"of":4,"sts":{"COA":"EX","PWS":"EX","RDP":"AL","FFG":"AL"},"sev":"low"},{"ref":"C-09.08","title":"Shaft wall assemblies","note":"Elevator and mechanical shafts, 2h rated","carry":48000,"priced":3,"of":4,"sts":{"COA":"IN","PWS":"EX","RDP":"IN","FFG":"IN"},"sev":"low"},{"ref":"C-09.07","title":"Firestopping at Div 09 penetrations","note":"ULC listed assemblies, Div 09 scope only","carry":22500,"priced":3,"of":4,"sts":{"COA":"IN","PWS":"NA","RDP":"IN","FFG":"IN"},"sev":"low"},{"ref":"C-09.17","title":"Hoisting and site distribution of materials","note":"","carry":18600,"priced":3,"of":4,"sts":{"COA":"IN","PWS":"IN","RDP":"IN","FFG":"EX"},"sev":"low"},{"ref":"C-09.14","title":"Deficiency touch-up after walkthrough","note":"Two passes, per schedule","carry":16000,"priced":3,"of":4,"sts":{"COA":"IN","PWS":"IN","RDP":"IN","FFG":"NA"},"sev":"low"},{"ref":"C-09.20","title":"Mock-up suite — one of each unit type","note":"For consultant review prior to production","carry":12500,"priced":3,"of":4,"sts":{"COA":"AL","PWS":"NA","RDP":"IN","FFG":"IN"},"sev":"low"},{"ref":"C-09.10","title":"Access panels — supply and install","note":"Coordinated with Div 22 / 23","carry":9400,"priced":3,"of":4,"sts":{"COA":"IN","PWS":"NA","RDP":"IN","FFG":"IN"},"sev":"low"}],"addenda":[{"no":"ADD-01","pkg":"P09","issued":"2026-08-21","asked":"2026-08-19","by":"FFG","q":"Appendix C lists suite entry door frame make-good. Is that Div 09 or is the door supplier making good?","a":"Div 09. The frame is supplied and set by Div 08; make-good of the surrounding wall, bead and paint is Div 09.","to":7,"cm":"Dale Ferreira","turn":"2 days","firm":"Fraser Finishing Group","proj":"4021-STR"},{"no":"ADD-02","pkg":"P09","issued":"2026-08-28","asked":"2026-08-26","by":"COA","q":"Does the Level 5 finish extend to the corridors, or lobby and amenity only?","a":"Lobby and amenity only. Corridors are Level 4. Appendix C item C-09.04 is revised accordingly.","to":7,"cm":"Dale Ferreira","turn":"2 days","firm":"Coastline Interiors Ltd.","proj":"4021-STR"},{"no":"ADD-03","pkg":"P06","issued":"2026-09-09","asked":"2026-09-08","by":"STV","q":"Is framing hardware supplied by Div 06 or supplied by the owner and installed by Div 06?","a":"Supplied and installed by Div 06. Hangers, straps and hold-downs per S-series are in your scope.","to":9,"cm":"Dale Ferreira","turn":"1 day","firm":"Stave Valley Structures","proj":"4021-STR"}],"openq":[{"id":"Q-114","pkg":"P09","asked":"2026-09-03","by":"PWS","cm":"Dale Ferreira","q":"Parkade line marking and wayfinding paint — is that ours under Div 09, or is it Div 32 with the paving?","why":"Asked 20 hours before close. No answer means no addendum, and no addendum means nobody prices it.","sev":"high","age":7,"firm":"Pacific Wall Systems Inc.","proj":"4021-STR"},{"id":"Q-118","pkg":"P07","asked":"2026-09-09","by":"STC","cm":"Dale Ferreira","q":"At the parapet, does A5.02 govern or the envelope consultant's SK-11? They show different membrane terminations.","why":"Thirteen days to close — enough time for an addendum if the answer lands this week.","sev":"ok","age":1,"firm":"Stormcoat Building Systems","proj":"4021-STR"},{"id":"Q-121","pkg":"W08","asked":"2026-09-09","by":"VER","cm":"Dale Ferreira","q":"At the podium transition, who carries the transition flashing — curtain wall or the podium cladding trade?","why":"Twenty-three days to close. Answer it once and every bidder prices the same thing.","sev":"ok","age":1,"firm":"Vertex Curtain Wall","proj":"4012-WWN"}],"prequal":[{"code":"COA","firm":"Coastline Interiors Ltd.","wsbc":"clear","wsbcExp":"2026-12-15","insExp":"2026-11-30","lim":5000000,"bond":"yes","note":"","state":"ok","insDays":81,"wsbcDays":96},{"code":"PWS","firm":"Pacific Wall Systems Inc.","wsbc":"clear","wsbcExp":"2026-12-08","insExp":"2027-01-31","lim":5000000,"bond":"yes","note":"Clearance letter had expired 31 Aug. Agent flagged it 1 Sep, renewal received 8 Sep.","state":"ok","insDays":143,"wsbcDays":89},{"code":"RDP","firm":"Ridgeline Drywall & Painting","wsbc":"clear","wsbcExp":"2027-02-28","insExp":"2026-12-31","lim":5000000,"bond":"yes","note":"","state":"ok","insDays":112,"wsbcDays":171},{"code":"FFG","firm":"Fraser Finishing Group","wsbc":"clear","wsbcExp":"2026-11-20","insExp":"2026-09-19","lim":2000000,"bond":"no","note":"Insurance certificate expires in 9 days and the limit is below Mosaic's $5M threshold.","state":"expiring","insDays":9,"wsbcDays":71},{"code":"SUM","firm":"Summit Formwork Ltd.","wsbc":"clear","wsbcExp":"2027-01-15","insExp":"2027-03-31","lim":10000000,"bond":"yes","note":"","state":"ok","insDays":202,"wsbcDays":127},{"code":"KIN","firm":"Kingsway Concrete Services","wsbc":"clear","wsbcExp":"2026-11-30","insExp":"2026-10-31","lim":5000000,"bond":"yes","note":"","state":"ok","insDays":51,"wsbcDays":81},{"code":"TBC","firm":"Tri-Base Concrete","wsbc":"clear","wsbcExp":"2027-04-30","insExp":"2027-02-28","lim":5000000,"bond":"yes","note":"","state":"ok","insDays":171,"wsbcDays":232},{"code":"TIM","firm":"Timberline Framing Ltd.","wsbc":"clear","wsbcExp":"2026-12-31","insExp":"2026-12-31","lim":5000000,"bond":"yes","note":"","state":"ok","insDays":112,"wsbcDays":112},{"code":"WCF","firm":"West Coast Frameworks","wsbc":"clear","wsbcExp":"2027-01-31","insExp":"2026-11-15","lim":5000000,"bond":"yes","note":"","state":"ok","insDays":66,"wsbcDays":143},{"code":"OKF","firm":"Oak & Kerf Contracting","wsbc":"expired","wsbcExp":"2026-08-22","insExp":null,"lim":0,"bond":"no","note":"WorkSafeBC clearance lapsed 22 Aug and no certificate on file. Cannot be awarded in this state.","state":"expired","insDays":null,"wsbcDays":-19},{"code":"GAB","firm":"Gable & Batten Exteriors","wsbc":"clear","wsbcExp":"2026-12-01","insExp":null,"lim":0,"bond":"no","note":"No insurance certificate on file at all.","state":"missing","insDays":null,"wsbcDays":82},{"code":"ENV","firm":"Envelope Sciences BC","wsbc":"clear","wsbcExp":"2027-03-31","insExp":"2027-01-31","lim":5000000,"bond":"yes","note":"","state":"ok","insDays":143,"wsbcDays":202},{"code":"VLT","firm":"Voltaic Electrical Contractors","wsbc":"clear","wsbcExp":"2027-02-15","insExp":"2026-12-31","lim":5000000,"bond":"yes","note":"","state":"ok","insDays":112,"wsbcDays":158},{"code":"THM","firm":"Thermaflow Mechanical","wsbc":"clear","wsbcExp":"2026-12-20","insExp":"2027-01-15","lim":10000000,"bond":"yes","note":"","state":"ok","insDays":127,"wsbcDays":101},{"code":"IRO","firm":"Ironvale Structural Steel","wsbc":"clear","wsbcExp":"2027-01-31","insExp":"2027-02-28","lim":10000000,"bond":"yes","note":"","state":"ok","insDays":171,"wsbcDays":143},{"code":"STL","firm":"Steelhead Fabricators","wsbc":"clear","wsbcExp":"2026-11-15","insExp":"2026-10-05","lim":10000000,"bond":"yes","note":"Insurance certificate expires in 25 days — inside the 30-day window.","state":"expiring","insDays":25,"wsbcDays":66},{"code":"BLT","firm":"Boltworks Erectors Ltd.","wsbc":"clear","wsbcExp":"2027-03-31","insExp":"2027-01-31","lim":10000000,"bond":"yes","note":"","state":"ok","insDays":143,"wsbcDays":202},{"code":"CWG","firm":"Clearwater Glazing Systems","wsbc":"clear","wsbcExp":"2026-12-31","insExp":"2027-03-31","lim":10000000,"bond":"yes","note":"","state":"ok","insDays":202,"wsbcDays":112},{"code":"FAC","firm":"Facade North Curtainwall","wsbc":"clear","wsbcExp":"2027-02-28","insExp":"2026-12-15","lim":10000000,"bond":"yes","note":"","state":"ok","insDays":96,"wsbcDays":171},{"code":"VER","firm":"Vertex Curtain Wall","wsbc":"clear","wsbcExp":"2026-10-31","insExp":"2027-01-31","lim":10000000,"bond":"yes","note":"","state":"ok","insDays":143,"wsbcDays":51},{"code":"ASC","firm":"Ascentia Elevator Co.","wsbc":"clear","wsbcExp":"2027-01-15","insExp":"2027-04-30","lim":10000000,"bond":"yes","note":"","state":"ok","insDays":232,"wsbcDays":127},{"code":"LFT","firm":"Liftway Vertical Systems","wsbc":"expired","wsbcExp":"2026-09-01","insExp":null,"lim":0,"bond":"no","note":"Clearance letter lapsed 1 Sep. Flagged the same morning; renewal not yet received.","state":"expired","insDays":null,"wsbcDays":-9},{"code":"MTB","firm":"Mass Timber Builders BC","wsbc":"clear","wsbcExp":"2027-02-28","insExp":"2027-02-28","lim":10000000,"bond":"yes","note":"","state":"ok","insDays":171,"wsbcDays":171},{"code":"CLT","firm":"Cross Laminated Contracting","wsbc":"clear","wsbcExp":"2026-12-31","insExp":"2026-11-30","lim":5000000,"bond":"yes","note":"","state":"ok","insDays":81,"wsbcDays":112},{"code":"TRB","firm":"Trailhead Timberworks","wsbc":"clear","wsbcExp":"2026-11-30","insExp":"2026-10-31","lim":2000000,"bond":"no","note":"General liability limit is $2M against Mosaic's $5M threshold for this contract value.","state":"expiring","insDays":51,"wsbcDays":81},{"code":"AQD","firm":"Aqueduct Plumbing Ltd.","wsbc":"clear","wsbcExp":"2027-01-31","insExp":"2027-01-31","lim":5000000,"bond":"yes","note":"","state":"ok","insDays":143,"wsbcDays":143},{"code":"HDR","firm":"Headwater Mechanical","wsbc":"clear","wsbcExp":"2026-12-15","insExp":"2026-12-31","lim":5000000,"bond":"yes","note":"","state":"ok","insDays":112,"wsbcDays":96},{"code":"PIP","firm":"Pipeline Services West","wsbc":"clear","wsbcExp":"2027-03-31","insExp":"2026-11-30","lim":5000000,"bond":"yes","note":"","state":"ok","insDays":81,"wsbcDays":202},{"code":"SEA","firm":"Seaboard Cladding Systems","wsbc":"clear","wsbcExp":"2027-01-31","insExp":"2027-01-31","lim":10000000,"bond":"yes","note":"","state":"ok","insDays":143,"wsbcDays":143},{"code":"RAI","firm":"Rainshield Exteriors","wsbc":"clear","wsbcExp":"2026-12-31","insExp":"2026-12-31","lim":5000000,"bond":"yes","note":"","state":"ok","insDays":112,"wsbcDays":112},{"code":"CWX","firm":"Cascade Wall & Exterior","wsbc":"clear","wsbcExp":"2027-02-28","insExp":"2026-10-15","lim":5000000,"bond":"yes","note":"","state":"ok","insDays":35,"wsbcDays":171},{"code":"TDE","firm":"Tidewater Envelope Ltd.","wsbc":"clear","wsbcExp":"2026-11-30","insExp":"2027-02-28","lim":5000000,"bond":"yes","note":"","state":"ok","insDays":171,"wsbcDays":81},{"code":"STC","firm":"Stormcoat Building Systems","wsbc":"clear","wsbcExp":"2027-04-30","insExp":"2026-12-31","lim":5000000,"bond":"yes","note":"","state":"ok","insDays":112,"wsbcDays":232},{"code":"HAR","firm":"Harbourfront Weatherline","wsbc":"clear","wsbcExp":"2026-12-31","insExp":"2027-01-31","lim":5000000,"bond":"yes","note":"","state":"ok","insDays":143,"wsbcDays":112},{"code":"MER","firm":"Meridian Power Systems","wsbc":"clear","wsbcExp":"2027-01-31","insExp":"2026-12-31","lim":5000000,"bond":"yes","note":"","state":"ok","insDays":112,"wsbcDays":143},{"code":"AMP","firm":"Amperage Contracting","wsbc":"clear","wsbcExp":"2026-11-30","insExp":"2027-01-31","lim":5000000,"bond":"yes","note":"","state":"ok","insDays":143,"wsbcDays":81},{"code":"NCE","firm":"Northcoast Electric Ltd.","wsbc":"clear","wsbcExp":"2027-02-28","insExp":"2026-11-30","lim":5000000,"bond":"yes","note":"","state":"ok","insDays":81,"wsbcDays":171},{"code":"MCA","firm":"McAllister Carpentry","wsbc":"clear","wsbcExp":"2026-12-31","insExp":"2027-01-31","lim":5000000,"bond":"yes","note":"","state":"ok","insDays":143,"wsbcDays":112},{"code":"PGF","firm":"Panorama Ridge Framing","wsbc":"clear","wsbcExp":"2027-01-31","insExp":"2026-12-31","lim":5000000,"bond":"yes","note":"","state":"ok","insDays":112,"wsbcDays":143},{"code":"STV","firm":"Stave Valley Structures","wsbc":"clear","wsbcExp":"2026-11-30","insExp":"2026-10-20","lim":5000000,"bond":"yes","note":"Insurance certificate expires in 40 days — watch, not a flag.","state":"ok","insDays":40,"wsbcDays":81},{"code":"HWD","firm":"Hardwood & Post Framing","wsbc":"clear","wsbcExp":"2027-03-31","insExp":"2027-03-31","lim":5000000,"bond":"yes","note":"","state":"ok","insDays":202,"wsbcDays":202},{"code":"GRV","firm":"Graveline Placing & Finishing","wsbc":"clear","wsbcExp":"2026-12-31","insExp":"2027-01-31","lim":10000000,"bond":"yes","note":"","state":"ok","insDays":143,"wsbcDays":112},{"code":"CBC","firm":"Cedarbank Concrete","wsbc":"clear","wsbcExp":"2027-01-31","insExp":"2026-12-31","lim":10000000,"bond":"yes","note":"","state":"ok","insDays":112,"wsbcDays":143}],"outbox":[{"id":"OB-1","kind":"chase","pkg":"P06","when":"Fri 11 Sep, 07:00","title":"Follow-up batch — Div 06 framing, 7 days to close","n":5,"to":["MCA","PGF","HWD","OKF","BRC"],"state":"ready","note":"Standard 7-day follow-up. Two of these have never opened the package.","firms":["McAllister Carpentry","Panorama Ridge Framing","Hardwood & Post Framing","Oak & Kerf Contracting","Bracket Structural"],"proj":"4021-STR"},{"id":"OB-2","kind":"chase","pkg":"P03","when":"Thu 10 Sep, 15:00","n":2,"title":"Final follow-up — Div 03 concrete, closes tomorrow 14:00","to":["GRV","CBC"],"state":"ready","note":"Both confirmed bidding. Neither quote is in with 23 hours left.","firms":["Graveline Placing & Finishing","Cedarbank Concrete"],"proj":"4021-STR"},{"id":"OB-3","kind":"addendum","pkg":"P07","when":"held","n":8,"title":"Addendum 04 draft — parapet membrane termination","to":["ENV","SEA","RAI","CWX","TDE","STC","GAB","HAR"],"state":"held","note":"Waiting on the CM's answer to Q-118. The agent does not write the answer.","firms":["Envelope Sciences BC","Seaboard Cladding Systems","Rainshield Exteriors","Cascade Wall & Exterior","Tidewater Envelope Ltd.","Stormcoat Building Systems","Gable & Batten Exteriors","Harbourfront Weatherline"],"proj":"4021-STR"},{"id":"OB-4","kind":"regret","pkg":"P23","when":"on your word","n":2,"title":"Regret letters — Div 23 mechanical, unsuccessful bidders","to":["PMS","AIR"],"state":"ready","note":"Drafted the day the award was recorded. Proposed extension — off by default.","firms":["Peninsula Mechanical Services","Airstream HVAC Ltd."],"proj":"4021-STR"},{"id":"OB-6","kind":"chase","pkg":"W14","when":"Fri 11 Sep, 07:00","n":1,"title":"Follow-up — Div 14 elevators, 3 days to close","to":["LFT"],"state":"ready","note":"Confirmed bidding on 25 Aug. Nothing since.","firms":["Liftway Vertical Systems"],"proj":"4012-WWN"},{"id":"OB-5","kind":"invite","pkg":"P22","when":"package not released","n":8,"title":"Invitation to bid — Div 22 plumbing","to":[],"state":"blocked","note":"Trade list loaded. Waiting on the coordinator to release the package and set the close date.","firms":[],"proj":"4021-STR"}],"unrouted":[{"frm":"quotes@ninemilewall.example","subj":"Re: pricing — Surrey townhomes","when":"Wed 9 Sep, 16:20","why":"Subject rewritten, so no job token. Sender is not on any bidder list — the estimating address differs from the one invited. Filed to Unrouted, Teams alert to Aaron. Not guessed."}],"skills":[{"layer":"Company","name":"mosaic-house-style","owner":"Marcy Boulter","v":"1.4","upd":"2026-08-30","lines":64,"holds":"Subject line format including the job token, tone, signature block, how a package is described, and the words Mosaic does and does not use with trades."},{"layer":"Company","name":"mosaic-cost-codes","owner":"Dale Ferreira","v":"2.1","upd":"2026-07-18","lines":112,"holds":"Division and cost code conventions, how a quote line maps to a budget line, and which divisions Mosaic self-performs."},{"layer":"Company","name":"mosaic-prequal-thresholds","owner":"Dale Ferreira","v":"1.2","upd":"2026-08-11","lines":38,"holds":"WorkSafeBC clearance currency, $5M general liability minimum, bonding threshold by contract value, and what an expiring certificate blocks."},{"layer":"Company","name":"mosaic-document-formats","owner":"Marcy Boulter","v":"1.1","upd":"2026-06-29","lines":87,"holds":"The ITB, the addendum, the tender log, the bid recommendation and the regret letter — the shape of each, so every project produces the same documents."},{"layer":"Agent","name":"tendering-agent","owner":"Aaron","v":"1.0","upd":"2026-09-02","lines":143,"holds":"The loop, the 14/7/3/1 cadence, how a reply is classified, when to escalate, and the hard limits — never negotiate, never commit, never close a trade off."},{"layer":"Agent","name":"bid-analysis-agent","owner":"Dale Ferreira","v":"0.9","upd":"2026-09-05","lines":131,"holds":"How a quote line is mapped back to Appendix C, the four levelling states, the rule that an incomplete low bid is not a low bid, and how a gap is reported."},{"layer":"Project type","name":"scope-townhome","owner":"Aaron","v":"1.3","upd":"2026-08-22","lines":206,"holds":"Trade list, typical divisions and the exclusions that reliably cause trouble on wood-frame townhome work — winter heat, hoisting, parkade scope splits."},{"layer":"Project type","name":"scope-concrete-tower","owner":"Priya Sandhu","v":"1.0","upd":"2026-08-08","lines":241,"holds":"Trade list and divisions for cast-in-place towers, crane and hoist scope, and the formwork cycle assumptions that change a concrete price."},{"layer":"Project type","name":"scope-wood-midrise","owner":"Dan Kowalchuk","v":"0.6","upd":"2026-09-01","lines":97,"holds":"Encapsulated mass timber divisions, fire-rating assemblies and the trades that price them differently from stick-frame. In progress."}],"integrations":[{"n":"Outlook 365","s":"Dedicated tenders mailbox","d":"tenders@mosaicavenue.example — send, read and file. No personal inbox is connected.","state":"on","scope":"read + send, one mailbox"},{"n":"SharePoint","s":"Packages, drawings, scopes","d":"Scoped to project tender folders only, not the whole drive.","state":"on","scope":"read + write, /Tenders folders"},{"n":"BuildingConnected","s":"Bidder lists and prequal","d":"Bidder directory and TradeTapp prequal status read in. Solicitation can stay there if Mosaic wants it to.","state":"on","scope":"read only"},{"n":"Tender log","s":"Excel — status by trade","d":"One workbook per project. The agent writes status; the coordinator owns the file.","state":"on","scope":"read + write"},{"n":"Estimate workbook","s":"Excel — budget lines only","d":"Read only, and only the tender lines the coordinator exposes.","state":"on","scope":"read only, tender lines"},{"n":"Teams","s":"Escalations and no-bids","d":"Where the agent asks for a person. Silence, unrouted mail and prequal failures land here.","state":"on","scope":"post to one channel"},{"n":"Sage 300 / Timberline","s":"Accounting","d":"Not connected. No path to it, by design.","state":"off","scope":"—"},{"n":"Payroll · HR · banking","s":"","d":"Not connected. No path to it, by design.","state":"off","scope":"—"}],"rec":{"pkg":"P09","ref":"BR-4021-09","drafted":"2026-09-09","by":"bid-analysis-agent","state":"draft — awaiting CM review","rec":"COA","conf":"Recommended subject to one unresolved item."},"roll":{"pkgs":4,"inv":30,"q":6,"bid":15,"no":3,"sil":6,"closing7":1,"openq":2,"oldestq":7,"pq":29,"pqflag":3,"ready":3,"readyn":9,"held":2,"levelled":1,"awarded":1},"cycle":[{"id":"P03","short":"Div 03 — Concrete","issued":"2026-08-20","last":"2026-09-09","n":3,"inv":6,"dur":20,"done":false},{"id":"P06","short":"Div 06 — Framing","issued":"2026-08-27","last":"2026-09-09","n":2,"inv":9,"dur":13,"done":false},{"id":"P07","short":"Div 07 — Envelope","issued":"2026-09-03","last":"2026-09-09","n":1,"inv":8,"dur":6,"done":false},{"id":"P09","short":"Div 09 — Drywall & paint","issued":"2026-08-14","last":"2026-09-04","n":4,"inv":7,"dur":21,"done":true},{"id":"P23","short":"Div 23 — Mechanical","issued":"2026-08-06","last":"2026-09-01","n":2,"inv":3,"dur":26,"done":true}],"rolls":{"4021-STR":{"pkgs":4,"inv":30,"q":6,"bid":15,"no":3,"sil":6,"closing7":1,"openq":2,"oldestq":7,"pq":29,"pqflag":3,"ready":3,"readyn":9,"held":2,"levelled":1,"awarded":1},"4012-WWN":{"pkgs":3,"inv":10,"q":2,"bid":6,"no":1,"sil":1,"closing7":1,"openq":1,"oldestq":1,"pq":9,"pqflag":2,"ready":1,"readyn":1,"held":0,"levelled":0,"awarded":0},"2894-LTS":{"pkgs":2,"inv":6,"q":1,"bid":3,"no":0,"sil":2,"closing7":0,"openq":0,"oldestq":0,"pq":6,"pqflag":1,"ready":0,"readyn":0,"held":0,"levelled":0,"awarded":0}},"cadence":[14,7,3,1]};
+
+/* ── helpers ────────────────────────────────────────────────────── */
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function $(s,r){return (r||document).querySelector(s);}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+function money(n){return '$'+Math.round(n).toLocaleString('en-CA');}
+function moneyk(n){
+  if(Math.abs(n)>=1e6) return '$'+(n/1e6).toFixed(2).replace(/\.00$/,'')+'M';
+  if(Math.abs(n)>=1e3) return '$'+Math.round(n/1e3)+'k';
+  return '$'+Math.round(n);}
+var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function dt(s){var p=String(s).split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
+function fdate(s){if(!s)return '—';var x=dt(s);return DOW[x.getDay()]+' '+x.getDate()+' '+MON[x.getMonth()];}
+function fshort(s){if(!s)return '—';var x=dt(s);return x.getDate()+' '+MON[x.getMonth()];}
+var TODAY=dt(D.today);
+function dleft(s){return Math.round((dt(s)-TODAY)/864e5);}
+function plural(n,a,b){return n===1?a:(b||a+'s');}
+function nd(n){return n+' '+plural(n,'day');}
+function cadenceText(){var c=D.cadence.slice();var last=c.pop();
+  return c.join(', ')+' and '+last+' '+plural(last,'day');}
+
+function tag(txt,cls){return '<span class="tag t-'+cls+'"><i class="dot"></i>'+esc(txt)+'</span>';}
+var STATE_TAG={
+  quote:['Quote in','green'], bidding:['Bidding','blue'], question:['Question','gold'],
+  nobid:['No-bid','grey'], withdrew:['Withdrew','grey'], silent:['No reply','red'],
+  invited:['Not opened','grey']};
+function bstate(b){var t=STATE_TAG[b.state];return tag(t[0],t[1]);}
+var PKG_TAG={open:['Open','blue'],closing:['Closing','amber'],levelled:['Levelled','teal'],
+             awarded:['Awarded','green']};
+
+var HSTEP='<span class="hstep">Person</span>';
+var ASTEP='<span class="astep">Agent</span>';
+
+/* ── truncation, honestly recorded ──────────────────────────────── */
+window.__TRUNC__={};
+function cut(rows,n,key){
+  if(S.more[key]||rows.length<=n){window.__TRUNC__[key]=0;return rows;}
+  window.__TRUNC__[key]=rows.length-n;return rows.slice(0,n);}
+function moreBtn(key,total,n){
+  if(S.more[key]||total<=n) return '';
+  return '<button class="moretog" data-more="'+key+'">Show the other '+(total-n)+
+         ' '+plural(total-n,'row')+'</button>';}
+
+/* ── icons ──────────────────────────────────────────────────────── */
+var I={
+ today:'<path d="M3 8h18M7 3v3m10-3v3M5 5h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z"/>',
+ log:'<path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/>',
+ out:'<path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/>',
+ chase:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+ qa:'<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>',
+ pq:'<path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/>',
+ lvl:'<path d="M3 3v18h18"/><path d="M7 15V9m5 6V5m5 10v-4"/>',
+ gap:'<path d="M12 3l9 16H3z"/><path d="M12 9v4m0 3h.01"/>',
+ rec:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 15l2 2 4-4"/>',
+ reg:'<path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/>',
+ x:'<path d="M18 6L6 18M6 6l12 12"/>',
+ menu:'<path d="M3 6h18M3 12h18M3 18h18"/>',
+ bell:'<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/>',
+ play:'<path d="M5 3l14 9-14 9z"/>',
+ clip:'<path d="M21.4 11.05L12.25 20.2a5 5 0 01-7.07-7.07l9.19-9.19a3.5 3.5 0 014.95 4.95l-9.2 9.19a2 2 0 01-2.82-2.83l8.49-8.48"/>'
+};
+function ic(n,sz,sw){return '<svg viewBox="0 0 24 24" width="'+(sz||16)+'" height="'+(sz||16)+
+  '" fill="none" stroke="currentColor" stroke-width="'+(sw||1.7)+
+  '" stroke-linecap="round" stroke-linejoin="round">'+(I[n]||'')+'</svg>';}
+var MARK='<svg class="logomark" viewBox="0 0 32 32" fill="none">'+
+ '<rect x="1.5" y="1.5" width="13" height="13" rx="2" fill="#C97B1E"/>'+
+ '<rect x="17.5" y="1.5" width="13" height="13" rx="2" fill="#CADCFC" opacity=".55"/>'+
+ '<rect x="1.5" y="17.5" width="13" height="13" rx="2" fill="#CADCFC" opacity=".3"/>'+
+ '<rect x="17.5" y="17.5" width="13" height="13" rx="2" fill="#fff" opacity=".9"/></svg>';
+
+/* ── state and navigation ───────────────────────────────────────── */
+var NAV=[
+ ['Tendering',[
+   ['hoy','Today','today'],['log','Tender log','log'],['out','Outbound queue','out'],
+   ['chase','Chase & escalation','chase'],['qa','Questions & addenda','qa'],
+   ['pq','Prequalification','pq']]],
+ ['Bid review',[
+   ['lvl','Levelling matrix','lvl'],['gap','Gap list','gap'],['rec','Bid recommendation','rec']]],
+ ['Company',[['reg','Projects & method','reg']]]
+];
+var TITLES={};
+NAV.forEach(function(g){g[1].forEach(function(n){TITLES[n[0]]=n[1];});});
+
+var S={sc:'hoy', proj:'4021-STR', pkg:'P09', tab:{}, more:{}, sel:null, ins:null, navopen:false};
+
+function proj(){return D.projects.filter(function(p){return p.tok===S.proj;})[0];}
+function roll(){return D.rolls[S.proj];}
+function pkgs(tok){return D.packages.filter(function(p){return p.proj===(tok||S.proj);});}
+function pkg(id){return D.packages.filter(function(p){return p.id===id;})[0];}
+function curPkg(){var l=pkgs();var m=l.filter(function(p){return p.id===S.pkg;});
+  return m[0]||l[0];}
+function firm(c){return D.firms[c];}
+function navcount(sc){
+  var r=roll();
+  if(sc==='out')  return r.ready||0;
+  if(sc==='qa')   return r.openq||0;
+  if(sc==='pq')   return r.pqflag||0;
+  if(sc==='chase')return r.sil||0;
+  return 0;}
+function navhot(sc){return sc==='qa'&&roll().oldestq>=5;}
+
+/* ── chart primitives ───────────────────────────────────────────── */
+/* dayBars: one column per day across a window. Items outside the window
+   are counted and named, never clamped into the edge column.          */
+function dayBars(items, opts){
+  opts=opts||{};
+  var from=opts.from!=null?opts.from:-2, to=opts.to!=null?opts.to:12;
+  var cols=[],i;
+  for(i=from;i<=to;i++) cols.push({d:i,n:0,items:[]});
+  var out=[];
+  items.forEach(function(it){
+    var k=it.d-from;
+    if(it.d<from||it.d>to){out.push(it);return;}
+    cols[k].n++; cols[k].items.push(it);});
+  var max=Math.max(1,Math.max.apply(null,cols.map(function(c){return c.n;})));
+  var h='<div class="daybars">';
+  cols.forEach(function(c){
+    var cls=c.d<0?'dim':(c.d<=1?'hot':(c.d<=3?'warm':'ok'));
+    var pct=c.n?Math.max(8,Math.round(c.n/max*100)):0;
+    h+='<div class="col" title="'+esc(c.items.map(function(x){return x.label;}).join(', ')||'nothing')+'">'+
+       (c.n?'<span class="cv">'+c.n+'</span>':'')+
+       '<div class="bar '+cls+'" style="height:'+pct+'%"></div></div>';});
+  h+='</div><div class="axl">';
+  cols.forEach(function(c){
+    var lbl = c.d===0?'today':(c.d<0? c.d+'d' : '+'+c.d);
+    h+='<span>'+(Math.abs(c.d)%2===0||c.d===0?lbl:'')+'</span>';});
+  h+='</div>';
+  if(out.length) h+='<div class="hint" style="margin-top:7px">Outside this window: '+
+    out.length+' — '+esc(out.map(function(x){return x.label;}).join(', '))+'</div>';
+  return h;}
+
+function gantt(rows,span){
+  span=span||Math.max(7,Math.max.apply(null,rows.map(function(r){return r.d;}))+1);
+  var ticks=[0,7,14,21,28].filter(function(t){return t<=span;});
+  var h='<div class="gantt">';
+  rows.forEach(function(r){
+    var pct=Math.max(2.5,Math.min(100,r.d/span*100));
+    var cls=r.d<=1?'hot':(r.d<=3?'warm':'ok');
+    h+='<div class="gr"'+(r.key?' data-insp="'+esc(r.key)+'" style="cursor:pointer"':'')+'>'+
+      '<div class="gl"><div class="hn">'+esc(r.n)+'</div><div class="hs">'+esc(r.s||'')+'</div></div>'+
+      '<div class="gtrack">'+
+        ticks.map(function(t){return '<i class="gt" style="left:'+(t/span*100)+'%"></i>';}).join('')+
+        '<div class="gbar '+cls+'" style="width:'+pct+'%"></div>'+
+        '<span class="gcap" style="left:'+pct+'%">'+esc(r.cap)+'</span>'+
+      '</div></div>';});
+  h+='<div class="gaxis"><div class="gl"></div><div class="gtrack">'+
+     ticks.map(function(t){return '<span class="gx" style="left:'+(t/span*100)+'%">'+
+       (t===0?'today':'+'+t+'d')+'</span>';}).join('')+'</div></div>';
+  return h+'</div>';}
+
+function stackBars(rows,max){
+  max=max||Math.max.apply(null,rows.map(function(r){return r.a+r.b;}));
+  var h='<div class="hbars">';
+  rows.forEach(function(r){
+    h+='<div class="hbrow"'+(r.key?' data-insp="'+esc(r.key)+'" style="cursor:pointer"':'')+'>'+
+      '<div class="hl"><div class="hn">'+esc(r.n)+'</div>'+
+      (r.s?'<div class="hs">'+esc(r.s)+'</div>':'')+'</div>'+
+      '<div class="hbtrack"><i class="hbfill '+(r.c||'')+'" style="width:'+(r.a/max*100)+'%"></i>'+
+      (r.b?'<i class="hbfill red" style="left:'+(r.a/max*100)+'%;width:'+(r.b/max*100)+'%;'+
+        'border-radius:0 5px 5px 0" title="added back"></i>':'')+'</div>'+
+      '<span class="hbv">'+esc(r.lbl)+'</span></div>';});
+  return h+'</div>';}
+
+function splitBar(segs){
+  var tot=segs.reduce(function(a,s){return a+s.n;},0)||1;
+  var h='<div class="sbar">';
+  segs.forEach(function(s){ if(!s.n) return;
+    h+='<span style="flex:0 0 '+(s.n/tot*100)+'%;background:'+s.c+
+       '" title="'+esc(s.l+': '+s.n)+'">'+(s.n/tot>0.07?s.n:'')+'</span>';});
+  h+='</div><div class="slegend">';
+  segs.forEach(function(s){ h+='<span><i style="background:'+s.c+'"></i>'+esc(s.l)+' · '+s.n+'</span>';});
+  return h+'</div>';}
+
+function hbars(rows,opts){
+  opts=opts||{};
+  var max=opts.max||Math.max.apply(null,rows.map(function(r){return Math.abs(r.v);}))||1;
+  var h='<div class="hbars">';
+  rows.forEach(function(r){
+    h+='<div class="hbrow"'+(r.key?' data-insp="'+esc(r.key)+'" style="cursor:pointer"':'')+'>'+
+       '<div class="hl"><div class="hn">'+esc(r.n)+'</div>'+
+       (r.s?'<div class="hs">'+esc(r.s)+'</div>':'')+'</div>'+
+       '<div class="hbtrack"><i class="hbfill '+(r.c||'')+'" style="width:'+
+       Math.max(1.5,Math.abs(r.v)/max*100)+'%"></i></div>'+
+       '<span class="hbv">'+esc(r.lbl)+'</span></div>';});
+  return h+'</div>';}
+
+function pipeline(stages){
+  var h='<div class="pipe">';
+  stages.forEach(function(s){
+    h+='<div class="pstage '+(s.cls||'')+'"><div class="pn">'+esc(s.n)+'</div>'+
+       '<div class="pv">'+esc(s.v)+'</div><div class="ps">'+esc(s.s||'')+'</div></div>';});
+  return h+'</div>';}
+
+/* meter shows the real percentage past 100 and marks the overflow */
+function meter(v,cap){
+  var pct=v/cap*100, over=pct>100;
+  return '<div class="meter"><i class="'+(over?'over':'')+'" style="width:'+
+    Math.min(100,pct)+'%"></i>'+(over?'<span class="mrk" style="left:100%"></span>':'')+'</div>';}
+
+function inst(label,val,sub,cls){
+  return '<div class="inst '+(cls||'')+'"><div class="il">'+esc(label)+'</div>'+
+    '<div class="iv">'+val+'</div><div class="is">'+sub+'</div></div>';}
+
+/* ── shell ──────────────────────────────────────────────────────── */
+function railHTML(){
+  var h='';
+  NAV.forEach(function(g){
+    h+='<div class="navgrp">'+esc(g[0])+'</div>';
+    g[1].forEach(function(n){
+      var c=navcount(n[0]);
+      h+='<button class="nb'+(S.sc===n[0]?' on':'')+'" data-go="'+n[0]+'">'+
+         '<span class="ni">'+ic(n[2],15)+'</span>'+esc(n[1])+
+         (c?'<span class="nct'+(navhot(n[0])?' hot':'')+'">'+c+'</span>':'')+'</button>';});});
+  return h;}
+
+function shell(){
+  var p=proj();
+  return '<div class="app">'+
+  '<aside class="side">'+
+    '<div class="brandbar"><div class="logo">'+MARK+
+      '<div><div class="logotext">Mosaic Avenue</div>'+
+      '<div class="logosub">Tender OS</div></div></div></div>'+
+    '<button class="nav-toggle" id="navtog">'+ic('menu',18)+'</button>'+
+    '<div class="railscroll" id="rail">'+railHTML()+'</div>'+
+    '<div class="railfoot"><div class="who"><span class="av">AR</span>'+
+      '<div><div class="whon">Aaron</div><div class="whor">Construction coordinator</div></div>'+
+    '</div></div>'+
+  '</aside>'+
+  '<div class="main">'+
+    '<header class="top">'+
+      '<div><div class="topt" id="scT">'+esc(TITLES[S.sc])+'</div>'+
+      '<div class="topc" id="scC"></div></div>'+
+      '<div class="topr">'+
+        '<div class="pjsel"><span class="tok">'+esc(p.tok)+'</span>'+
+        '<select id="psel">'+D.projects.map(function(x){
+          return '<option value="'+x.tok+'"'+(x.tok===S.proj?' selected':'')+'>'+esc(x.name)+'</option>';}).join('')+
+        '</select></div>'+
+        '<button class="ibtn" id="tourbtn" title="Guided walkthrough">'+ic('play',14)+'</button>'+
+      '</div>'+
+    '</header>'+
+    '<div class="wrap" id="wrap"><div class="wbody" id="body"></div></div>'+
+    '<div class="dband"><span>Demonstration build — the projects, trades and prices are '+
+      '<b>fictional</b>. The workflow, the governance points and the document formats are the proposal.</span>'+
+      '<button class="btn gold" id="tourbtn2">'+ic('play',12)+' Walk me through it</button></div>'+
+  '</div></div>'+
+  '<div class="scrim" id="scrim"></div>'+
+  '<aside class="insp" id="insp"><div class="insph"><div style="min-width:0">'+
+    '<h4 id="inspT"></h4><div class="isub" id="inspS"></div></div>'+
+    '<button id="inspclose">'+ic('x',16)+'</button></div>'+
+    '<div class="inspb" id="inspB"></div></aside>'+
+  '<div class="spot" id="spot"></div>'+
+  '<div class="tourbar" id="tour"></div>';}
+
+/* ── router ─────────────────────────────────────────────────────── */
+var SC={}, CRUMB={};
+function go(sc,opts){
+  opts=opts||{};
+  if(sc&&sc!==S.sc){S.sc=sc;S.more={};S.sel=null;}
+  if(opts.pkg) S.pkg=opts.pkg;
+  if(opts.tab!=null) S.tab[S.sc]=opts.tab;
+  closeIns(); closeNav();
+  render();
+  var w=$('#wrap'); if(w&&!opts.keep) w.scrollTop=0;}
+
+function render(){
+  $('#rail').innerHTML=railHTML();
+  $('#scT').textContent=TITLES[S.sc];
+  $('#scC').innerHTML=(CRUMB[S.sc]?CRUMB[S.sc]():'');
+  window.__TRUNC__={};
+  $('#body').innerHTML=SC[S.sc]();
+  var sel=$('#psel'); if(sel) sel.value=S.proj;
+  var tk=$('.pjsel .tok'); if(tk) tk.textContent=S.proj;}
+
+function tabbar(items,key){
+  var cur=S.tab[S.sc]!=null?S.tab[S.sc]:items[0][0];
+  var h='<div class="tabbar">';
+  items.forEach(function(t){
+    h+='<button class="tb'+(cur===t[0]?' on':'')+'" data-tab="'+esc(t[0])+'">'+esc(t[1])+
+       (t[2]!=null?'<span class="tbn">'+t[2]+'</span>':'')+'</button>';});
+  return h+'</div>';}
+function curTab(def){return S.tab[S.sc]!=null?S.tab[S.sc]:def;}
+
+/* ═══ 1 · TODAY ═══════════════════════════════════════════════════ */
+CRUMB.hoy=function(){var p=proj();
+  return esc(p.full)+' · '+esc(p.loc)+' · '+fdate(D.today);};
+
+function recentActivity(n){
+  var out=[];
+  pkgs().forEach(function(p){
+    p.bidders.forEach(function(b){
+      b.touches.forEach(function(t){
+        if(dleft(t.day)>=-3) out.push({day:t.day,kind:t.kind,text:t.text,
+          firm:b.firm,pkg:p.short,code:b.code,pid:p.id});});});});
+  out.sort(function(a,b){return a.day<b.day?1:-1;});
+  return out.slice(0,n||14);}
+
+SC.hoy=function(){
+  var r=roll(), ps=pkgs(), p=proj();
+  var open=ps.filter(function(x){return x.status==='open'||x.status==='closing';});
+  var h='';
+
+  h+='<div class="ctxbar">'+
+    inst('Packages out', r.pkgs, r.closing7? r.closing7+' '+plural(r.closing7,'closes','close')+
+         ' within 7 days':'nothing closing this week', r.closing7?'warn':'')+
+    inst('Quotes in', r.q+' <span style="font-size:14px;color:var(--mut)">of '+r.inv+'</span>',
+         r.bid+' still bidding · '+r.sil+' no reply yet')+
+    inst('Waiting on you', r.ready+r.openq,
+         r.ready+' '+plural(r.ready,'batch','batches')+' to release · '+r.openq+' '+
+         plural(r.openq,'question')+' to answer', (r.ready+r.openq)?'warn':'')+
+    inst('Prequal flags', r.pqflag, r.pqflag?'one of these blocks an award':'every trade current',
+         r.pqflag?'bad':'good')+
+  '</div>';
+
+  /* closing window */
+  var gs=open.slice().sort(function(a,b){return a.dleft-b.dleft;}).map(function(x){
+    return {n:x.short, s:x.nQuote+' of '+x.nInvited+' priced · '+moneyk(x.budget)+' budget',
+            d:Math.max(0,x.dleft), cap:fshort(x.close), key:'pkg:'+x.id};});
+  h+='<div class="card"><div class="hd"><h3>What closes when</h3>'+
+     '<span class="sub">every open package on '+esc(p.name)+'</span>'+
+     '<span class="rt">'+ASTEP+'</span></div><div class="bd">'+
+     gantt(gs)+
+     '<div class="hint" style="margin-top:11px">Red is inside twenty-four hours, amber inside '+
+     'three days. The follow-up cadence is '+cadenceText()+' before close — the agent does not '+
+     'wait to be reminded, and it does not chase anyone who has already replied.</div></div></div>';
+
+  /* coverage */
+  var segs=[{l:'Quote in',n:r.q,c:'#1E7A57'},{l:'Bidding',n:r.bid,c:'#1E2761'},
+            {l:'No-bid',n:r.no,c:'#9AA3BC'},{l:'No reply',n:r.sil,c:'#B4402C'}];
+  var cov=open.map(function(x){return {n:x.short,s:fdate(x.close)+' · '+nd(Math.max(0,x.dleft))+' left',
+     v:x.nQuote, lbl:x.nQuote+'/'+x.nInvited, c:x.nQuote===0?'red':(x.nQuote<3?'gold':'green'),
+     key:'pkg:'+x.id};});
+  h+='<div class="split64">'+
+     '<div class="card"><div class="hd"><h3>Coverage by package</h3>'+
+       '<span class="sub">quotes in against trades invited</span></div><div class="bd">'+
+       hbars(cov,{max:Math.max.apply(null,open.map(function(x){return x.nInvited;}))})+
+       '<div class="hint" style="margin-top:11px">Click a package to open it.</div>'+
+     '</div></div>'+
+     '<div class="card"><div class="hd"><h3>Every invited trade</h3>'+
+       '<span class="sub">'+r.inv+' across '+r.pkgs+' open '+plural(r.pkgs,'package')+
+       '</span></div><div class="bd">'+splitBar(segs)+
+       '<div class="hint" style="margin-top:11px">No-reply is a state, not a decision. '+
+       'Each of those '+r.sil+' has been escalated to you or is still inside the cadence — '+
+       'the agent never closes a trade off.</div></div></div>'+
+     '</div>';
+
+  /* waiting on you */
+  var todo=[];
+  D.outbox.filter(function(o){return o.proj===S.proj&&o.state==='ready';}).forEach(function(o){
+    todo.push({t:o.title,s:o.n+' '+plural(o.n,'recipient')+' · drafted and waiting on your release',
+               go:'out',k:'Release'});});
+  D.openq.filter(function(q){return q.proj===S.proj;}).forEach(function(q){
+    todo.push({t:'Answer '+q.id+' — '+q.firm, s:'open '+nd(q.age)+' · '+
+      (q.sev==='high'?'a package has already closed without this answer':'in time for an addendum'),
+      go:'qa',k:q.sev==='high'?'Overdue':'Answer'});});
+  if(ps.filter(function(x){return x.status==='levelled';}).length)
+    todo.push({t:'Review the Div 09 bid recommendation', s:'drafted '+fdate(D.rec.drafted)+
+      ' by the bid analysis agent · not sent, not awarded', go:'rec', k:'Review'});
+  D.prequal.filter(function(x){return x.state==='expired';}).forEach(function(x){
+    var mine=false; ps.forEach(function(p2){p2.bidders.forEach(function(b){if(b.code===x.code)mine=true;});});
+    if(mine) todo.push({t:'Prequal blocked — '+x.firm, s:x.note, go:'pq', k:'Blocked'});});
+
+  h+='<div class="card"><div class="hd"><h3>Waiting on a person</h3>'+
+     '<span class="sub">the agent has taken these as far as it is allowed to</span>'+
+     '<span class="rt">'+HSTEP+'</span></div><div class="bd tight">'+
+     '<div class="scroll"><table class="dt"><tbody>'+
+     todo.map(function(t){
+       return '<tr class="clik" data-go="'+t.go+'"><td style="width:1%">'+
+         tag(t.k,t.k==='Overdue'||t.k==='Blocked'?'red':'gold')+'</td>'+
+         '<td><div class="tname">'+esc(t.t)+'</div><div class="tsub">'+esc(t.s)+'</div></td></tr>';}).join('')+
+     '</tbody></table></div></div></div>';
+
+  /* overnight */
+  var act=recentActivity(10);
+  var KIND={invite:['a','Invitation'],open:['a','Opened'],chase:['a','Follow-up'],
+    quote:['a','Quote in'],bidding:['a','Classified'],question:['h','Question'],
+    nobid:['a','No-bid'],withdrew:['r','Withdrew'],escalate:['r','Escalated']};
+  h+='<div class="split64">'+
+    '<div class="card"><div class="hd"><h3>The last three days</h3>'+
+      '<span class="sub">every touch, logged</span><span class="rt">'+ASTEP+'</span></div>'+
+      '<div class="bd"><div class="tl">'+
+      act.map(function(a){var k=KIND[a.kind]||['a',a.kind];
+        return '<div class="tli '+k[0]+'"><div class="tlt">'+esc(a.firm)+
+          ' <span class="tag t-grey">'+esc(k[1])+'</span></div>'+
+          '<div class="tld">'+esc(a.text)+'</div>'+
+          '<div class="tlw">'+fdate(a.day)+' · '+esc(a.pkg)+'</div></div>';}).join('')+
+      '</div></div></div>'+
+    '<div class="card"><div class="hd"><h3>Unrouted</h3>'+
+      '<span class="sub">mail the agent would not guess about</span></div><div class="bd">'+
+      D.unrouted.map(function(u){
+        return '<div class="note red"><div class="notet">'+esc(u.when)+'</div>'+
+          '<b>'+esc(u.subj)+'</b><br><span class="mono">'+esc(u.frm)+'</span>'+
+          '<div style="margin-top:7px">'+esc(u.why)+'</div></div>';}).join('')+
+      '<div class="hint" style="margin-top:11px">Three checks decide a project: the job token in '+
+      'the subject, the thread ID recorded when the invitation went out, and the sender address '+
+      'against that package&rsquo;s bidder list. Nothing matched, so nothing was assumed.</div>'+
+    '</div></div></div>';
+
+  /* cycle time */
+  if(S.proj==='4021-STR'){
+    var cy=D.cycle.map(function(c){return {n:c.short, s:(c.done?'complete quote set':'still open')+
+      ' · '+c.n+' of '+c.inv+' in', v:c.dur, lbl:c.dur+' d', c:c.done?'teal':'pale'};});
+    h+='<div class="card"><div class="hd"><h3>Package issued to a complete quote set</h3>'+
+      '<span class="sub">the Phase 1 measure from the proposal</span></div><div class="bd">'+
+      hbars(cy)+
+      '<div class="note gold" style="margin-top:12px"><div class="notet">Read this honestly</div>'+
+      'These are demo figures. The number worth measuring is the same one either way: how many '+
+      'days pass between issuing a package and having every quote in hand — and how much of that '+
+      'time was somebody remembering to send an email.</div></div></div>';}
+  return h;};
+
+/* ═══ 2 · TENDER LOG ══════════════════════════════════════════════ */
+CRUMB.log=function(){var p=proj();
+  return esc(p.log)+' — the agent writes status, the coordinator owns the file';};
+
+function pkgTabs(){
+  var l=pkgs();
+  if(l.map(function(x){return x.id;}).indexOf(S.pkg)<0) S.pkg=l[0].id;
+  var h='<div class="tabbar">';
+  l.forEach(function(p){
+    h+='<button class="tb'+(S.pkg===p.id?' on':'')+'" data-pkg="'+p.id+'">'+esc(p.short)+
+       '<span class="tbn">'+p.nQuote+'/'+p.nInvited+'</span></button>';});
+  return h+'</div>';}
+
+function lastTouch(b){return b.touches[b.touches.length-1];}
+function nextAction(p,b){
+  if(b.state==='quote')   return ['Filed to '+proj().folder,'grey'];
+  if(b.state==='nobid')   return ['Closed — reason logged','grey'];
+  if(b.state==='withdrew')return ['Closed — reason logged','grey'];
+  if(b.state==='question')return ['Answer with the CM, then addendum','gold'];
+  if(p.dleft<0)           return ['Tender closed without a quote','red'];
+  var nxt=null;
+  D.cadence.forEach(function(n){ if(nxt===null && p.dleft>=n) nxt=n; });
+  if(nxt===null) nxt=D.cadence[D.cadence.length-1];
+  if(b.state==='silent'||b.state==='invited') return ['Escalated — you decide','red'];
+  return ['Follow-up at '+nxt+' '+plural(nxt,'day')+' out','blue'];}
+
+SC.log=function(){
+  var p=curPkg(), h=pkgTabs();
+  var seg=[{l:'Quote in',n:p.nQuote,c:'#1E7A57'},{l:'Bidding',n:p.nBidding,c:'#1E2761'},
+           {l:'No-bid',n:p.nNoBid,c:'#9AA3BC'},{l:'No reply',n:p.nSilent,c:'#B4402C'}];
+  var st=PKG_TAG[p.status];
+
+  h+='<div class="ctxbar">'+
+    inst('Status', tag(st[0],st[1]), p.status==='levelled'?'closed '+fdate(p.close):
+         (p.dleft>=0? nd(p.dleft)+' to close':'closed '+nd(-p.dleft)+' ago'))+
+    inst('Invited', p.nInvited, p.nQuote+' returned a price')+
+    inst('Budget line', moneyk(p.budget), 'from the estimate workbook, read only')+
+    inst('Scope skill', '<span style="font-size:14px" class="mono">'+esc(p.scope.split(' / ')[0])+'</span>',
+         esc(p.scope.split(' / ')[1])+' — the trade list and the exclusions that bite')+
+  '</div>';
+
+  h+='<div class="card"><div class="hd"><h3>'+esc(p.short)+' — '+esc(p.title)+'</h3>'+
+     '<span class="sub">issued '+fdate(p.issued)+' · closes '+fdate(p.close)+
+     (p.close.slice(0,4)?' 14:00':'')+'</span><span class="rt">'+
+     (p.status==='awarded'?HSTEP:ASTEP)+'</span></div><div class="bd">'+
+     splitBar(seg)+'</div></div>';
+
+  var rows=p.bidders.slice().sort(function(a,b){
+    var o={quote:0,question:1,bidding:2,silent:3,invited:4,withdrew:5,nobid:6};
+    return o[a.state]-o[b.state] || (b.quote||0)-(a.quote||0);});
+  var key='log:'+p.id, shown=cut(rows,9,key);
+
+  h+='<div class="card"><div class="hd"><h3>Tender log</h3>'+
+     '<span class="sub">one row per invited trade</span></div><div class="bd tight">'+
+     '<div class="scroll"><table class="dt"><thead><tr>'+
+     '<th>Trade</th><th>Status</th><th>Replied</th><th class="num">Quote</th>'+
+     '<th>Last touch</th><th>Next</th></tr></thead><tbody>'+
+     shown.map(function(b){
+       var lt=lastTouch(b), na=nextAction(p,b);
+       return '<tr class="clik'+(S.sel===b.code?' sel':'')+'" data-insp="bidder:'+p.id+':'+b.code+'">'+
+        '<td><div class="tname">'+esc(b.firm)+'</div><div class="tsub">'+esc(b.city)+' · '+
+          esc(b.contact)+'</div></td>'+
+        '<td>'+bstate(b)+'</td>'+
+        '<td class="mono">'+(b.replied?fshort(b.replied):'—')+'</td>'+
+        '<td class="num">'+(b.quote?money(b.quote):'—')+'</td>'+
+        '<td><div class="tsub" style="margin:0">'+fshort(lt.day)+' · '+esc(lt.kind)+'</div></td>'+
+        '<td>'+tag(na[0],na[1])+'</td></tr>';}).join('')+
+     '</tbody></table></div>'+moreBtn(key,rows.length,9)+'</div></div>';
+
+  if(p.status==='open'||p.status==='closing'){
+    h+='<div class="note"><div class="notet">Closing the tender is a person&rsquo;s decision</div>'+
+      'Bid analysis does not start until the coordinator confirms this log is complete. '+
+      'A late quote, a trade you are still waiting on, a withdrawal you know about but the '+
+      'mailbox does not — the agent cannot see any of that. So it asks.'+
+      '<div style="margin-top:10px" class="rowflex">'+
+      '<button class="btn" disabled>Confirm the log is complete</button>'+
+      '<span class="hint">Disabled in the demo — this is the button that starts Phase 2.</span>'+
+      '</div></div>';
+  } else if(p.status==='levelled'){
+    h+='<div class="note teal"><div class="notet">Log confirmed complete '+fdate('2026-09-05')+'</div>'+
+      'Aaron closed this log the working day after the tender closed, which released the four '+
+      'returned quotes to the bid analysis agent. '+
+      '<button class="btn sm" data-go="lvl" style="margin-left:6px">Open the levelling matrix</button></div>';
+  } else if(p.status==='awarded'){
+    h+='<div class="note teal"><div class="notet">Awarded</div>'+esc(firm(p.awarded).name)+
+      ' at '+money(p.award_val)+', against a budget line of '+money(p.budget)+'. '+
+      'Two unsuccessful bidders have regret letters drafted and unsent. '+
+      '<button class="btn sm" data-go="out" style="margin-left:6px">See the outbound queue</button></div>';}
+  return h;};
+
+/* ═══ 3 · OUTBOUND QUEUE ══════════════════════════════════════════ */
+CRUMB.out=function(){return 'tenders@mosaicavenue.example — nothing leaves this mailbox '+
+  'without a person releasing it';};
+S.released={};
+
+function subjectFor(o){
+  var p=pkg(o.pkg), tok=o.proj;
+  if(o.kind==='invite')  return '['+tok+'] Div 22 plumbing — invitation to bid — close date to be set';
+  if(o.kind==='chase')   return '['+tok+'] '+p.short.replace(/^Div (\d+) — /,'Div $1 ')+
+    ' — invitation to bid — closes '+fdate(p.close);
+  if(o.kind==='addendum')return '['+tok+'] '+p.short+' — Addendum 04 — parapet membrane termination';
+  return '['+tok+'] '+p.short+' — tender result';}
+
+function bodyFor(o){
+  var p=pkg(o.pkg);
+  if(o.kind==='chase') return '<p>Good morning,</p><p>Following up on the invitation to bid for '+
+    esc(p.title)+' at '+esc(proj().full)+'. The tender closes <b>'+fdate(p.close)+' at 14:00</b>, '+
+    'which is '+nd(Math.max(0,p.dleft))+' from today.</p>'+
+    '<p>The package, drawings and Appendix C scope of work are attached. If you are not bidding, '+
+    'a one-line reply saying so is genuinely useful to us — it means we stop chasing you and can '+
+    'look for coverage elsewhere.</p><p>Any scope questions come to this address and are answered '+
+    'to every bidder by addendum, not just to whoever asked.</p>'+
+    '<p class="sig">Aaron<br>Construction Coordinator, Mosaic Avenue Construction<br>'+
+    'Sent by the tendering agent on Aaron&rsquo;s behalf and released by Aaron.</p>';
+  if(o.kind==='addendum') return '<p>Bidders,</p><p><b>Addendum 04</b> — issued to all eight '+
+    'invited trades on '+esc(p.short)+'.</p><p><i>Question, from a bidder:</i> at the parapet, '+
+    'does A5.02 govern or the envelope consultant&rsquo;s SK-11?</p>'+
+    '<p><i>Answer, from the CM:</i> <span style="color:var(--mut)">[awaiting Dale Ferreira]</span></p>'+
+    '<p>Acknowledge receipt of this addendum with your bid.</p>'+
+    '<p class="sig">Issued by the tendering agent. The answer above is written by the '+
+    'construction manager, not by the agent.</p>';
+  if(o.kind==='regret') return '<p>Dear '+esc(firm(o.to[0]).contact.split(' ')[0])+',</p>'+
+    '<p>Thank you for pricing '+esc(p.title)+' at '+esc(proj().full)+'. On this occasion the '+
+    'work has been awarded elsewhere.</p><p>Your submission was complete and priced against our '+
+    'Appendix C scope, which is not always the case, and we would like you on the list for the '+
+    'next package in this division.</p>'+
+    '<p class="sig">Aaron<br>Construction Coordinator, Mosaic Avenue Construction</p>';
+  return '<p>Bidders,</p><p>Mosaic Avenue Construction invites your firm to bid on Div 22 '+
+    'plumbing at '+esc(proj().full)+'.</p><p>The trade list is loaded and the invitation is '+
+    'drafted. The package has not been released and the close date has not been set — both are '+
+    'the coordinator&rsquo;s to decide.</p>'+
+    '<p class="sig">Aaron<br>Construction Coordinator, Mosaic Avenue Construction</p>';}
+
+var KINDTAG={chase:['Follow-up','blue'],invite:['Invitation','teal'],
+             addendum:['Addendum','gold'],regret:['Regret letter','plum']};
+
+SC.out=function(){
+  var l=D.outbox.filter(function(o){return o.proj===S.proj;});
+  var ready=l.filter(function(o){return o.state==='ready'&&!S.released[o.id];});
+  var sent =l.filter(function(o){return S.released[o.id];});
+  var held =l.filter(function(o){return o.state!=='ready';});
+  var n=ready.reduce(function(a,o){return a+o.n;},0);
+  var h='';
+
+  h+='<div class="ctxbar">'+
+    inst('Drafted and ready', ready.length, n+' '+plural(n,'recipient')+' across those batches',
+         ready.length?'warn':'good')+
+    inst('Held back', held.length, 'waiting on something only a person can give')+
+    inst('Released today', sent.length, sent.length?'sent from the tenders mailbox':'nothing sent yet',
+         sent.length?'good':'')+
+    inst('Approval mode', '<span style="font-size:15px">Every batch</span>',
+         'Phase 1 setting. Exception-only comes later, when you trust it')+
+  '</div>';
+
+  h+='<div class="note gold"><div class="notet">Governance — releasing outbound email</div>'+
+    'In Phase 1 the coordinator approves every batch before it leaves. Later, once the cadence '+
+    'has proven itself, this relaxes to exception-only — but it relaxes because you decided it '+
+    'should, not because the agent got confident.</div>';
+
+  function batch(o,isSent){
+    var s=KINDTAG[o.kind];
+    return '<div class="card"><div class="hd">'+tag(s[0],s[1])+
+      '<h3>'+esc(o.title)+'</h3><span class="rt">'+
+      (isSent?tag('Released','green'):(o.state==='ready'?'<span class="hint">'+esc(o.when)+'</span>':
+        tag('Held','amber')))+'</span></div>'+
+      '<div class="bd">'+
+      '<div class="mail"><div class="mailh"><span class="msubj">'+esc(subjectFor(o))+'</span></div>'+
+      '<div class="mailb">'+bodyFor(o)+'</div>'+
+      '<div class="mailf">'+
+        (o.kind==='chase'||o.kind==='invite'?'<span class="attach">'+ic('clip',12)+
+          ' tender package · drawings · Appendix C</span>':'')+
+        '<span class="hint">'+(o.firms.length? o.n+' '+plural(o.n,'recipient')+': '+
+          esc(o.firms.slice(0,3).join(', '))+(o.firms.length>3?' +'+(o.firms.length-3)+' more':'')
+          : o.n+' '+plural(o.n,'recipient')+' — list loaded, not addressed yet')+'</span>'+
+        '<span class="spacer"></span>'+
+        (isSent? '<span class="hint">Released by Aaron just now</span>' :
+         o.state==='ready'? '<button class="btn gold" data-rel="'+o.id+'">Release this batch</button>'+
+           '<button class="btn gh" disabled>Edit</button>' :
+           '<span class="hint">Blocked: '+esc(o.note)+'</span>')+
+      '</div></div>'+
+      (o.state==='ready'?'<div class="hint" style="margin-top:9px">'+esc(o.note)+'</div>':'')+
+      '</div></div>';}
+
+  if(ready.length){h+='<div class="hd" style="border:0;padding:6px 0"><h3>Ready for you</h3>'+
+    '<span class="sub">read it, release it, or edit it</span><span class="rt">'+HSTEP+'</span></div>';
+    ready.forEach(function(o){h+=batch(o,false);});}
+  if(sent.length){h+='<div class="hd" style="border:0;padding:6px 0"><h3>Released</h3></div>';
+    sent.forEach(function(o){h+=batch(o,true);});}
+  if(held.length){h+='<div class="hd" style="border:0;padding:6px 0"><h3>Held back</h3>'+
+    '<span class="sub">the agent is waiting on a person, and will keep waiting</span></div>';
+    held.forEach(function(o){h+=batch(o,false);});}
+  if(!l.length) h+='<div class="card"><div class="empty">Nothing queued on '+esc(proj().name)+
+    ' right now.</div></div>';
+  return h;};
+
+/* ═══ 4 · CHASE & ESCALATION ══════════════════════════════════════ */
+CRUMB.chase=function(){return 'the cadence is '+cadenceText()+' before close, '+
+  'the same on every package, every project';};
+
+SC.chase=function(){
+  var ps=pkgs().filter(function(p){return p.status!=='awarded';});
+  var rows=[];
+  ps.forEach(function(p){ p.bidders.forEach(function(b){
+    var sent=b.touches.filter(function(t){return t.kind==='chase';}).length;
+    var esc_=b.touches.filter(function(t){return t.kind==='escalate';}).length;
+    rows.push({p:p,b:b,sent:sent,esc:esc_});});});
+  var chased=rows.reduce(function(a,r){return a+r.sent;},0);
+  var quiet=rows.filter(function(r){return r.b.state==='silent'||r.b.state==='invited';});
+  var escd=rows.filter(function(r){return r.esc;});
+  var h='';
+
+  h+='<div class="ctxbar">'+
+    inst('Follow-ups sent', chased, 'across '+ps.length+' '+plural(ps.length,'package')+
+         ' — none of them remembered by a person')+
+    inst('Still quiet', quiet.length, 'invited, no reply of any kind', quiet.length?'warn':'good')+
+    inst('Escalated to you', escd.length, 'two follow-ups, no answer — handed over',
+         escd.length?'bad':'')+
+    inst('Closed off by the agent', '0', 'and it never will be — silence is yours to judge','good')+
+  '</div>';
+
+  /* cadence visual for the nearest closing package */
+  var near=ps.filter(function(p){return p.dleft>=0;}).sort(function(a,b){return a.dleft-b.dleft;})[0];
+  if(near){
+    var st=D.cadence.map(function(n){
+      var done=near.dleft<n;
+      return {n:n+' '+plural(n,'day')+' out', v:done?'sent':(near.dleft===n?'today':'queued'),
+        s:fdate(new Date(dt(near.close)-n*864e5).toISOString().slice(0,10)),
+        cls:done?'done':(near.dleft===n?'now':'')};});
+    h+='<div class="card"><div class="hd"><h3>The cadence on '+esc(near.short)+'</h3>'+
+      '<span class="sub">closes '+fdate(near.close)+' · '+nd(near.dleft)+' out</span>'+
+      '<span class="rt">'+ASTEP+'</span></div><div class="bd">'+pipeline(st)+
+      '<div class="hint" style="margin-top:10px">Every trade that has not returned a price gets '+
+      'each of these. A trade that replies drops out of the cadence the moment it is classified — '+
+      'nobody who has already said no-bid gets chased again.</div></div></div>';}
+
+  /* quiet list */
+  var key='chase:quiet';
+  var qs=cut(quiet,8,key);
+  h+='<div class="card"><div class="hd"><h3>Trades that have not replied</h3>'+
+    '<span class="sub">what the agent did, and where it stopped</span></div><div class="bd tight">'+
+    (quiet.length?'<div class="scroll"><table class="dt"><thead><tr><th>Trade</th><th>Package</th>'+
+    '<th>Package opened</th><th class="num">Follow-ups</th><th>Where it sits</th></tr></thead><tbody>'+
+    qs.map(function(r){
+      return '<tr class="clik" data-insp="bidder:'+r.p.id+':'+r.b.code+'">'+
+        '<td><div class="tname">'+esc(r.b.firm)+'</div><div class="tsub">'+esc(r.b.contact)+'</div></td>'+
+        '<td>'+esc(r.p.short)+'</td>'+
+        '<td class="mono">'+(r.b.opened?fshort(r.b.opened):'never')+'</td>'+
+        '<td class="num">'+r.sent+'</td>'+
+        '<td>'+(r.esc?tag('Escalated to Aaron','red'):tag('Inside the cadence','blue'))+'</td></tr>';}).join('')+
+    '</tbody></table></div>'+moreBtn(key,quiet.length,8)
+    :'<div class="empty">Every invited trade on this project has replied.</div>')+'</div></div>';
+
+  h+='<div class="split"><div class="card"><div class="hd"><h3>What the agent never does</h3>'+
+    '<span class="rt">'+ASTEP+'</span></div><div class="bd">'+
+    ['Negotiate price or scope with a contractor',
+     'Commit Mosaic to anything',
+     'Send anything in Phase 1 without your release',
+     'Decide a trade is out — silence escalates, it never closes'].map(function(x){
+      return '<div class="tlt" style="padding:6px 0;border-bottom:1px solid var(--line2)">'+
+        '<span style="color:var(--red);font-weight:700">×</span> '+esc(x)+'</div>';}).join('')+
+    '</div></div>'+
+    '<div class="card"><div class="hd"><h3>What it does instead</h3><span class="rt">'+ASTEP+
+    '</span></div><div class="bd">'+
+    ['Reads every reply and classifies it: bidding, no-bid, question, or quote received',
+     'Follows up on the same schedule whether or not anyone remembers',
+     'Routes a scope question to the CM and issues the answer to every bidder',
+     'Files the returned quote and ticks the trade off the log'].map(function(x){
+      return '<div class="tlt" style="padding:6px 0;border-bottom:1px solid var(--line2)">'+
+        '<span style="color:var(--green);font-weight:700">✓</span> '+esc(x)+'</div>';}).join('')+
+    '</div></div></div>';
+  return h;};
+
+/* ═══ 5 · QUESTIONS & ADDENDA ═════════════════════════════════════ */
+CRUMB.qa=function(){return 'a question answered to one bidder is a question answered to nobody';};
+
+SC.qa=function(){
+  var qs=D.openq.filter(function(q){return q.proj===S.proj;});
+  var ad=D.addenda.filter(function(a){return a.proj===S.proj;});
+  var oldest=qs.length?Math.max.apply(null,qs.map(function(q){return q.age;})):0;
+  var reach=ad.reduce(function(a,x){return a+x.to;},0);
+  var h='';
+
+  h+='<div class="ctxbar">'+
+    inst('Open questions', qs.length, qs.length?'oldest is '+nd(oldest)+' — with '+
+      esc(qs[0].cm):'nothing waiting on the CM', oldest>=5?'bad':(qs.length?'warn':'good'))+
+    inst('Addenda issued', ad.length, reach+' bidder '+plural(reach,'notice')+' sent, '+
+      'every bidder every time')+
+    inst('Fastest turnaround', ad.length?'1 day':'—', 'question in, CM answer, addendum out')+
+    inst('Answered privately', '0', 'the agent has no way to reply to just one bidder','good')+
+  '</div>';
+
+  if(qs.length){
+    h+='<div class="hd" style="border:0;padding:6px 0"><h3>With the construction manager</h3>'+
+      '<span class="sub">the agent routed it; the answer is not its to write</span>'+
+      '<span class="rt">'+HSTEP+'</span></div>';
+    qs.forEach(function(q){
+      var p=pkg(q.pkg);
+      h+='<div class="card"><div class="hd">'+tag(q.id,q.sev==='high'?'red':'gold')+
+        '<h3>'+esc(p.short)+'</h3><span class="sub">asked by '+esc(q.firm)+' · '+fdate(q.asked)+
+        '</span><span class="rt">'+(q.sev==='high'?tag('Open '+nd(q.age),'red'):
+          tag('Open '+nd(q.age),'amber'))+'</span></div><div class="bd">'+
+        '<div class="mail"><div class="mailh"><span class="msubj">['+esc(S.proj)+'] '+
+          esc(p.short)+' — scope question</span></div>'+
+        '<div class="mailb"><p>'+esc(q.q)+'</p>'+
+        '<p class="sig">Routed to '+esc(q.cm)+' the same hour it arrived. Held for an answer.</p></div>'+
+        '<div class="mailf"><span class="hint">Answer here and the agent issues it to all '+
+          p.nInvited+' invited trades as an addendum.</span><span class="spacer"></span>'+
+          '<button class="btn" disabled>Write the answer</button></div></div>'+
+        '<div class="note '+(q.sev==='high'?'red':'')+'" style="margin-top:11px">'+
+        '<div class="notet">Why this one matters</div>'+esc(q.why)+
+        (q.sev==='high'?' <button class="btn sm" data-go="gap" style="margin-left:6px">'+
+          'See what it cost</button>':'')+'</div>'+
+        '</div></div>';});}
+
+  h+='<div class="card addreg"><div class="hd"><h3>Addenda register</h3>'+
+    '<span class="sub">issued to every bidder, recorded against the package</span>'+
+    '<span class="rt">'+ASTEP+'</span></div><div class="bd tight">'+
+    (ad.length?'<div class="scroll"><table class="dt"><thead><tr><th>No.</th><th>Package</th>'+
+      '<th>Question</th><th>Asked by</th><th class="num">Issued to</th><th>Turnaround</th>'+
+      '</tr></thead><tbody>'+
+      ad.map(function(a){return '<tr class="clik" data-insp="add:'+a.no+'">'+
+        '<td class="mono">'+esc(a.no)+'</td><td>'+esc(pkg(a.pkg).short)+'</td>'+
+        '<td><div class="tname" style="font-weight:400">'+esc(a.q.slice(0,72))+
+          (a.q.length>72?'…':'')+'</div></td>'+
+        '<td><div class="tsub" style="margin:0">'+esc(a.firm)+'</div></td>'+
+        '<td class="num">'+a.to+'</td><td>'+tag(a.turn,'green')+'</td></tr>';}).join('')+
+      '</tbody></table></div>'
+     :'<div class="empty">No addenda issued on this project yet.</div>')+'</div></div>';
+
+  h+='<div class="note"><div class="notet">The rule</div>'+
+    'A scope question comes in to the tenders mailbox. The agent routes it to the CM and holds. '+
+    'The CM writes the answer. The agent distributes <b>that answer, unchanged, to every bidder</b> '+
+    'as a numbered addendum, and records the acknowledgement. There is no path in the system for '+
+    'an answer to reach only the trade that asked — which is the single most common way a tender '+
+    'goes sideways.</div>';
+  return h;};
+
+/* ═══ 6 · PREQUALIFICATION ════════════════════════════════════════ */
+CRUMB.pq=function(){return 'WorkSafeBC clearance, insurance currency and limit — checked on the '+
+  'way in, not on the way to an award';};
+
+SC.pq=function(){
+  var codes={};
+  pkgs().forEach(function(p){p.bidders.forEach(function(b){codes[b.code]=1;});});
+  var rows=D.prequal.filter(function(r){return codes[r.code];});
+  var bad=rows.filter(function(r){return r.state==='expired';});
+  var warn=rows.filter(function(r){return r.state==='expiring'||r.state==='missing';});
+  var ok=rows.filter(function(r){return r.state==='ok';});
+  var h='';
+
+  h+='<div class="ctxbar">'+
+    inst('Trades on this project', rows.length, 'every firm invited to any package here')+
+    inst('Current', ok.length, 'clearance and certificate both good','good')+
+    inst('Needs attention', warn.length, 'expiring inside 30 days, limit short, or missing',
+      warn.length?'warn':'good')+
+    inst('Blocks an award', bad.length, bad.length?'cannot be awarded in this state':'nothing blocked',
+      bad.length?'bad':'good')+
+  '</div>';
+
+  var ST={ok:['Current','green'],expiring:['Attention','amber'],
+          expired:['Blocked','red'],missing:['Missing','red']};
+  var tabs=[['all','All',rows.length],['flag','Needs attention',warn.length+bad.length],
+            ['ok','Current',ok.length]];
+  h+=tabbar(tabs); var t=curTab('all');
+  var show=t==='flag'?bad.concat(warn):(t==='ok'?ok:bad.concat(warn,ok));
+
+  var key='pq:'+t, sh=cut(show,10,key);
+  h+='<div class="card"><div class="bd tight">'+
+    (show.length?'<div class="scroll"><table class="dt"><thead><tr><th>Trade</th><th>Status</th>'+
+      '<th>WorkSafeBC clearance</th><th>Insurance certificate</th><th class="num">Limit</th>'+
+      '<th>Bonded</th></tr></thead><tbody>'+
+      sh.map(function(r){
+        var s=ST[r.state];
+        return '<tr class="clik" data-insp="pq:'+r.code+'">'+
+        '<td><div class="tname">'+esc(r.firm)+'</div>'+
+          (r.note?'<div class="tsub">'+esc(r.note.slice(0,64))+(r.note.length>64?'…':'')+'</div>':'')+
+        '</td><td>'+tag(s[0],s[1])+'</td>'+
+        '<td class="mono">'+(r.wsbc==='expired'?'<span style="color:var(--red)">lapsed '+
+          fshort(r.wsbcExp)+'</span>':'to '+fshort(r.wsbcExp))+'</td>'+
+        '<td class="mono">'+(r.insExp?(r.insDays<=30?'<span style="color:var(--amberd)">'+
+          fshort(r.insExp)+' · '+nd(r.insDays)+'</span>':fshort(r.insExp)):
+          '<span style="color:var(--red)">none on file</span>')+'</td>'+
+        '<td class="num">'+(r.lim?moneyk(r.lim):'—')+'</td>'+
+        '<td>'+(r.bond==='yes'?'yes':'<span style="color:var(--mut)">no</span>')+'</td></tr>';}).join('')+
+      '</tbody></table></div>'+moreBtn(key,show.length,10)
+     :'<div class="empty">Nothing in this view.</div>')+'</div></div>';
+
+  h+='<div class="split"><div class="note gold"><div class="notet">What the agent does with a flag</div>'+
+    'It emails the trade asking for the current document, copies the coordinator, and records the '+
+    'flag against the bidder in the tender log. It does <b>not</b> disqualify anybody. '+
+    'Pacific Wall Systems&rsquo; clearance letter had expired on 31 August; the agent flagged it '+
+    'on 1 September and the renewal arrived on the 8th — before it could become an award problem.'+
+    '</div><div class="note red"><div class="notet">What it will not do</div>'+
+    'Award, or let an award go out, against a trade whose clearance has lapsed. That is a hard '+
+    'limit in the tendering-agent skill, and it is the reason the block shows up here rather than '+
+    'in a conversation three weeks later.</div></div>';
+  return h;};
+
+/* ═══ 7 · LEVELLING MATRIX ════════════════════════════════════════ */
+function bidPkg(){return pkgs().filter(function(p){return p.status==='levelled';})[0];}
+function noBidYet(what){
+  var ps=pkgs(), closed=ps.filter(function(p){return p.dleft<0;});
+  return '<div class="card"><div class="hd"><h3>Nothing to '+esc(what)+' on '+esc(proj().name)+
+    ' yet</h3></div><div class="bd">'+
+    '<div class="note"><div class="notet">This is the governance point, not a gap in the demo</div>'+
+    'Bid analysis does not begin until a coordinator confirms a tender log is complete. On this '+
+    'project '+(closed.length?'a package has closed but the log has not been confirmed'
+      :'no package has closed yet')+', so the bid analysis agent has been given nothing to read.'+
+    '<div class="rowflex" style="margin-top:11px">'+
+    '<button class="btn gh" data-go="log">Open the tender log</button>'+
+    '<button class="btn" data-proj="4021-STR" data-go="lvl">Switch to Stoneridge</button>'+
+    '</div><div class="hint" style="margin-top:8px">A drywall and paint package has been levelled '+
+    'there.</div></div></div></div>';}
+
+var MXN={IN:['IN','m-in','Included'],EX:['EX','m-ex','Excluded'],
+         NA:['—','m-na','Not addressed'],AL:['AL','m-al','Allowance carried']};
+
+SC.lvl=function(){
+  var p=bidPkg(); if(!p) return noBidYet('level');
+  var L=D.levelled, sc=D.scope09, mx=D.mx09;
+  var lowFace=L.slice().sort(function(a,b){return a.base-b.base;})[0];
+  var lowAdj=L[0];
+  var h='';
+
+  h+='<div class="ctxbar">'+
+    inst('Quotes levelled', L.length+' <span style="font-size:14px;color:var(--mut)">of '+
+      p.nInvited+'</span>', 'against '+sc.length+' Appendix C scope items')+
+    inst('Lowest on face value', esc(firm(lowFace.code).name.split(' ')[0]),
+      money(lowFace.base)+' — before anything is added back')+
+    inst('Lowest once levelled', esc(firm(lowAdj.code).name.split(' ')[0]),
+      money(lowAdj.adj)+' — a different firm', 'good')+
+    inst('Budget line', moneyk(D.budget09), money(lowAdj.adj-D.budget09)+' over on the '+
+      'recommended bid', lowAdj.adj>D.budget09?'warn':'good')+
+  '</div>';
+
+  h+='<div class="note red"><div class="notet">The whole argument, in one line</div>'+
+    esc(firm(lowFace.code).name)+' is '+money(lowAdj.base-lowFace.base)+' cheaper than '+
+    esc(firm(lowAdj.code).name)+' on the face of the quote. Add back what they did not price and '+
+    'they are '+money(lowFace.adj-lowAdj.adj)+' <b>more expensive</b>. '+
+    'An incomplete low bid is not a low bid.</div>';
+
+  var rows=L.map(function(r){return {n:firm(r.code).name, key:'lev:'+r.code,
+    s:'quoted '+moneyk(r.base)+(r.carry?' · +'+moneyk(r.carry)+' added back':' · nothing added back'),
+    a:r.base, b:r.carry, lbl:money(r.adj),
+    c:r.code===lowAdj.code?'green':''};});
+  h+='<div class="split64">'+
+    '<div class="card"><div class="hd"><h3>Levelled comparison</h3>'+
+      '<span class="sub">quote plus the cost of what it leaves out</span>'+
+      '<span class="rt">'+ASTEP+'</span></div><div class="bd">'+
+      stackBars(rows)+
+      '<div class="slegend" style="margin-top:9px">'+
+        '<span><i style="background:#1E7A57"></i>Quoted, lowest levelled</span>'+
+        '<span><i style="background:#1E2761"></i>Quoted</span>'+
+        '<span><i style="background:#B4402C"></i>Added back — scope they did not price</span></div>'+
+      '<div style="margin-top:15px"><div class="hint" style="margin-bottom:5px">'+
+      'Recommended bid against the budget line of '+money(D.budget09)+'</div>'+
+      meter(lowAdj.adj,D.budget09)+
+      '<div class="hint" style="margin-top:6px">'+money(lowAdj.adj)+' — '+
+      (lowAdj.adj>D.budget09?money(lowAdj.adj-D.budget09)+' over':money(D.budget09-lowAdj.adj)+' under')+
+      '. The meter shows the real number past 100%, it does not stop at the line.</div></div>'+
+    '</div></div>'+
+    '<div class="card"><div class="hd"><h3>How each quote reads</h3></div><div class="bd tight">'+
+    '<div class="scroll"><table class="dt" style="min-width:0"><thead><tr><th>Bidder</th>'+
+    '<th class="num">In</th><th class="num">Ex</th><th class="num">Not addressed</th>'+
+    '</tr></thead><tbody>'+
+    L.map(function(r){return '<tr class="clik" data-insp="lev:'+r.code+'">'+
+      '<td><div class="tname">'+esc(firm(r.code).name.split(' ').slice(0,2).join(' '))+'</div></td>'+
+      '<td class="num">'+r.nin+(r.nal?'<span style="color:var(--mut)">+'+r.nal+'</span>':'')+'</td>'+
+      '<td class="num">'+(r.nex||'—')+'</td>'+
+      '<td class="num"'+(r.nna>2?' style="color:var(--red);font-weight:700"':'')+'>'+
+        (r.nna||'—')+'</td></tr>';}).join('')+
+    '</tbody></table></div>'+
+    '<div class="bd"><div class="hint">&ldquo;Not addressed&rdquo; is the column that matters. '+
+    'An exclusion is a decision you can price around. Silence is a hole you find on site.</div></div>'+
+    '</div></div></div>';
+
+  /* the matrix */
+  h+='<div class="card"><div class="hd"><h3>Appendix C, line by line</h3>'+
+    '<span class="sub">'+sc.length+' scope items × '+L.length+' bidders</span>'+
+    '<span class="rt"><span class="tag t-green">IN included</span>'+
+    '<span class="tag t-amber">EX excluded</span><span class="tag t-red">— not addressed</span>'+
+    '<span class="tag t-blue">AL allowance</span></span></div><div class="bd tight">'+
+    '<div class="scroll"><table class="mx"><thead><tr><th class="stkc">Scope of work</th>'+
+    L.map(function(r){return '<th class="b">'+esc(firm(r.code).name.split(' ')[0])+'</th>';}).join('')+
+    '<th class="b">Priced by</th></tr></thead><tbody>'+
+    sc.map(function(it,i){
+      var pr=0; L.forEach(function(r){var v=mx[r.code][i]; if(v==='IN'||v==='AL') pr++;});
+      var gap=pr<L.length;
+      return '<tr'+(pr===0?' class="gaprow"':'')+'>'+
+        '<td class="sc stkc"><div class="scit">'+esc(it.title)+'</div>'+
+        '<div class="scref">'+esc(it.ref)+(it.note?' · '+esc(it.note):'')+'</div></td>'+
+        L.map(function(r){var v=mx[r.code][i], m=MXN[v];
+          return '<td class="c"><span class="mcell '+m[1]+'" title="'+esc(m[2])+'">'+m[0]+'</span></td>';}).join('')+
+        '<td class="c"><span style="font-family:var(--mono);font-size:11.5px;'+
+          (pr===0?'color:var(--red);font-weight:700':(gap?'color:var(--amberd)':'color:var(--mut)'))+
+          '">'+pr+'/'+L.length+'</span></td></tr>';}).join('')+
+    '</tbody></table></div></div></div>';
+
+  h+='<div class="note"><div class="notet">What the bid agent will not do</div>'+
+    'It does not name a winner, it does not rank on price alone, and it does not fill a gap with '+
+    'an assumption — unpriced scope stays flagged as unpriced. Anything it could not map back to '+
+    'Appendix C is listed for the CM to resolve rather than quietly dropped.</div>';
+  return h;};
+CRUMB.lvl=function(){var p=bidPkg();
+  return p? esc(p.short)+' · closed '+fdate(p.close)+' · log confirmed by Aaron'
+          : 'no package on '+esc(proj().name)+' has been released for analysis';};
+
+/* ═══ 8 · GAP LIST ════════════════════════════════════════════════ */
+SC.gap=function(){
+  var p=bidPkg(); if(!p) return noBidYet('report on');
+  var G=D.gaps, L=D.levelled;
+  var none=G.filter(function(g){return g.priced===0;});
+  var carried=G.reduce(function(a,g){return a+g.carry;},0);
+  var h='';
+
+  h+='<div class="ctxbar">'+
+    inst('Scope nobody priced', none.length, none.length?'not one of the four bidders carried '+
+      plural(none.length,'it','them'):'every item priced by somebody', none.length?'bad':'good')+
+    inst('Priced by some, not all', G.length-none.length, 'the levelling adds these back per bidder')+
+    inst('Value at risk', moneyk(carried), 'Mosaic&rsquo;s own estimate to buy this scope elsewhere')+
+    inst('Assumptions made', '0', 'a gap is reported as a gap, never filled in','good')+
+  '</div>';
+
+  if(none.length){
+    h+='<div class="note red"><div class="notet">The gap list is the output that matters most</div>'+
+      none.map(function(g){return '<b>'+esc(g.title)+'</b> ('+esc(g.ref)+') — priced by 0 of '+
+        g.of+' bidders. Mosaic carries '+money(g.carry)+' for it, or it turns up as a change '+
+        'order after award.';}).join('<br>')+'</div>';}
+
+  var rows=G.map(function(g){return {n:g.title, s:g.ref+' · priced by '+g.priced+' of '+g.of,
+    v:g.carry, lbl:money(g.carry), c:g.priced===0?'red':(g.priced===1?'gold':'pale'), key:'gap:'+g.ref};});
+  h+='<div class="split64">'+
+    '<div class="card"><div class="hd"><h3>What it would cost to cover each gap</h3>'+
+      '<span class="sub">from the estimate workbook, not from a bidder</span></div>'+
+      '<div class="bd wideL">'+hbars(rows)+'</div></div>'+
+    '<div class="card"><div class="hd"><h3>Where the gaps sit</h3></div><div class="bd">'+
+      splitBar([{l:'Priced by all four',n:D.scope09.length-G.length,c:'#1E7A57'},
+                {l:'Priced by some',n:G.length-none.length,c:'#E0A33C'},
+                {l:'Priced by none',n:none.length,c:'#B4402C'}])+
+      '<div class="hint" style="margin-top:12px">Twenty scope items went out. '+
+      (D.scope09.length-G.length)+' came back priced by everyone, which means the scope was '+
+      'written clearly enough. The rest are where the tender is actually decided.</div>'+
+    '</div></div></div>';
+
+  var key='gap:list', sh=cut(G,10,key);
+  h+='<div class="card"><div class="hd"><h3>Gap list</h3>'+
+    '<span class="sub">bidder by bidder, item by item</span><span class="rt">'+ASTEP+'</span></div>'+
+    '<div class="bd tight"><div class="scroll"><table class="mx"><thead><tr>'+
+    '<th class="stkc">Scope item</th>'+
+    L.map(function(r){return '<th class="b">'+esc(firm(r.code).name.split(' ')[0])+'</th>';}).join('')+
+    '<th class="b">Carry</th></tr></thead><tbody>'+
+    sh.map(function(g){
+      return '<tr'+(g.priced===0?' class="gaprow"':'')+'>'+
+      '<td class="sc stkc"><div class="scit">'+esc(g.title)+'</div>'+
+      '<div class="scref">'+esc(g.ref)+' · priced by '+g.priced+' of '+g.of+'</div></td>'+
+      L.map(function(r){var v=g.sts[r.code], m=MXN[v];
+        return '<td class="c"><span class="mcell '+m[1]+'" title="'+esc(m[2])+'">'+m[0]+'</span></td>';}).join('')+
+      '<td class="c mono" style="font-size:11.5px">'+moneyk(g.carry)+'</td></tr>';}).join('')+
+    '</tbody></table></div>'+moreBtn(key,G.length,10)+'</div></div>';
+
+  var q=D.openq.filter(function(x){return x.sev==='high'&&x.proj===S.proj;})[0];
+  if(q) h+='<div class="note gold"><div class="notet">Where the biggest gap came from</div>'+
+    esc(q.firm)+' asked on '+fdate(q.asked)+', twenty hours before close: &ldquo;'+esc(q.q)+
+    '&rdquo; The answer never came, so no addendum went out, so nobody priced it. '+
+    'The agent did not invent an answer and it did not let the item disappear — it carried the '+
+    'question forward into the gap list, where it is now the first line of the recommendation.'+
+    ' <button class="btn sm" data-go="qa" style="margin-left:6px">See the open question</button></div>';
+  return h;};
+CRUMB.gap=function(){var p=bidPkg();
+  return p? 'scope that came back unpriced on '+esc(p.short)
+          : 'nothing has been levelled on '+esc(proj().name)+' yet';};
+
+/* ═══ 9 · BID RECOMMENDATION ══════════════════════════════════════ */
+SC.rec=function(){
+  var p=bidPkg(); if(!p) return noBidYet('recommend on');
+  var L=D.levelled, r=L[0], second=L[1], face=L.slice().sort(function(a,b){return a.base-b.base;})[0];
+  var none=D.gaps.filter(function(g){return g.priced===0;});
+  var over=r.adj-D.budget09;
+  var h='';
+
+  h+='<div class="ctxbar">'+
+    inst('Document', '<span style="font-size:15px" class="mono">'+esc(D.rec.ref)+'</span>',
+      'Mosaic&rsquo;s standard bid recommendation format')+
+    inst('Recommends', esc(firm(r.code).name.split(' ')[0]), money(r.adj)+' levelled')+
+    inst('Against budget', (over>0?'+':'')+moneyk(over), over>0?'over the estimate line':'under the estimate line',
+      over>0?'warn':'good')+
+    inst('State', '<span style="font-size:15px">Draft</span>', 'nobody has been told anything','')+
+  '</div>';
+
+  h+='<div class="note gold"><div class="notet">Governance — the award</div>'+
+    'This document is where the agent stops. It hands over a draft with its gaps and its '+
+    'uncertainties visible. '+esc(proj().cm)+' awards, or sends it back for clarification. '+
+    'No trade has been contacted about the outcome and nothing has been committed.</div>';
+
+  h+='<div class="card"><div class="hd"><h3>Preliminary bid recommendation</h3>'+
+    '<span class="sub">drafted '+fdate(D.rec.drafted)+' by the bid analysis agent</span>'+
+    '<span class="rt">'+tag('Draft','amber')+'</span></div><div class="bd">'+
+    '<dl class="kv" style="margin-bottom:15px">'+
+      '<dt>Project</dt><dd>'+esc(proj().full)+' · <span class="mono">'+esc(proj().tok)+'</span></dd>'+
+      '<dt>Package</dt><dd>'+esc(p.short)+' — '+esc(p.title)+'</dd>'+
+      '<dt>Tender closed</dt><dd>'+fdate(p.close)+' at 14:00 · log confirmed by Aaron '+
+        fdate('2026-09-05')+'</dd>'+
+      '<dt>Coverage</dt><dd>'+p.nQuote+' priced bids from '+p.nInvited+' invited trades · '+
+        p.nNoBid+' no-bid or withdrawn · '+p.nSilent+' no reply</dd>'+
+      '<dt>Budget line</dt><dd>'+money(D.budget09)+' (estimate workbook, tender lines only)</dd>'+
+    '</dl>'+
+
+    '<h4 style="font-size:12.5px;margin-bottom:8px">Levelled comparison</h4>'+
+    '<div class="scroll"><table class="dt" style="min-width:600px"><thead><tr>'+
+    '<th>Bidder</th><th class="num">Quoted</th><th class="num">Added back</th>'+
+    '<th class="num">Levelled</th><th class="num">vs budget</th><th>Complete?</th>'+
+    '</tr></thead><tbody>'+
+    L.map(function(x,i){
+      var dv=x.adj-D.budget09;
+      return '<tr'+(i===0?' class="sel"':'')+'>'+
+      '<td><div class="tname">'+esc(firm(x.code).name)+'</div>'+
+        (i===0?'<div class="tsub">lowest levelled bid</div>':
+         x.code===face.code?'<div class="tsub">lowest on face value</div>':'')+'</td>'+
+      '<td class="num">'+money(x.base)+'</td>'+
+      '<td class="num"'+(x.carry>60000?' style="color:var(--red)"':'')+'>'+
+        (x.carry?'+'+money(x.carry):'—')+'</td>'+
+      '<td class="num"><b>'+money(x.adj)+'</b></td>'+
+      '<td class="num"'+(dv>0?' style="color:var(--amberd)"':' style="color:var(--green)"')+'>'+
+        (dv>0?'+':'')+money(dv)+'</td>'+
+      '<td>'+(x.nna===0&&x.nex===0?tag('Complete','green'):
+        tag(x.nex+' excluded · '+x.nna+' unaddressed', x.nna>2?'red':'amber'))+'</td></tr>';}).join('')+
+    '</tbody></table></div>'+
+
+    '<h4 style="font-size:12.5px;margin:17px 0 8px">Recommendation</h4>'+
+    '<div class="note teal"><b>'+esc(firm(r.code).name)+' at '+money(r.base)+' as quoted, '+
+    money(r.adj)+' levelled.</b><br><br>'+
+    esc(firm(face.code).name)+' returned the lowest number at '+money(face.base)+'. Once the '+
+    face.nex+' excluded and '+face.nna+' unaddressed scope items are added back at Mosaic&rsquo;s '+
+    'own rates, that bid levels to '+money(face.adj)+' — '+money(face.adj-r.adj)+' above the '+
+    'recommendation. The difference is '+esc(D.scope09[7].title.toLowerCase())+', '+
+    esc(D.scope09[6].title.toLowerCase())+' and '+esc(D.scope09[9].title.toLowerCase())+', none of '+
+    'which get cheaper by being left out of a quote.<br><br>'+
+    'The recommended bid sits '+money(over)+' '+(over>0?'above':'below')+' the budget line. '+
+    'That is a real number, not a rounding — it belongs in the conversation with the owner, and '+
+    'it is not the agent&rsquo;s to absorb.</div>'+
+
+    '<h4 style="font-size:12.5px;margin:17px 0 8px">Conditions on this recommendation</h4>'+
+    '<div class="tl">'+
+    none.map(function(g){return '<div class="tli r"><div class="tlt">'+esc(g.title)+
+      ' <span class="tag t-red">unresolved</span></div><div class="tld">'+esc(g.ref)+
+      ' — priced by none of the '+g.of+' bidders. '+esc(g.note||'')+
+      ' Carry '+money(g.carry)+' or resolve the scope split before award.</div></div>';}).join('')+
+    '<div class="tli h"><div class="tlt">Q-114 is still open with the CM</div>'+
+    '<div class="tld">The parkade line marking question was asked twenty hours before close and '+
+    'never answered. Answer it and this recommendation may move — it is the one variable that '+
+    'could change the ranking.</div></div>'+
+    '<div class="tli h"><div class="tlt">Prequalification is current for the recommended trade</div>'+
+    '<div class="tld">Coastline Interiors&rsquo; WorkSafeBC clearance runs to 15 Dec and the '+
+    'insurance certificate to 30 Nov, at a $5M limit. Nothing blocks an award.</div></div>'+
+    '<div class="tli a"><div class="tlt">Two bidders could not be fully mapped on one line each</div>'+
+    '<div class="tld">Both quoted &ldquo;site services&rdquo; as a lump without breaking out '+
+    'hoisting. Listed here rather than assumed either way.</div></div>'+
+    '</div>'+
+
+    '<div class="rowflex" style="margin-top:17px;padding-top:14px;border-top:1px solid var(--line)">'+
+    HSTEP+'<span class="hint">'+esc(proj().cm)+' decides. The agent has no award button.</span>'+
+    '<span class="spacer"></span>'+
+    '<button class="btn gh" disabled>Send back for clarification</button>'+
+    '<button class="btn" disabled>Award</button></div>'+
+    '</div></div>';
+
+  h+='<div class="split"><div class="note"><div class="notet">What happens the moment it is awarded</div>'+
+    'The tender log is stamped, the award value replaces the budget line in the workbook, and '+
+    'regret letters to every unsuccessful bidder are drafted the same day — which is the proposed '+
+    'extension in the deck, and the reason those letters currently do not get sent at all.'+
+    ' <button class="btn sm gh" data-go="out" style="margin-top:9px">See the drafted regret letters</button>'+
+    '</div>'+
+    '<div class="note"><div class="notet">Where this format comes from</div>'+
+    'The shape of this document is not the agent&rsquo;s idea. It lives in '+
+    '<span class="mono">mosaic-document-formats</span>, a written skill with one named owner. '+
+    'Change how Mosaic writes a bid recommendation and you change one file, not eleven '+
+    'coordinators&rsquo; habits.'+
+    ' <button class="btn sm gh" data-go="reg" data-tab="skills" style="margin-top:9px">'+
+    'Open the skills library</button></div></div>';
+  return h;};
+CRUMB.rec=function(){var p=bidPkg();
+  return p? esc(D.rec.ref)+' · '+esc(p.short)+' · draft, awaiting '+esc(proj().cm)
+          : 'nothing has been levelled on '+esc(proj().name)+' yet';};
+
+/* ═══ 10 · PROJECTS & METHOD ══════════════════════════════════════ */
+CRUMB.reg=function(){return 'adding a project is a new row, not a new system';};
+
+SC.reg=function(){
+  var t=curTab('registry');
+  var h=tabbar([['registry','Project registry',D.projects.length],
+                ['skills','Skills library',D.skills.length],
+                ['routing','Mailbox routing'],
+                ['conn','Connections',D.integrations.filter(function(x){return x.state==='on';}).length],
+                ['scale','How it scales']]);
+
+  if(t==='registry'){
+    h+='<div class="lede">One row per job, kept in SharePoint. The job token resolves to '+
+      'everything else the agent needs to know — which scope skill to load, which folder to open, '+
+      'which coordinator to escalate to. Nothing on the row has to be told twice.</div>';
+    h+='<div class="card"><div class="bd tight"><div class="scroll"><table class="dt">'+
+      '<thead><tr><th>Job token</th><th>Project</th><th>Type</th><th>Scope skill</th>'+
+      '<th>Tender folder</th><th>Coordinator</th><th class="num">Packages</th></tr></thead><tbody>'+
+      D.projects.map(function(p){var r=D.rolls[p.tok];
+        return '<tr class="clik'+(p.tok===S.proj?' sel':'')+'" data-proj="'+p.tok+'">'+
+        '<td><span class="tag t-blue" style="font-family:var(--mono)">'+esc(p.tok)+'</span></td>'+
+        '<td><div class="tname">'+esc(p.name)+'</div><div class="tsub">'+esc(p.detail)+'</div></td>'+
+        '<td>'+esc(p.type)+'</td>'+
+        '<td class="mono">'+esc(p.skill)+'</td>'+
+        '<td class="mono">'+esc(p.folder)+'</td>'+
+        '<td>'+esc(p.coord)+'</td>'+
+        '<td class="num">'+(r.pkgs+r.levelled+r.awarded)+'</td></tr>';}).join('')+
+      '</tbody></table></div></div></div>';
+    h+='<div class="note"><div class="notet">What else the row carries</div>'+
+      'The coordinator on point, the construction manager, the estimate workbook path and the '+
+      'tender log path. When the agent sees <span class="mono">4021-STR</span> it loads the '+
+      'townhome scope skill, opens the Stoneridge folder, reads the Stoneridge budget lines and '+
+      'escalates to Aaron. Click any row above to switch this whole demo to that project.</div>';}
+
+  if(t==='skills'){
+    h+='<div class="lede">A skill is a written procedure the agent loads when it becomes '+
+      'relevant. It is how Mosaic&rsquo;s method stops living in one coordinator&rsquo;s head. '+
+      '<b>Project knowledge is kept separate</b> — drawings, trade lists, dates and budgets live '+
+      'in the project&rsquo;s own space. Skills say how we work; the project says which job.</div>';
+    var LAY={'Company':['How Mosaic works','Applies to every agent on every project'],
+             'Agent':['The job description','One per agent — the loop, the cadence, the hard limits'],
+             'Project type':['What a scope looks like','One per building type']};
+    ['Company','Agent','Project type'].forEach(function(lay){
+      var ls=D.skills.filter(function(s){return s.layer===lay;});
+      h+='<div class="card"><div class="hd"><h3>'+esc(lay)+' skills — '+esc(LAY[lay][0])+'</h3>'+
+        '<span class="sub">'+esc(LAY[lay][1])+'</span></div><div class="bd tight">'+
+        '<div class="scroll"><table class="dt"><thead><tr><th>Skill</th><th>What it holds</th>'+
+        '<th>Owner</th><th class="num">Version</th><th>Updated</th></tr></thead><tbody>'+
+        ls.map(function(s){return '<tr class="clik" data-insp="skill:'+esc(s.name)+'">'+
+          '<td><span class="mono" style="font-weight:600">'+esc(s.name)+'</span>'+
+          '<div class="tsub">'+s.lines+' lines</div></td>'+
+          '<td><div class="tsub" style="margin:0;color:var(--mut2)">'+esc(s.holds)+'</div></td>'+
+          '<td>'+esc(s.owner)+'</td><td class="num">'+esc(s.v)+'</td>'+
+          '<td class="mono">'+fshort(s.upd)+'</td></tr>';}).join('')+
+        '</tbody></table></div></div></div>';});
+    h+='<div class="note gold"><div class="notet">Every skill has one named owner</div>'+
+      'Without an owner the written method drifts back into habit within two projects. '+
+      'Changing how Mosaic tenders means changing one file, and one person is answerable for '+
+      'each file. That is the whole governance model of the method layer.</div>';}
+
+  if(t==='routing'){
+    h+='<div class="lede">Every project shares a single tenders mailbox. A job token in the '+
+      'subject line is what keeps them apart.</div>';
+    h+='<div class="card"><div class="bd">'+
+      '<div class="mail"><div class="mailh"><span class="msubj">[4021-STR]&nbsp; '+
+      'Div 06 framing — invitation to bid — closes Fri 18 Sep</span></div>'+
+      '<div class="mailb"><p>The agent wrote that subject line, so the token comes back on every '+
+      'reply — and on every reply to a reply.</p></div></div>'+
+      '<h4 style="font-size:12.5px;margin:15px 0 8px">How a reply finds its project — three checks, in order</h4>'+
+      '<div class="tl">'+
+      [['The job token in the subject','The agent wrote it, so it comes back on nearly everything.'],
+       ['The thread ID recorded when the invitation went out','Works even when a contractor rewrites the subject.'],
+       ['The sender address against that package&rsquo;s bidder list','The third check, for when the first two fail.']]
+      .map(function(x,i){return '<div class="tli a"><div class="tlt">'+(i+1)+' · '+x[0]+'</div>'+
+        '<div class="tld">'+x[1]+'</div></div>';}).join('')+
+      '<div class="tli r"><div class="tlt">No match on any of the three</div>'+
+      '<div class="tld">Filed to <b>Unrouted</b>, Teams alert to the coordinator. '+
+      'The agent never guesses which project an email belongs to.</div></div>'+
+      '</div></div></div>';
+    h+='<div class="split"><div class="note"><div class="notet">Why not one mailbox per project?</div>'+
+      'It works, but it means an IT request every time a project starts, and contractors end up '+
+      'with a different address for every job. One mailbox plus a token scales without touching '+
+      'IT.</div><div class="note"><div class="notet">Plus-addressing</div>'+
+      '<span class="mono">tenders+4021@</span> is a workable alternative and it is genuinely '+
+      'tidier — but some contractor mail systems strip the plus segment, and a stripped address '+
+      'is an unrouted email. The token in the subject survives everything.</div></div>';}
+
+  if(t==='conn'){
+    h+='<div class="lede">Six connections in, two deliberately absent. Admins control connectors, '+
+      'permissions and spend at the organisation level.</div>';
+    h+='<div class="card"><div class="bd tight"><div class="scroll"><table class="dt">'+
+      '<thead><tr><th>System</th><th>What for</th><th>Scope of access</th><th>State</th>'+
+      '</tr></thead><tbody>'+
+      D.integrations.map(function(x){
+        return '<tr><td><div class="tname">'+esc(x.n)+'</div>'+
+        (x.s?'<div class="tsub">'+esc(x.s)+'</div>':'')+'</td>'+
+        '<td><div class="tsub" style="margin:0;color:var(--mut2)">'+esc(x.d)+'</div></td>'+
+        '<td class="mono" style="font-size:11px">'+esc(x.scope)+'</td>'+
+        '<td>'+(x.state==='on'?tag('Connected','green'):tag('Not connected','grey'))+'</td></tr>';}).join('')+
+      '</tbody></table></div></div></div>';
+    h+='<div class="note red"><div class="notet">The data boundary</div>'+
+      'No connection to Sage 300, Timberline or any accounting system. No payroll, HR or banking '+
+      'access of any kind. Budget figures reach the agent through one Excel workbook the '+
+      'coordinator maintains — read only, and only the tender lines. Mail access is limited to '+
+      'the tenders mailbox, not anyone&rsquo;s personal inbox. SharePoint access is scoped to '+
+      'project tender folders, not the whole drive.</div>';
+    h+='<div class="note"><div class="notet">Before rollout</div>'+
+      'Business plans are covered by Anthropic&rsquo;s commercial terms rather than the consumer '+
+      'ones. IT should review the current data handling and retention terms and sign off on the '+
+      'connector scope above before any project data is loaded.</div>';}
+
+  if(t==='scale'){
+    h+='<div class="lede">Written once, inherited by every project. Coordinators, project '+
+      'managers and construction managers work the same method on their own job, with no '+
+      'duplicated setup.</div>';
+    h+='<div class="card"><div class="hd"><h3>Mosaic organisation — shared company layer</h3>'+
+      '<span class="sub">skills, connectors, document templates, admin controls</span></div>'+
+      '<div class="bd"><div class="grid g3">'+
+      D.projects.map(function(p){var r=D.rolls[p.tok];
+        return '<div class="note" style="background:var(--paper);border-color:var(--line)">'+
+        '<div class="notet">'+esc(p.type)+'</div><b>'+esc(p.name)+'</b>'+
+        '<div class="hint" style="margin-top:6px">Own project space · own scope skill '+
+        '<span class="mono">'+esc(p.skill)+'</span></div>'+
+        '<div class="hint" style="margin-top:6px">'+esc(p.coord)+' on point · '+
+        (r.pkgs+r.levelled+r.awarded)+' packages</div></div>';}).join('')+
+      '</div></div></div>';
+    h+='<div class="card"><div class="hd"><h3>Phasing</h3>'+
+      '<span class="sub">the shape from the proposal, with what each phase is measured on</span>'+
+      '</div><div class="bd">'+
+      [['Phase 1','Weeks 0–8','One pilot project. Tendering agent only, every send approved. '+
+        'Write the company and tendering-agent skills.','Days from package issue to a complete quote set'],
+       ['Phase 2','Weeks 8–16','Add the bid analysis agent, draft only. Build the townhome scope '+
+        'skill. Stand up the tender log and the project registry.','Coordinator hours per package, '+
+        'and gaps caught before award'],
+       ['Phase 3','Weeks 16+','Share the skills library organisation-wide. Add the second and '+
+        'third project types. Relax send approval to exception-only. Extend to regret letters.',
+        'Adoption across projects, and consistency of recommendations']]
+      .map(function(x){return '<div class="tli a" style="margin-left:19px;position:relative">'+
+        '<div class="tlt">'+esc(x[0])+' <span class="tag t-grey">'+esc(x[1])+'</span></div>'+
+        '<div class="tld">'+esc(x[2])+'</div>'+
+        '<div class="tld" style="margin-top:5px"><b style="color:var(--ink)">Measure:</b> '+
+        esc(x[3])+'</div></div>';}).join('')+
+      '</div></div>';}
+  return h;};
+
+/* ═══ INSPECTOR ═══════════════════════════════════════════════════ */
+function openIns(title,sub,html){
+  $('#inspT').innerHTML=title; $('#inspS').innerHTML=sub; $('#inspB').innerHTML=html;
+  $('#insp').classList.add('open'); $('#scrim').classList.add('on'); S.ins=1;}
+function closeIns(){var i=$('#insp'); if(!i)return;
+  i.classList.remove('open'); $('#scrim').classList.remove('on'); S.ins=null;}
+function closeNav(){var r=$('#rail'); if(r) r.classList.remove('open');
+  document.body.style.overflow=''; S.navopen=false;}
+
+var TKIND={invite:'Invitation',open:'Opened',chase:'Follow-up',quote:'Quote received',
+  bidding:'Classified',question:'Question',nobid:'No-bid',withdrew:'Withdrawn',escalate:'Escalated'};
+
+function inspect(key){
+  var a=key.split(':');
+  if(a[0]==='pkg'){go('log',{pkg:a[1]});return;}
+
+  if(a[0]==='bidder'){
+    var p=pkg(a[1]), b=p.bidders.filter(function(x){return x.code===a[2];})[0];
+    var pq=D.prequal.filter(function(x){return x.code===b.code;})[0];
+    var h='<dl class="kv" style="margin-bottom:13px">'+
+      '<dt>Contact</dt><dd>'+esc(b.contact)+'</dd>'+
+      '<dt>Email</dt><dd class="mono">'+esc(b.email)+'</dd>'+
+      '<dt>Based in</dt><dd>'+esc(b.city)+'</dd>'+
+      '<dt>Package</dt><dd>'+esc(p.short)+'</dd>'+
+      '<dt>Status</dt><dd>'+bstate(b)+'</dd>'+
+      (b.quote?'<dt>Quoted</dt><dd><b>'+money(b.quote)+'</b></dd>':'')+
+      (b.note?'<dt>Note</dt><dd>'+esc(b.note)+'</dd>':'')+'</dl>';
+    if(pq) h+='<div class="note '+(pq.state==='ok'?'teal':'red')+'" style="margin-bottom:13px">'+
+      '<div class="notet">Prequalification — '+esc(pq.state)+'</div>'+
+      'WorkSafeBC clearance '+(pq.wsbc==='expired'?'lapsed '+fdate(pq.wsbcExp):'to '+fdate(pq.wsbcExp))+
+      ' · insurance '+(pq.insExp?fdate(pq.insExp)+' at '+moneyk(pq.lim):'none on file')+
+      (pq.note?'<div style="margin-top:6px">'+esc(pq.note)+'</div>':'')+'</div>';
+    h+='<div class="hd" style="border:0;padding:0 0 8px"><h3>Every touch</h3></div><div class="tl">'+
+      b.touches.slice().reverse().map(function(t){
+        var cl=t.kind==='escalate'||t.kind==='withdrew'?'r':(t.kind==='question'?'h':'a');
+        return '<div class="tli '+cl+'"><div class="tlt">'+esc(TKIND[t.kind]||t.kind)+'</div>'+
+          '<div class="tld">'+esc(t.text)+'</div><div class="tlw">'+fdate(t.day)+'</div></div>';}).join('')+
+      '</div>';
+    openIns(esc(b.firm), esc(p.project)+' · '+esc(p.short), h); return;}
+
+  if(a[0]==='pq'){
+    var r=D.prequal.filter(function(x){return x.code===a[1];})[0];
+    var mine=[]; D.packages.forEach(function(p2){p2.bidders.forEach(function(b2){
+      if(b2.code===r.code) mine.push(p2);});});
+    openIns(esc(r.firm),'Prequalification record',
+      '<dl class="kv" style="margin-bottom:13px">'+
+      '<dt>WorkSafeBC</dt><dd>'+(r.wsbc==='expired'?'<span style="color:var(--red)">lapsed '+
+        fdate(r.wsbcExp)+'</span>':'clear to '+fdate(r.wsbcExp))+'</dd>'+
+      '<dt>Insurance</dt><dd>'+(r.insExp?fdate(r.insExp)+(r.insDays<=30?
+        ' — '+nd(r.insDays)+' away':''):'<span style="color:var(--red)">none on file</span>')+'</dd>'+
+      '<dt>Limit</dt><dd>'+(r.lim?money(r.lim):'—')+' against a $5,000,000 threshold</dd>'+
+      '<dt>Bonded</dt><dd>'+(r.bond==='yes'?'yes':'no')+'</dd>'+
+      '<dt>Invited to</dt><dd>'+esc(mine.map(function(x){return x.short;}).join(', ')||'—')+'</dd></dl>'+
+      (r.note?'<div class="note red">'+esc(r.note)+'</div>':
+        '<div class="note teal">Nothing on this record blocks an award.</div>')); return;}
+
+  if(a[0]==='add'){
+    var ad=D.addenda.filter(function(x){return x.no===a[1];})[0], p2=pkg(ad.pkg);
+    openIns(esc(ad.no), esc(p2.short)+' · issued '+fdate(ad.issued)+' to '+ad.to+' bidders',
+      '<div class="mail"><div class="mailh"><span class="msubj">['+esc(ad.proj)+'] '+esc(p2.short)+
+      ' — '+esc(ad.no)+'</span></div><div class="mailb">'+
+      '<p><b>Question, from a bidder:</b><br>'+esc(ad.q)+'</p>'+
+      '<p><b>Answer, from the construction manager:</b><br>'+esc(ad.a)+'</p>'+
+      '<p class="sig">Issued to all '+ad.to+' invited trades, not only to '+esc(ad.firm)+'. '+
+      'Acknowledgement recorded against each bid.</p></div></div>'+
+      '<dl class="kv" style="margin-top:13px"><dt>Asked</dt><dd>'+fdate(ad.asked)+' by '+
+      esc(ad.firm)+'</dd><dt>Answered by</dt><dd>'+esc(ad.cm)+'</dd>'+
+      '<dt>Turnaround</dt><dd>'+esc(ad.turn)+'</dd></dl>'); return;}
+
+  if(a[0]==='lev'){
+    var L=D.levelled.filter(function(x){return x.code===a[1];})[0];
+    openIns(esc(firm(L.code).name),'Levelled from '+money(L.base)+' to '+money(L.adj),
+      '<dl class="kv" style="margin-bottom:13px"><dt>As quoted</dt><dd>'+money(L.base)+'</dd>'+
+      '<dt>Added back</dt><dd>'+(L.carry?money(L.carry):'nothing')+'</dd>'+
+      '<dt>Levelled</dt><dd><b>'+money(L.adj)+'</b></dd>'+
+      '<dt>Included</dt><dd>'+L.nin+' of '+D.scope09.length+' scope items'+
+        (L.nal?' (plus '+L.nal+' carried as an allowance)':'')+'</dd>'+
+      '<dt>Excluded</dt><dd>'+L.nex+'</dd><dt>Not addressed</dt><dd>'+L.nna+'</dd></dl>'+
+      (L.items.length?'<div class="hd" style="border:0;padding:0 0 8px"><h3>What was added back</h3></div>'+
+      '<div class="scroll"><table class="dt" style="min-width:0"><tbody>'+
+      L.items.map(function(x){return '<tr><td><div class="tname">'+esc(x.title)+'</div>'+
+        '<div class="tsub">'+esc(x.ref)+' · '+(x.st==='EX'?'excluded':'not addressed')+'</div></td>'+
+        '<td class="num">'+money(x.carry)+'</td></tr>';}).join('')+'</tbody></table></div>'
+      :'<div class="note teal">Nothing to add back — every scope item is priced or carried.</div>'));
+    return;}
+
+  if(a[0]==='gap'){
+    var g=D.gaps.filter(function(x){return x.ref===a[1];})[0];
+    openIns(esc(g.title), esc(g.ref)+' · priced by '+g.priced+' of '+g.of+' bidders',
+      (g.note?'<div class="note gold" style="margin-bottom:13px">'+esc(g.note)+'</div>':'')+
+      '<div class="scroll"><table class="dt" style="min-width:0"><thead><tr><th>Bidder</th>'+
+      '<th>How they treated it</th></tr></thead><tbody>'+
+      D.levelled.map(function(r){var m=MXN[g.sts[r.code]];
+        return '<tr><td>'+esc(firm(r.code).name)+'</td><td><span class="mcell '+m[1]+
+        '" style="margin-right:6px">'+m[0]+'</span>'+esc(m[2])+'</td></tr>';}).join('')+
+      '</tbody></table></div>'+
+      '<div class="note" style="margin-top:13px"><div class="notet">Carry</div>'+
+      money(g.carry)+' — Mosaic&rsquo;s own estimate to buy this scope elsewhere. '+
+      'The agent does not fill the gap with an assumption; it reports it and prices the exposure.'+
+      '</div>'); return;}
+
+  if(a[0]==='skill'){
+    var s=D.skills.filter(function(x){return x.name===a[1];})[0];
+    openIns('<span class="mono">'+esc(s.name)+'</span>', esc(s.layer)+' skill · v'+esc(s.v),
+      '<dl class="kv" style="margin-bottom:13px"><dt>Owner</dt><dd>'+esc(s.owner)+'</dd>'+
+      '<dt>Updated</dt><dd>'+fdate(s.upd)+'</dd><dt>Length</dt><dd>'+s.lines+' lines</dd></dl>'+
+      '<div class="note">'+esc(s.holds)+'</div>'+
+      '<div class="note gold" style="margin-top:11px"><div class="notet">Why it is a file</div>'+
+      'Because a file has a version, a date and one person answerable for it. '+
+      'A habit has none of those, and it leaves with whoever held it.</div>'); return;}}
+
+/* ═══ GUIDED TOUR ═════════════════════════════════════════════════ */
+var TOUR=[
+ {sc:'hoy',proj:'4021-STR',t:'Thursday morning on Stoneridge',
+  d:'This is the board a coordinator opens. Four packages out, thirty trades invited, six prices '+
+    'in. Nothing here was assembled by hand — every number is the mailbox, read and classified.'},
+ {sc:'hoy',target:'.card',t:'What closes when',
+  d:'Red is inside twenty-four hours. The follow-up cadence is 14, 7, 3 and 1 day before close, '+
+    'and it runs whether or not anyone remembers it.'},
+ {sc:'hoy',target:'[data-go="out"]',t:'Waiting on a person',
+  d:'The agent takes each item as far as it is allowed to and then stops. This list is the whole '+
+    'human workload for the day — release the mail, answer the question, review the draft.'},
+ {sc:'log',pkg:'P06',t:'The tender log',
+  d:'One row per invited trade, kept current by the agent. Framing closes in eight days: two '+
+    'prices in, four bidding, one question, one no-bid, two who have not replied.'},
+ {sc:'log',target:'.dt tbody tr:last-child',t:'Silence is escalated, never closed',
+  d:'A trade that has not replied stays on the log with its history attached. After two '+
+    'follow-ups it goes to the coordinator on Teams. The agent never decides a trade is out.'},
+ {sc:'out',t:'Nothing leaves without you',
+  d:'Every outbound batch sits here as a finished draft. In Phase 1 the coordinator releases '+
+    'every one of them. Later that relaxes to exception-only — because you decided it should.'},
+ {sc:'out',target:'[data-rel]',t:'Read it, then release it',
+  d:'Try it. The draft is written to Mosaic&rsquo;s house style, the package is attached, and the '+
+    'subject carries the job token so every reply comes back to the right project.'},
+ {sc:'chase',t:'The cadence, on every package',
+  d:'The same schedule on every trade on every job. A trade that replies drops out of it the '+
+    'moment it is classified — nobody who has already said no-bid gets chased again.'},
+ {sc:'qa',t:'A question answered to one bidder is a question answered to nobody',
+  d:'Pacific Wall asked about parkade line marking twenty hours before close. The agent routed '+
+    'it to the CM and held. The answer never came — watch what that costs.'},
+ {sc:'qa',target:'.addreg',t:'Three addenda, every bidder, every time',
+  d:'The CM writes the answer. The agent distributes it unchanged to every invited trade as a '+
+    'numbered addendum. There is no path in the system for a private answer.'},
+ {sc:'pq',t:'Clearance and insurance, checked on the way in',
+  d:'One lapsed WorkSafeBC clearance blocks an award. One certificate expires in nine days. '+
+    'The agent flags and emails — it does not disqualify anybody.'},
+ {sc:'log',pkg:'P09',t:'Drywall and paint closed last Friday',
+  d:'Four prices from seven invited trades. Aaron confirmed the log complete the next working '+
+    'day, and that is what released the quotes to the bid analysis agent.'},
+ {sc:'lvl',t:'This is the punchline',
+  d:'Pacific Wall came in $88,500 cheaper than Coastline. Add back what they did not price and '+
+    'they are $3,900 more expensive. An incomplete low bid is not a low bid.'},
+ {sc:'lvl',target:'.mx',t:'Twenty scope items, four bidders',
+  d:'Every line of Appendix C mapped against every quote. Included, excluded, not addressed, '+
+    'allowance. The red row is scope nobody priced at all.'},
+ {sc:'gap',t:'The gap list is the output that matters most',
+  d:'Parkade line marking: priced by none of the four. Either Mosaic carries $14,200 for it, or '+
+    'it arrives as a change order three months after award.'},
+ {sc:'gap',target:'.note.gold',t:'And here is where it came from',
+  d:'The unanswered question on Tuesday became the unpriced line on Friday. The agent did not '+
+    'invent an answer and it did not let the item disappear — it carried the question forward.'},
+ {sc:'rec',t:'A draft, with its uncertainties visible',
+  d:'Mosaic&rsquo;s standard format, filled in from the levelled matrix. It recommends Coastline, '+
+    'says by how much it is over budget, and lists what it could not resolve.'},
+ {sc:'rec',target:'.rowflex:last-of-type',t:'The award stays with the CM',
+  d:'There is no award button for the agent. Dale awards or sends it back. Nothing has been '+
+    'said to any trade about the outcome.'},
+ {sc:'reg',tab:'registry',t:'Adding a project is a new row',
+  d:'The job token resolves to the scope skill, the tender folder, the coordinator and the budget '+
+    'workbook. Click a row and the whole demo switches to that project.'},
+ {sc:'reg',tab:'skills',t:'The method layer',
+  d:'Nine written skills in three layers, each with one named owner. This is how Mosaic&rsquo;s '+
+    'method stops living in one coordinator&rsquo;s head and becomes something every project inherits.'},
+ {sc:'reg',tab:'conn',t:'And what it never touches',
+  d:'Six connections in. No Sage, no Timberline, no payroll, no banking. Budget figures arrive '+
+    'through one Excel workbook the coordinator controls, read only, tender lines only.'},
+ {sc:'reg',tab:'scale',t:'Where it goes from here',
+  d:'One pilot project, tendering agent only, every send approved. Then the bid agent in draft. '+
+    'Then the library shared across the company. Each phase has a number it is measured on.'}
+];
+var TI=-1;
+function tourGo(i){
+  if(i<0||i>=TOUR.length){tourEnd();return;}
+  TI=i; var s=TOUR[i];
+  if(s.proj&&s.proj!==S.proj) S.proj=s.proj;
+  if(s.pkg) S.pkg=s.pkg;
+  if(s.tab!=null) S.tab[s.sc]=s.tab;
+  S.sc=s.sc; S.more={}; closeIns(); closeNav(); render();
+  var b=$('#tour'); b.classList.add('on');
+  b.innerHTML='<div class="tourn">Step '+(i+1)+' of '+TOUR.length+'</div>'+
+    '<div class="tourt">'+esc(s.t)+'</div><div class="tourd">'+esc(s.d)+'</div>'+
+    '<div class="tourf"><button class="tbtn" data-tour="x">Close</button>'+
+    '<div class="tourp"><i style="width:'+((i+1)/TOUR.length*100)+'%"></i></div>'+
+    '<button class="tbtn" data-tour="p"'+(i===0?' disabled':'')+'>Back</button>'+
+    '<button class="tbtn pri" data-tour="n">'+(i===TOUR.length-1?'Finish':'Next')+'</button></div>';
+  setTimeout(function(){spotlight(s.target);},60);}
+function spotlight(sel){
+  var sp=$('#spot');
+  if(!sel){sp.classList.remove('on');return;}
+  var el=$(sel,$('#body')); if(!el){sp.classList.remove('on');return;}
+  el.scrollIntoView({block:'center',behavior:'smooth'});
+  setTimeout(function(){
+    var r=el.getBoundingClientRect();
+    if(r.height<2||r.width<2){sp.classList.remove('on');return;}
+    var pad=6;
+    sp.style.left=(r.left-pad)+'px'; sp.style.top=(r.top-pad)+'px';
+    sp.style.width=(r.width+pad*2)+'px'; sp.style.height=(r.height+pad*2)+'px';
+    sp.classList.add('on');},340);}
+function tourEnd(){TI=-1;$('#tour').classList.remove('on');$('#spot').classList.remove('on');}
+
+/* ═══ EVENTS ══════════════════════════════════════════════════════ */
+function boot(){
+  document.getElementById('app-root').innerHTML=shell();
+  render();
+
+  document.addEventListener('click',function(e){
+    var t=e.target;
+    function up(attr){var n=t; while(n&&n!==document){ if(n.getAttribute&&n.getAttribute(attr)!=null) return n; n=n.parentNode;} return null;}
+    var n;
+    if((n=up('data-tour'))){var k=n.getAttribute('data-tour');
+      if(k==='x') tourEnd(); else if(k==='n') tourGo(TI+1); else tourGo(TI-1); return;}
+    if(t.id==='inspclose'||t.id==='scrim'){closeIns();return;}
+    if(t.id==='navtog'||(t.parentNode&&t.parentNode.id==='navtog')){
+      var r=$('#rail'); S.navopen=!S.navopen; r.classList.toggle('open',S.navopen);
+      document.body.style.overflow=S.navopen?'hidden':''; return;}
+    if(t.id==='tourbtn'||t.id==='tourbtn2'||(t.parentNode&&(t.parentNode.id==='tourbtn'||t.parentNode.id==='tourbtn2'))){
+      tourGo(0); return;}
+    if((n=up('data-rel'))){S.released[n.getAttribute('data-rel')]=1; render(); return;}
+    if((n=up('data-more'))){S.more[n.getAttribute('data-more')]=1; render(); return;}
+    if((n=up('data-proj'))){
+      S.proj=n.getAttribute('data-proj'); S.more={}; S.sel=null;
+      var g=n.getAttribute('data-go'); if(g){S.sc=g;}
+      var l=pkgs(); if(l.length) S.pkg=l[0].id;
+      closeIns(); render(); return;}
+    if((n=up('data-insp'))){inspect(n.getAttribute('data-insp')); return;}
+    if((n=up('data-pkg'))){S.pkg=n.getAttribute('data-pkg'); S.more={}; render(); return;}
+    if((n=up('data-tab'))){S.tab[S.sc]=n.getAttribute('data-tab'); S.more={}; render(); return;}
+    if((n=up('data-go'))){
+      var tb=n.getAttribute('data-tab'); var pk=n.getAttribute('data-pkg');
+      go(n.getAttribute('data-go'),{tab:tb,pkg:pk}); return;}
+  });
+
+  document.addEventListener('change',function(e){
+    if(e.target.id==='psel'){
+      S.proj=e.target.value; S.more={}; S.sel=null;
+      var l=pkgs(); if(l.length) S.pkg=l[0].id;
+      closeIns(); render();}});
+
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'){ if(S.ins) closeIns(); else if(TI>=0) tourEnd(); }
+    if(TI>=0&&e.key==='ArrowRight') tourGo(TI+1);
+    if(TI>=0&&e.key==='ArrowLeft')  tourGo(TI-1);});
+
+  window.addEventListener('resize',function(){ if(TI>=0) spotlight(TOUR[TI].target); });
+
+  if(/[?&]tour=1/.test(location.search)) setTimeout(function(){tourGo(0);},420);
+}
+if(document.readyState!=='loading') boot();
+else document.addEventListener('DOMContentLoaded',boot);
+</script>
+</body></html>
