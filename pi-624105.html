@@ -320,7 +320,9 @@ function calibrate(lines, segs, ppf) {
 async function readPdf(file, P, onProgress) {
   await loadPdfjs();
   const data = new Uint8Array(await file.arrayBuffer());
-  const doc = await pdfjs.getDocument({ data }).promise;
+  let doc;
+  try { doc = await pdfjs.getDocument({ data }).promise; }
+  catch (e) { throw new Error(/password/i.test(e.message) ? 'this PDF is password-protected' : 'not a readable PDF (' + e.message + ')'); }
   P.source_files.push(file.name);
   const evL = { source: 'pdf_vector', confidence: 0.7, ref: 'inferred from room numbering' };
   const pages = [];
@@ -334,8 +336,10 @@ async function readPdf(file, P, onProgress) {
     const tb = readTitleBlock(vp.width, lines);
     const kind = classify(tb.title, pageText);
     const ppf = scalePtPerFt(tb.scale);
+    if (!lines.length) P.issues.push(`${file.name} p.${pno}: no text layer (scanned image or outlined fonts) — the browser demo reads vector text only; this sheet needs the server worker's OCR/vision pass. Sheet listed with unknown number.`);
     const sheet = { id: nid(), file: file.name, page: pno, number: tb.number, title: tb.title, kind, scale_text: tb.scale, scale_pt_per_ft: ppf, width_in: +(vp.width / 72).toFixed(1), height_in: +(vp.height / 72).toFixed(1), evidence: { source: 'pdf_vector', confidence: tb.number ? 0.9 : 0.4, page: pno }, overlays: [] };
     P.sheets.push(sheet);
+    if (lines.length && !tb.number) P.issues.push(`${file.name} p.${pno}: no sheet number recognised in the right-hand title-block strip — this firm's title block needs a profile (Sprint 2).`);
     for (const [k, v] of Object.entries(tb.meta)) if (!(k in P.meta)) P.meta[k] = v;
     if (!P.name && tb.meta.project_number) P.name = tb.meta.project_number;
     const tbLines = lines.filter(s => s.bbox[0] > vp.width * 0.86 && (s.text === tb.number || s.text === tb.title || s.text === tb.scale || (tb.title && tb.title.includes(s.text) && s.text.length > 3)));
@@ -625,10 +629,11 @@ async function ingest(fileList) {
       else if (entry.kind === 'dxf') readDxf(await f.text(), f.name, P, null);
       else readIfc(await f.text(), f.name, P);
       entry.status = 'done';
-    } catch (e) { console.error(e); entry.status = 'error'; entry.error = e.message; P.issues.push(`${f.name}: could not be read — ${e.message}`); }
+    } catch (e) { console.error(e); entry.status = 'error'; entry.error = e.message; P.issues.push(`${f.name}: could not be read — ${e.message}`); setStatus(`${f.name}: ${e.message}`, 'warn'); }
     renderFiles();
   }
   state.busy = false; $('#drop').classList.remove('busy');
+  if (state.files.some(f => f.status === 'error')) { render(); return; }
   setStatus(`Done. ${summaryLine(P)}`, 'ok');
   render();
 }
@@ -784,6 +789,10 @@ function wire() {
   drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
   drop.addEventListener('dragleave', () => drop.classList.remove('over'));
   drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('over'); ingest(e.dataTransfer.files); });
+  // a file dropped anywhere on the page must never navigate the tab to the PDF — treat the whole page as the drop zone
+  document.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
+  document.addEventListener('dragleave', e => { if (!e.relatedTarget) drop.classList.remove('over'); });
+  document.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('over'); if (!drop.contains(e.target) && e.dataTransfer && e.dataTransfer.files.length) ingest(e.dataTransfer.files); });
   $('#fileinput').addEventListener('change', e => { ingest(e.target.files); e.target.value = ''; });
   $('#reset').addEventListener('click', () => { state.project = newProject(null); state.files = []; state.ai = {}; state.sheetIdx = 0; renderFiles(); render(); setStatus(''); });
   const b64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
