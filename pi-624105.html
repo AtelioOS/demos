@@ -88,7 +88,7 @@
     <div class="status" id="status"></div>
     <h4>Files</h4>
     <ul class="files" id="files"></ul>
-    <div class="foot">What this demo does: title blocks, sheet index, room tags, schedules, scale verification and evidence boxes from vector PDFs; rooms, walls and door/window blocks from DXF; storeys, spaces, openings and exported quantities from IFC. What only the server worker does: DWG conversion, geometry recompute for IFC, room polygons from PDF linework, scanned sheets.</div>
+    <div class="foot">What this demo does: title blocks on any edge (learned from what repeats across sheets), sheet index, numbered or name-only room tags, schedule tables and door/window legends, scale verification and evidence boxes from vector PDFs; rooms, walls and door/window blocks from DXF; storeys, spaces, openings and exported quantities from IFC. What only the server worker does: DWG conversion, geometry recompute for IFC, room polygons from PDF linework, scanned sheets.</div>
   </aside>
   <main class="main">
     <div class="projhead"><h1 id="projname">No project loaded</h1><span class="meta" id="projmeta"></span></div>
@@ -109,13 +109,17 @@ const PDFJS_URL = window.PDFJS_URL || 'https://cdnjs.cloudflare.com/ajax/libs/pd
 const PDFJS_WORKER = window.PDFJS_WORKER || 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs';
 
 const FT_TO_M = 0.3048, SQFT_TO_M2 = 0.09290304;
-const SHEET_NO = /^(?:[A-Z]{1,2}-?\d{2,3}(?:\.\d+)?|#\d{2})$/;
+const SHEET_NO = /^(?:[A-Z]{1,3}-?\d{1,3}(?:[.\-]\d{1,2})?[A-Z]?|#\d{2}|[A-Z]{1,2}-[A-Z]?\d{1,3})$/;   // A101, A-1, A1.1, S-2.1, M101A, CS002, #00
+const NORM = s => s.replace(/[\u2019\u2018\u02BC]/g, "'").replace(/[\u201D\u201C\u2033]/g, '"').replace(/\s+/g, ' ').trim();
+const ROOM_WORDS = /\b(LIVING|FAMILY|GREAT|DINING|KITCHEN|KITCHENETTE|PANTRY|BED|BEDROOM|MASTER|PRIMARY|GUEST|NURSERY|BATH|BATHROOM|POWDER|PWDR|PWDER|WC|TOILET|SHOWER|ENSUITE|CLOSET|WIC|W\.I\.C\.|WARDROBE|HALL|HALLWAY|FOYER|ENTRY|VESTIBULE|MUDROOM|LAUNDRY|UTILITY|MECH|MECHANICAL|STORAGE|STORE|OFFICE|STUDY|DEN|LIBRARY|LOFT|BONUS|FLEX|GARAGE|CARPORT|PORCH|DECK|PATIO|TERRACE|BALCONY|LANAI|SUNROOM|LOBBY|CORRIDOR|STAIR|STAIRS|ELEV|ELEVATOR|ROOM|SUITE|LOUNGE|GYM|SPA|SAUNA|CELLAR|BASEMENT|ATTIC|SHOP|WORKSHOP|STUDIO|RECEPTION|WAITING|CONFERENCE|BOARDROOM|BREAK|CAFE|BAR|SERVER|JANITOR|RESTROOM|LOCKER|MEZZANINE|COURT|COURTYARD|RECAMARA|RECÁMARA|ALCOBA|COCINA|SALA|COMEDOR|BAÑO|BANO|MEDIO BAÑO|ESTUDIO|TERRAZA|COCHERA|ESTACIONAMIENTO|PATIO|VESTIBULO|VESTÍBULO|LAVANDERIA|LAVANDERÍA|BODEGA|CUARTO|SERVICIO|PASILLO|ESCALERA|ROOF TERRACE|BALCON|BALCÓN|JARDIN|JARDÍN|OFICINA|RECEPCION|RECEPCIÓN|LOBBY|GIMNASIO|ALBERCA|CLOSET|VESTIDOR)\b/;
+const ROOM_STOP = /\b(NOTE|NOTES|SCHEDULE|LEGEND|PLAN|PLANS|ELEVATION|SECTION|DETAIL|CEILING|SOFFIT|BEAM|POST|JOIST|SLAB|WALL|DOOR|DOORS|WINDOW|WINDOWS|SCALE|TYP|TYPICAL|SEE|MIN|MAX|CLEAR|ABOVE|BELOW|OPEN TO|LINE OF|EXISTING|NEW|OPTIONAL|REQUIRED|PROVIDE|VERIFY|STEPS|STEP|RISERS|LANDING|ROOF|GUTTER|DOWNSPOUT|VENT|GFCI|SMOKE|LIGHT|OUTLET|SWITCH|PANEL|FIXTURE|CABINET|SHELF|SHELVING|COUNTER|ISLAND|SINK|RANGE|REF|REFRIGERATOR|MICROWAVE|WASHER|DRYER|W\/D|TUB|TOILET|LAV|FIREPLACE|COATS)\b/;
 const SCALE_RE = /(\d+(?:\s*\d+\/\d+)?|\d+\/\d+)"\s*=\s*1'\s*-?\s*0"|(?:^|[^\d:\/])1\s*:\s*(\d{2,4})(?![\d:])/;
+const SCALE_ANY = /(?:\d+(?:\s*\d+\/\d+)?|\d+\/\d+)"\s*=\s*1'\s*-?\s*0"|(?:^|[^\d:\/])1\s*:\s*\d{2,4}(?![\d:])/;
 const DIM_RE = /^±?\s*\d+'\s*-\s*\d+(?:\s+\d+\/\d+)?"$|^±?\s*\d+(?:\s+\d+\/\d+)?"$/;
 const ROOM_NO = /^[A-Z]?\d{3}[A-Z]?$/;
 const SCHED_TITLE = /^([A-Z][A-Z \/]+?)\s+SCHEDULE$/;
 const AREA_RE = /^\s*([\d,]+(?:\.\d+)?)\s*(SF|SQ\.? ?FT|m2|m²)\s*$/i;
-const KIND_RULES = [['cover', /cover|welcome|title|index/], ['schedule', /schedule/], ['foundation', /foundation/], ['framing', /framing/], ['roof_plan', /roof plan/], ['floor_plan', /floor plan|\bplan\b/], ['elevation', /elevation/], ['section', /section/], ['detail', /detail/], ['3d', /3d|axon|perspective|render/], ['site', /site/], ['notes', /note|abbreviation|symbol|legend/]];
+const KIND_RULES = [['cover', /cover|welcome|title|index/], ['schedule', /schedule/], ['foundation', /foundation/], ['framing', /framing/], ['roof_plan', /roof plan/], ['floor_plan', /floor plans?|\bplans?\b|planta/], ['elevation', /elevation/], ['section', /section/], ['detail', /detail/], ['3d', /3d|axon|perspective|render/], ['site', /site/], ['notes', /note|abbreviation|symbol|legend/]];
 
 let uid = 0; const nid = () => 'id' + (++uid).toString(36) + Math.random().toString(36).slice(2, 6);
 
@@ -174,7 +178,7 @@ function textItemsToLines(items, viewport) {
     });
     const xs = corners.map(p => p[0]), ys = corners.map(p => p[1]);
     const dir = Math.abs(corners[1][0] - corners[0][0]) >= Math.abs(corners[1][1] - corners[0][1]) ? 'h' : 'v';
-    spans.push({ text: it.str.trim(), bbox: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)], dir, raw: it });
+    spans.push({ text: NORM(it.str), bbox: [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)], dir, raw: it });
   }
   // merge runs that sit on one baseline with a small gap (pdf.js sometimes splits "LIVING" / "ROOM")
   spans.sort((p, q) => (p.bbox[1] - q.bbox[1]) || (p.bbox[0] - q.bbox[0]));
@@ -189,49 +193,131 @@ function textItemsToLines(items, viewport) {
   return { spans, lines };
 }
 
-function readTitleBlock(W, lines) {
-  const strip = lines.filter(s => s.bbox[0] > W * 0.86);
+function edgeBand(W, H, s, f = 0.16) { const b = s.bbox; return b[0] > W * (1 - f) || b[1] > H * (1 - f) || b[2] < W * f || b[3] < H * f; }
+const near = (a, b, d) => Math.abs(((a[0] + a[2]) - (b[0] + b[2])) / 2) < d && Math.abs(((a[1] + a[3]) - (b[1] + b[3])) / 2) < d;
+
+function readTitleBlock(W, H, lines, boiler) {
+  // Firm-agnostic: the title block can sit on any edge. Text that repeats on most
+  // sheets (project name, architect, licence) is boilerplate; the sheet number is
+  // the largest non-boilerplate token that looks like one, in the outer band, and
+  // the sheet title is the largest non-boilerplate wording near it.
   const h = s => s.bbox[3] - s.bbox[1];
+  const isBoiler = s => boiler.has(s.text);
   const info = { number: null, title: null, scale: null, meta: {} };
-  const nums = strip.filter(s => SHEET_NO.test(s.text));
+  const band = lines.filter(s => edgeBand(W, H, s));
+  let nums = band.filter(s => !isBoiler(s) && SHEET_NO.test(s.text) && h(s) >= 9);
+  if (!nums.length) nums = lines.filter(s => !isBoiler(s) && SHEET_NO.test(s.text) && h(s) >= 24);
   if (nums.length) {
-    const big = nums.reduce((a, b) => h(b) > h(a) ? b : a);
+    const big = nums.reduce((p, q) => h(q) > h(p) ? q : p);
     info.number = big.text;
-    const cands = strip.filter(s => s !== big && h(s) >= 16 && h(s) <= 60 && /[a-z]/.test(s.text) && !/^(Project Number|Issue Date|Author|Checker)$/.test(s.text) && Math.abs(s.bbox[1] - big.bbox[1]) < 400);
+    const cands = band.filter(s => s !== big && !isBoiler(s) && h(s) >= 8 && h(s) <= 60 && /[A-Za-z]{3}/.test(s.text) && !SHEET_NO.test(s.text) && !SCALE_ANY.test(s.text) && !/^\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4}/.test(s.text) && !/^(Project Number|Issue Date|Author|Checker|Scale|Date|Drawn by|Checked by|Project number|SHEET|SHEET NO\.?|DRAWING NO\.?|DWG NO\.?)$/i.test(s.text) && near(s.bbox, big.bbox, 320));
     if (cands.length) {
-      cands.sort((a, b) => h(b) - h(a)); const top = cands[0];
-      const parts = cands.filter(s => Math.abs(h(s) - h(top)) < 2 && Math.abs(s.bbox[0] - top.bbox[0]) < 1.5 * h(top)).sort((a, b) => b.bbox[0] - a.bbox[0]);
+      cands.sort((x, y) => (h(y) - h(x)) || (Math.hypot(x.bbox[0] - big.bbox[0], x.bbox[1] - big.bbox[1]) - Math.hypot(y.bbox[0] - big.bbox[0], y.bbox[1] - big.bbox[1])));
+      const top = cands[0];
+      const parts = cands.filter(s => Math.abs(h(s) - h(top)) < 2 && (Math.abs(s.bbox[0] - top.bbox[0]) < 1.5 * h(top) || Math.abs(s.bbox[1] - top.bbox[1]) < 1.5 * h(top)) && near(s.bbox, top.bbox, 3 * h(top) + 40));
+      parts.sort((x, y) => (x.bbox[1] - y.bbox[1]) || (y.bbox[0] - x.bbox[0]));
       info.title = parts.map(s => s.text).join(' ');
     }
   }
-  const sc = strip.find(s => SCALE_RE.test(s.text)); if (sc) info.scale = sc.text;
+  const sc = band.find(s => SCALE_ANY.test(s.text)) || lines.find(s => SCALE_ANY.test(s.text));
+  if (sc) info.scale = sc.text;
   const labels = { 'Project number': 'project_number', 'Date': 'date', 'Drawn by': 'drawn_by', 'Checked by': 'checked_by' };
-  for (const s of strip) if (labels[s.text]) {
+  for (const s of band) if (labels[s.text]) {
     const y = (s.bbox[1] + s.bbox[3]) / 2;
-    const c = strip.find(u => Math.abs((u.bbox[1] + u.bbox[3]) / 2 - y) < 6 && u.bbox[0] > s.bbox[2]);
+    const c = band.find(u => Math.abs((u.bbox[1] + u.bbox[3]) / 2 - y) < 6 && u.bbox[0] > s.bbox[2]);
     if (c) info.meta[labels[s.text]] = c.text;
   }
   return info;
 }
 
-function readRoomTags(lines) {
+function pageKindFallback(lines, W, H) {
+  // No usable title? Look at the view titles drawn on the sheet itself.
+  const big = lines.filter(s => (s.bbox[3] - s.bbox[1]) >= 12 && !edgeBand(W, H, s)).map(s => s.text.toUpperCase());
+  const has = rx => big.some(t => rx.test(t));
+  if (has(/SCHEDULE/)) return 'schedule';
+  if (has(/FLOOR PLAN|CEILING PLAN|FRAMING PLAN|FOUNDATION PLAN|SITE PLAN|ROOF PLAN|\bPLAN\b|PLANTA/)) return has(/FOUNDATION|CIMENT/) ? 'foundation' : has(/FRAMING/) ? 'framing' : has(/ROOF PLAN|AZOTEA/) && !has(/FLOOR PLAN/) ? 'roof_plan' : 'floor_plan';
+  if (has(/ELEVATION|FACHADA|ALZADO/)) return 'elevation';
+  if (has(/SECTION|CORTE/)) return 'section';
+  if (has(/DETAIL|DETALLE/)) return 'detail';
+  return 'other';
+}
+
+function levelFromTitle(title) {
+  const t = (title || '').toUpperCase();
+  if (/BASEMENT|SÓTANO|SOTANO|CELLAR|LOWER LEVEL/.test(t)) return 'Basement';
+  if (/DOWNSTAIRS|FIRST FLOOR|1ST FLOOR|GROUND FLOOR|MAIN FLOOR|LEVEL 1\b|LEVEL ONE|PLANTA BAJA|\bPB\b|NIVEL 1\b/.test(t)) return 'Level 1';
+  if (/UPSTAIRS|SECOND FLOOR|2ND FLOOR|UPPER FLOOR|LEVEL 2\b|LEVEL TWO|PLANTA ALTA|NIVEL 2\b/.test(t)) return 'Level 2';
+  if (/THIRD FLOOR|3RD FLOOR|LEVEL 3\b|NIVEL 3\b/.test(t)) return 'Level 3';
+  if (/ROOF|AZOTEA/.test(t)) return 'Roof';
+  return null;
+}
+
+
+function readRoomTags(lines, W, H) {
   const tags = [];
-  const names = lines.filter(s => /^[A-Z][A-Z0-9 .\/&'-]{1,30}$/.test(s.text) && !DIM_RE.test(s.text) && !ROOM_NO.test(s.text));
-  for (const n of lines.filter(s => ROOM_NO.test(s.text))) {
+  const inField = s => !edgeBand(W, H, s, 0.05);   // drawings often run into the margin; only the outer 5% is off-limits
+  const names = lines.filter(s => /^[A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑ0-9 .\/&'-]{1,30}$/.test(s.text) && !DIM_RE.test(s.text) && !ROOM_NO.test(s.text) && inField(s));
+  const used = new Set();
+  // 1) NAME over NUMBER (Revit / ArchiCAD tags)
+  for (const n of lines.filter(s => ROOM_NO.test(s.text) && inField(s))) {
     const nb = n.bbox, h = nb[3] - nb[1];
     for (const m of names) {
       const mb = m.bbox;
       const xo = Math.min(mb[2], nb[2]) - Math.max(mb[0], nb[0]);
       const gap = nb[1] - mb[3];
       if (xo > 0 && gap >= -1 && gap < 1.2 * h && Math.abs(((mb[0] + mb[2]) - (nb[0] + nb[2])) / 2) < 3 * h) {
-        let name = m.text, top = mb;
-        for (const u of names) { const ub = u.bbox; if (u !== m && mb[1] - ub[3] >= -1 && mb[1] - ub[3] < 0.6 * h && Math.min(ub[2], mb[2]) - Math.max(ub[0], mb[0]) > 0) { name = u.text + ' ' + name; top = ub; break; } }
+        let name = m.text, top = mb; used.add(m);
+        for (const u of names) { const ub = u.bbox; if (u !== m && mb[1] - ub[3] >= -1 && mb[1] - ub[3] < 0.6 * h && Math.min(ub[2], mb[2]) - Math.max(ub[0], mb[0]) > 0) { name = u.text + ' ' + name; top = ub; used.add(u); break; } }
         tags.push({ name, number: n.text, bbox: [Math.min(top[0], mb[0], nb[0]), top[1], Math.max(top[2], mb[2], nb[2]), nb[3]] });
         break;
       }
     }
   }
+  // 2) name-only labels (no room numbering — common on residential and MX sets):
+  //    a room word, possibly stacked over two lines ("SCREEN" / "PORCH"), not a note.
+  const cand = names.filter(s => !used.has(s));
+  const taken = new Set();
+  for (const s of cand) {
+    if (taken.has(s)) continue;
+    const h = s.bbox[3] - s.bbox[1];
+    let text = s.text, bbox = s.bbox.slice(), parts = [s];
+    const below = cand.find(u => u !== s && !taken.has(u) && u.bbox[1] - s.bbox[3] >= -1 && u.bbox[1] - s.bbox[3] < 0.6 * h && Math.abs((u.bbox[3] - u.bbox[1]) - h) < 2 && Math.min(u.bbox[2], s.bbox[2]) - Math.max(u.bbox[0], s.bbox[0]) > 0);
+    if (below) { text = s.text + ' ' + below.text; bbox = [Math.min(bbox[0], below.bbox[0]), bbox[1], Math.max(bbox[2], below.bbox[2]), below.bbox[3]]; parts.push(below); }
+    if (!ROOM_WORDS.test(text) || ROOM_STOP.test(text) || text.split(' ').length > 4) {
+      // maybe the first line alone is a room ("KITCHEN" over "8' CEILING")
+      if (below && ROOM_WORDS.test(s.text) && !ROOM_STOP.test(s.text)) { text = s.text; bbox = s.bbox.slice(); parts = [s]; } else continue;
+    }
+    parts.forEach(p => taken.add(p));
+    tags.push({ name: text, number: null, bbox, nameOnly: true });
+  }
   return tags;
+}
+
+// Door / window LEGENDS ("DOORS" heading, then "A  36x84 9-LITE FRONT DOOR")
+function readLegends(spans) {
+  const rows = new Map();
+  for (const w of spans) { if (w.dir !== 'h') continue; const k = Math.round((w.bbox[1] + w.bbox[3]) / 2 / 3); if (!rows.has(k)) rows.set(k, []); rows.get(k).push(w); }
+  const ordered = [...rows.keys()].sort((a, b) => a - b).map(k => rows.get(k).sort((a, b) => a.bbox[0] - b.bbox[0]));
+  const out = [];
+  ordered.forEach((r, i) => {
+    for (const w of r) {
+      const m = w.text.match(/^(DOORS?|WINDOWS?|PUERTAS|VENTANAS)(?:\s+(?:LEGEND|SCHEDULE|TYPES))?:?$/i);
+      if (!m) continue;
+      const kind = /^(DOOR|PUERTA)/i.test(m[1]) ? 'door' : 'window';
+      const x0 = w.bbox[0], h = w.bbox[3] - w.bbox[1]; let lastY = w.bbox[3];
+      for (let j = i + 1; j < ordered.length; j++) {
+        const cells = ordered[j].filter(c => c.bbox[0] >= x0 - 6 && c.bbox[0] < x0 + 40);
+        if (!cells.length) { if (ordered[j][0].bbox[1] - lastY > 3 * h) break; continue; }
+        const rowText = ordered[j].filter(c => c.bbox[0] >= x0 - 6 && c.bbox[0] < x0 + 260).map(c => c.text).join(' ');
+        const mm = rowText.match(/^([A-Z]{1,2}|\d{1,3})\s+(\d{2,3})\s*[xX×]\s*(\d{2,3})\s*(.*?)(?:\s+(?:[A-Z]{1,2}|\d{1,3})\s+\d{2,3}\s*[xX×]\s*\d{2,3}\b.*)?$/);
+        if (!mm) { if (ordered[j][0].bbox[1] - lastY > 3 * h) break; lastY = ordered[j][0].bbox[3]; continue; }
+        lastY = ordered[j][0].bbox[3];
+        const c0 = cells[0]; const bbox = [c0.bbox[0], c0.bbox[1], Math.max(...ordered[j].map(c => c.bbox[2])), c0.bbox[3]];
+        out.push({ kind, mark: mm[1], width_m: +(parseFloat(mm[2]) * 0.0254).toFixed(3), height_m: +(parseFloat(mm[3]) * 0.0254).toFixed(3), type_name: mm[4].trim() || null, bbox });
+      }
+    }
+  });
+  return out;
 }
 
 function readSchedules(spans) {
@@ -325,28 +411,82 @@ async function readPdf(file, P, onProgress) {
   catch (e) { throw new Error(/password/i.test(e.message) ? 'this PDF is password-protected' : 'not a readable PDF (' + e.message + ')'); }
   P.source_files.push(file.name);
   const evL = { source: 'pdf_vector', confidence: 0.7, ref: 'inferred from room numbering' };
-  const pages = [];
+  // pass 1 — text of every page, and what repeats on most pages (title-block boilerplate)
+  const pagesData = [];
+  const seen = new Map();
   for (let pno = 1; pno <= doc.numPages; pno++) {
-    onProgress && onProgress(`Reading ${file.name} — sheet ${pno}/${doc.numPages}`);
+    onProgress && onProgress(`Reading ${file.name} — text ${pno}/${doc.numPages}`);
     const page = await doc.getPage(pno);
     const vp = page.getViewport({ scale: 1 });
     const tc = await page.getTextContent();
     const { spans, lines } = textItemsToLines(tc.items, vp);
+    pagesData.push({ pno, page, vp, spans, lines });
+    for (const t of new Set(lines.filter(s => edgeBand(vp.width, vp.height, s)).map(s => s.text))) seen.set(t, (seen.get(t) || 0) + 1);
+  }
+  const boiler = new Set();
+  if (doc.numPages > 1) for (const [t, n] of seen) if (n >= Math.max(2, Math.ceil(doc.numPages * 0.6))) boiler.add(t);
+  const bigBoiler = [...boiler].filter(t => /[A-Za-z]{3}/.test(t.replace(/ /g, '')) && !/^(Project Number|Issue Date|Author|Checker)$/.test(t) && !/^(Project number|Date|Drawn by|Checked by|Scale)$/.test(t));
+  if (bigBoiler.length) {
+    const sample = pagesData[Math.min(1, pagesData.length - 1)].lines;
+    const ok = t => t.length <= 60 && !/\.(com|net|org|mx|ca)\b|www\.|http|licen|copyright|©|all rights|reserved|liab|warrant/i.test(t);
+    const scored = bigBoiler.filter(ok).map(t => ({ t, h: Math.max(0, ...sample.filter(s => s.text === t).map(s => Math.min(s.bbox[3] - s.bbox[1], s.bbox[2] - s.bbox[0]))) })).sort((a, b) => b.h - a.h);
+    if (scored[0] && scored[0].h > 14 && !P.meta.project_name) {
+      const L = sample.find(s => s.text === scored[0].t);
+      const row = sample.filter(s => boiler.has(s.text) && Math.abs(s.bbox[1] - L.bbox[1]) < 3 && Math.abs((s.bbox[3] - s.bbox[1]) - (L.bbox[3] - L.bbox[1])) < 2 && Math.abs(s.bbox[0] - L.bbox[0]) < 600).sort((x, y) => x.bbox[0] - y.bbox[0]);
+      let name = (row.length ? row : [L]).map(s => s.text).join(' ');
+      if (/^(?:\S ){6,}\S$/.test(name)) name = name.replace(/ /g, '');   // letter-spaced display type
+      P.meta.project_name = name;
+    }
+  }
+  const levelByName = {};
+  const levelNamed = (name) => { if (!levelByName[name]) levelByName[name] = levelFor(P, 'name:' + name, name, { source: 'pdf_vector', confidence: 0.7, ref: 'from sheet title' }); return levelByName[name]; };
+
+  for (const { pno, page, vp, spans, lines } of pagesData) {
+    onProgress && onProgress(`Reading ${file.name} — sheet ${pno}/${doc.numPages}`);
     const pageText = lines.map(l => l.text).join('\n');
-    const tb = readTitleBlock(vp.width, lines);
-    const kind = classify(tb.title, pageText);
+    const tb = readTitleBlock(vp.width, vp.height, lines, boiler);
+    let kind = classify(tb.title, '');
+    if (kind === 'other' && !tb.title) kind = pageKindFallback(lines, vp.width, vp.height);
+    let presentation = false;
+    if (!tb.number && lines.length) {
+      // unnumbered page with a big caption on an edge = a rendering / narrative page, not a drawing sheet
+      const caps = lines.filter(s => edgeBand(vp.width, vp.height, s) && !boiler.has(s.text) && (s.bbox[3] - s.bbox[1]) >= 18 && (s.bbox[3] - s.bbox[1]) <= 70 && /[A-Za-z]{3}/.test(s.text.replace(/ /g, '')) && s.text.length <= 60);
+      if (caps.length) {
+        caps.sort((x, y) => (y.bbox[3] - y.bbox[1]) - (x.bbox[3] - x.bbox[1])); const top = caps[0], th = top.bbox[3] - top.bbox[1];
+        const row = caps.filter(s => Math.abs(s.bbox[1] - top.bbox[1]) < 3 && Math.abs((s.bbox[3] - s.bbox[1]) - th) < 2).sort((x, y) => x.bbox[0] - y.bbox[0]);
+        let t = row.map(s => /^(?:\S ){2,}\S$/.test(s.text) ? s.text.replace(/ /g, '') : s.text).join(' ');
+        tb.title = t; kind = 'presentation'; presentation = true;
+      }
+    }
     const ppf = scalePtPerFt(tb.scale);
     if (!lines.length) P.issues.push(`${file.name} p.${pno}: no text layer (scanned image or outlined fonts) — the browser demo reads vector text only; this sheet needs the server worker's OCR/vision pass. Sheet listed with unknown number.`);
-    const sheet = { id: nid(), file: file.name, page: pno, number: tb.number, title: tb.title, kind, scale_text: tb.scale, scale_pt_per_ft: ppf, width_in: +(vp.width / 72).toFixed(1), height_in: +(vp.height / 72).toFixed(1), evidence: { source: 'pdf_vector', confidence: tb.number ? 0.9 : 0.4, page: pno }, overlays: [] };
+    const sheet = { id: nid(), file: file.name, page: pno, number: tb.number, title: tb.title, kind, scale_text: tb.scale, scale_pt_per_ft: ppf, width_in: +(vp.width / 72).toFixed(1), height_in: +(vp.height / 72).toFixed(1), evidence: { source: 'pdf_vector', confidence: tb.number ? (tb.title ? 0.9 : 0.75) : 0.4, page: pno }, overlays: [] };
     P.sheets.push(sheet);
-    if (lines.length && !tb.number) P.issues.push(`${file.name} p.${pno}: no sheet number recognised in the right-hand title-block strip — this firm's title block needs a profile (Sprint 2).`);
+    if (presentation) P.issues.push(`${file.name} p.${pno}: presentation page “${tb.title}” (no sheet number) — kept in the set, not a drawing sheet.`);
+    else if (lines.length && !tb.number) {
+      const hasEdgeText = boiler.size ? lines.filter(s => boiler.has(s.text)).length >= 3 : lines.some(s => edgeBand(vp.width, vp.height, s) && s.text.length > 3);
+      P.issues.push(hasEdgeText ? `${file.name} p.${pno}: no sheet number recognised on any edge of the sheet — this firm's title block needs a profile (Sprint 2).` : `${file.name} p.${pno}: no title block on this page (rendering or narrative page) — kept in the set as unnumbered.`);
+    }
     for (const [k, v] of Object.entries(tb.meta)) if (!(k in P.meta)) P.meta[k] = v;
-    if (!P.name && tb.meta.project_number) P.name = tb.meta.project_number;
-    const tbLines = lines.filter(s => s.bbox[0] > vp.width * 0.86 && (s.text === tb.number || s.text === tb.title || s.text === tb.scale || (tb.title && tb.title.includes(s.text) && s.text.length > 3)));
-    for (const s of tbLines) sheet.overlays.push({ kind: 'title', bbox: s.bbox, label: s.text });
+    if (!P.name) P.name = P.meta.project_name || tb.meta.project_number || null;
+    for (const s of lines.filter(s => edgeBand(vp.width, vp.height, s) && (s.text === tb.number || s.text === tb.title || s.text === tb.scale || (tb.title && tb.title.includes(s.text) && s.text.length > 3)))) sheet.overlays.push({ kind: 'title', bbox: s.bbox, label: s.text });
 
-    if (['floor_plan', 'roof_plan', 'foundation'].includes(kind)) {
-      for (const t of readRoomTags(lines)) {
+    const isPlan = ['floor_plan', 'roof_plan', 'foundation'].includes(kind) || (kind === 'other' && /PLAN/i.test(tb.title || ''));
+    if (isPlan) {
+      const lvlName = levelFromTitle(tb.title) || levelFromTitle(pageText.slice(0, 400));
+      const seenNames = new Set();
+      for (const t of readRoomTags(lines, vp.width, vp.height)) {
+        if (t.nameOnly) {
+          if (kind !== 'floor_plan') continue;   // labels on foundation / roof / framing sheets are not rooms
+          const key = t.name.toUpperCase();
+          if (seenNames.has(key)) { sheet.overlays.push({ kind: 'room', bbox: t.bbox, label: t.name }); continue; }  // second view of the same plan on this sheet
+          seenNames.add(key);
+          const lv = lvlName ? levelNamed(lvlName) : levelNamed(`Sheet ${tb.number || pno}`);
+          const dup = P.spaces.find(s => s.number == null && s.name && s.name.toUpperCase() === key && s.level_id === lv.id);
+          if (!dup) P.spaces.push({ id: nid(), level_id: lv.id, number: null, name: t.name, area_m2: null, perimeter_m: null, evidence: { source: 'pdf_vector', confidence: 0.7, page: pno, sheet: sheet.number, bbox: t.bbox, ref: 'name-only tag (no room number on this set)' } });
+          sheet.overlays.push({ kind: 'room', bbox: t.bbox, label: t.name });
+          continue;
+        }
         const ex = P.spaces.find(s => s.number === t.number);
         const ev = { source: 'pdf_vector', confidence: 0.85, page: pno, sheet: sheet.number, bbox: t.bbox };
         if (ex) {
@@ -361,6 +501,13 @@ async function readPdf(file, P, onProgress) {
         (P.meta.scale_checks ||= []).push(`Sheet ${tb.number}: scale ${tb.scale} verified on ${c.hits}/${c.tries} dimension strings` + (c.ratio ? `, geometry/stated ratio ${c.ratio.toFixed(3)}` : ''));
         if (c.ratio && Math.abs(c.ratio - 1) > 0.03) P.issues.push(`Sheet ${tb.number}: drawn geometry disagrees with the stated scale by ${(100 * (c.ratio - 1)).toFixed(1)}% — the plot may be rescaled; measurements need review.`);
       }
+    }
+    for (const o of readLegends(spans)) {
+      if (P.openings.some(x => x.kind === o.kind && x.mark === o.mark && x.evidence.source === 'pdf_legend')) continue;
+      const ev = { source: 'pdf_legend', confidence: 0.8, page: pno, sheet: sheet.number, bbox: o.bbox, ref: 'legend row (one type; instance count not on the legend)' };
+      P.openings.push({ id: nid(), kind: o.kind, level_id: null, mark: o.mark, type_name: o.type_name, width_m: o.width_m, height_m: o.height_m, evidence: ev });
+      P.schedule_rows.push({ schedule: o.kind + ' legend', key: o.mark, fields: { Mark: o.mark, Size: `${Math.round(o.width_m / 0.0254)}x${Math.round(o.height_m / 0.0254)}`, Type: o.type_name || '' }, evidence: ev });
+      sheet.overlays.push({ kind: 'schedule', bbox: o.bbox, label: `${o.kind} ${o.mark}` });
     }
     for (const sch of readSchedules(spans)) {
       const sname = sch.name.toLowerCase();
@@ -389,12 +536,18 @@ async function readPdf(file, P, onProgress) {
         }
       }
     }
-    pages.push({ pno, page });
   }
   P._pdfDocs = P._pdfDocs || []; P._pdfDocs.push({ file: file.name, doc });
   const schedNums = new Set(P.schedule_rows.filter(r => r.schedule === 'room').map(r => r.key));
+  const nameOnly = P.spaces.filter(s => s.number == null && s.evidence.source === 'pdf_vector');
+  for (let i = 0; i < nameOnly.length; i++) for (let j = i + 1; j < nameOnly.length; j++) {
+    const a1 = nameOnly[i], b1 = nameOnly[j]; if (a1.level_id !== b1.level_id) continue;
+    const x = a1.name.toUpperCase(), y = b1.name.toUpperCase();
+    if (x !== y && (x.startsWith(y) || y.startsWith(x))) P.issues.push(`“${a1.name}” and “${b1.name}” on ${(P.levels.find(l => l.id === a1.level_id) || {}).name || 'this level'} may be the same room labelled differently across views — confirm or merge.`);
+  }
+  if (nameOnly.length) P.issues.push(`${nameOnly.length} rooms are labelled by name only (this set has no room numbers or room schedule) — areas need polygon extraction (Sprint 3) or a manual measure; unit grouping will use the level + name.`);
   for (const s of P.spaces) {
-    if (!s.evidence.source.startsWith('pdf')) continue;
+    if (!s.evidence.source.startsWith('pdf') || s.number == null) continue;
     if (schedNums.size && !schedNums.has(s.number)) P.issues.push(`Room ${s.number} ${s.name} is tagged on a plan but missing from the room schedule.`);
     if (s.evidence.source === 'pdf_table') P.issues.push(`Room ${s.number} ${s.name} is in the room schedule but no tag was found on a plan sheet.`);
     if (s.evidence.source === 'pdf_vector' && s.area_m2 == null) P.issues.push(`Room ${s.number} ${s.name}: no area available (no room schedule) — needs polygon extraction or a manual measure.`);
