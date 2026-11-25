@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>DSS Studio OS — a Telaia demo for Daria Sheina Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F1EFE9;--card:#FFFFFF;--ink:#1C1C1A;--mute:#6E6A62;--line:#E2DFD6;--cedar:#8A7430;--cedar2:#EDE6CF;--moss:#494B21;--moss2:#E2E3D2;--red:#B4412F;--red2:#F3DAD4;--amber:#B97F14;--amber2:#F5E6C6;--sans:'DM Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.45 var(--sans)}
+button{font:inherit;cursor:pointer}
+.app{display:grid;grid-template-columns:232px 1fr;min-height:100svh}
+.side{background:#000;color:#EDEAE3;padding:20px 14px;position:sticky;top:0;height:100svh;overflow:auto}
+.logo{font-weight:600;letter-spacing:.55em;font-size:15px;padding:4px 8px 2px}
+.logosub{font-size:11px;color:#A7A296;padding:0 8px 18px;letter-spacing:.04em}
+.navgrp{font-size:10.5px;text-transform:uppercase;letter-spacing:.14em;color:#8E897E;margin:16px 8px 6px}
+.navbtn{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;background:none;border:0;color:#EDEAE3;padding:7px 10px;border-radius:6px;font-size:13.5px}
+.navbtn:hover{background:#2C2B28}.navbtn.on{background:#EDEAE3;color:var(--ink)}
+.badge{font:500 11px var(--mono);background:var(--red);color:#fff;border-radius:9px;padding:1px 7px}
+.burger{display:none}
+.main{min-width:0}
+.top{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:16px 26px;border-bottom:1px solid var(--line);background:var(--paper);position:sticky;top:0;z-index:20}
+.crumb{font-size:12px;color:var(--mute);letter-spacing:.06em;text-transform:uppercase}
+h1{font-size:22px;font-weight:600;margin:2px 0 0;letter-spacing:-.01em}
+.demoflag{font-size:11.5px;color:var(--mute);border:1px solid var(--line);border-radius:20px;padding:4px 10px;white-space:nowrap}
+.wbody{padding:16px 26px 40px}
+.lede{color:var(--mute);margin:0 0 13px;max-width:780px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:12px;min-width:0}
+.hd{padding:10px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.hd b{font-weight:600}.hd span{font-size:12px;color:var(--mute)}
+.bd{padding:13px 14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px}
+.split{display:grid;grid-template-columns:1.4fr 1fr;gap:12px;align-items:start}
+.grid>*,.split>*,.g4>*,.g3>*{min-width:0}
+.split>.card{margin-bottom:12px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.stat .k{font-size:11.5px;color:var(--mute);text-transform:uppercase;letter-spacing:.08em}
+.stat .v{font:500 24px var(--mono);margin-top:4px;letter-spacing:-.02em}
+.stat .s{font-size:12px;color:var(--mute)}
+.stat.bad .v{color:var(--red)}.stat.warn .v{color:var(--amber)}.stat.good .v{color:var(--moss)}
+.scroll{overflow-x:auto}
+table.dt{width:100%;border-collapse:collapse;font-size:13.5px}
+.dt th{text-align:left;font-weight:500;font-size:11.5px;color:var(--mute);text-transform:uppercase;letter-spacing:.06em;padding:9px 11px;border-bottom:1px solid var(--line);white-space:nowrap}
+.dt td{padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+.dt tr:last-child td{border-bottom:0}
+.dt tr.click{cursor:pointer}.dt tr.click:hover td{background:#FAF8F4}
+.num{font-family:var(--mono);text-align:right;white-space:nowrap}
+.sub{font-size:12px;color:var(--mute)}
+.pill{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:10px;background:#EEEBE5;white-space:nowrap}
+.pill.red{background:var(--red2);color:var(--red)}.pill.amber{background:var(--amber2);color:#7A5409}.pill.moss{background:var(--moss2);color:var(--moss)}.pill.cedar{background:var(--cedar2);color:var(--cedar)}
+.btn{border:1px solid var(--ink);background:var(--ink);color:#fff;border-radius:6px;padding:5px 11px;font-size:12.5px;white-space:nowrap}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:default}
+.moretog{display:block;width:100%;border:0;border-top:1px solid var(--line);background:#FAF8F4;padding:8px;font-size:12.5px;color:var(--mute);border-radius:0 0 10px 10px}
+.illus{font-size:10.5px;color:var(--cedar);border:1px dashed var(--cedar);border-radius:4px;padding:0 5px;margin-left:6px;white-space:nowrap}
+.real{font-size:10.5px;color:var(--moss);border:1px solid var(--moss);border-radius:4px;padding:0 5px;margin-left:6px;white-space:nowrap}
+/* charts */
+.hb{display:grid;grid-template-columns:minmax(110px,170px) 1fr 74px;gap:8px;align-items:center;margin:7px 0;font-size:13px}
+.hb .lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb .tr{height:14px;background:#F0EDE7;border-radius:3px;position:relative;overflow:hidden}
+.hb .fl{position:absolute;left:0;top:0;bottom:0;border-radius:3px}
+.hb .vv{font:12px var(--mono);text-align:right}
+.dv{display:grid;grid-template-columns:minmax(120px,190px) 1fr 80px;gap:8px;align-items:center;margin:7px 0;font-size:13px}
+.dv .tr{height:14px;position:relative}
+.dv .tr:before{content:'';position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--mute)}
+.dv .fl{position:absolute;top:0;bottom:0;border-radius:2px}
+.cols{display:flex;align-items:flex-end;gap:4px;height:110px;padding-top:14px}
+.cols .c{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
+.cols .b{width:100%;border-radius:3px 3px 0 0;position:relative}
+.cols .b i{position:absolute;top:-15px;left:0;right:0;text-align:center;font:10.5px var(--mono);font-style:normal;color:var(--mute)}
+.cols .xl{font-size:10.5px;color:var(--mute);margin-top:4px;white-space:nowrap}
+.sb{display:flex;height:16px;gap:2px;border-radius:3px;overflow:hidden}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-size:12px;color:var(--mute)}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px}
+.meter{height:8px;background:#F0EDE7;border-radius:4px;position:relative;margin-top:4px;overflow:visible}
+.meter b{position:absolute;left:0;top:0;bottom:0;border-radius:4px}
+.meter u{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink)}
+.pipe{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.pipe .st{border:1px solid var(--line);border-radius:8px;padding:9px;background:#FAF8F4;min-width:0}
+.pipe .st b{display:block;font:500 20px var(--mono)}
+.pipe .st span{font-size:11.5px;color:var(--mute)}
+.pipe .st em{display:block;font-style:normal;font-size:11.5px;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* queue */
+.q{display:flex;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);align-items:flex-start}
+.q:last-child{border-bottom:0}
+.q .dot{width:9px;height:9px;border-radius:50%;margin-top:5px;flex:none}
+.q .t{flex:1;min-width:0}.q .t b{font-weight:600}
+.q .a{flex:none}
+/* inspector */
+.insp{position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);background:var(--card);border-left:1px solid var(--line);box-shadow:-10px 0 30px rgba(0,0,0,.08);transform:translateX(105%);transition:transform .22s;z-index:70;overflow:auto}
+.insp.open{transform:none}
+.insp .ih{position:sticky;top:0;background:var(--card);padding:14px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.insp .ib{padding:14px 16px}
+.x{border:1px solid var(--line);background:#fff;border-radius:6px;width:32px;height:32px;font-size:16px}
+.kv{display:grid;grid-template-columns:130px 1fr;gap:6px 10px;font-size:13px;margin-bottom:14px}
+.kv dt{color:var(--mute)}.kv dd{margin:0}
+.tabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:1px solid var(--line);background:#fff;border-radius:16px;padding:5px 12px;font-size:12.5px;white-space:nowrap;flex:none}
+.tab.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.note{font-size:12.5px;color:var(--mute);border-left:3px solid var(--cedar2);padding:4px 10px;margin:10px 0}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 16px;border-radius:8px;font-size:13px;opacity:0;transition:opacity .2s;z-index:90;pointer-events:none}
+.toast.on{opacity:1}
+.phasebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#000;color:#EBE9E2;border-radius:10px;padding:9px 14px;margin-bottom:13px;font-size:13px}
+.phasebar b{font-weight:600}.phasebar .when{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:#C9C4B4}
+.fb{margin-top:18px;background:var(--card);border:1px dashed var(--cedar);border-radius:10px;padding:12px 14px}
+.fb .q{font-weight:600;margin-bottom:8px}.fb .opts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.fb .opt{border:1px solid var(--line);background:#fff;border-radius:16px;padding:5px 12px;font-size:12.5px}
+.fb .opt.on{background:var(--moss);border-color:var(--moss);color:#fff}
+.fb textarea{width:100%;min-height:58px;border:1px solid var(--line);border-radius:8px;padding:8px;font:inherit;font-size:13px;resize:vertical}
+.syncline{margin:-6px 0 12px;font-size:12.5px;color:var(--mute)}.syncst[data-s=ok]{color:var(--moss)}.syncst[data-s=err]{color:var(--red)}
+.who .bd{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.who label{font-weight:600}.who input{flex:1;min-width:180px;border:1px solid var(--line);border-radius:8px;padding:7px 10px;font:inherit;background:#fff}
+.fb .saved{font-size:11.5px;color:var(--mute);margin-top:4px}
+.phcards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px}.phcards>*{min-width:0}
+.phcard{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+.phcard .n{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--cedar)}
+.phcard h3{margin:4px 0 6px;font-size:17px;font-weight:600}.phcard ul{margin:8px 0 10px;padding-left:18px;font-size:13px}.phcard li{margin:3px 0}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.tiles>*{min-width:0}
+.post{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.post .img{height:120px;display:flex;align-items:flex-end;padding:8px;color:#fff;font-size:11.5px;font-family:var(--mono)}
+.post .bd{padding:10px 12px;font-size:13px}
+@media (max-width:900px){.phcards,.tiles{grid-template-columns:1fr}}
+
+.sys{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.sys .card{margin:0}
+.portal{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+.portal .ph{background:var(--ink);color:#fff;padding:12px 14px;display:flex;justify-content:space-between;font-size:13px}
+.portal .pb{padding:14px}
+.dec{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+/* responsive — injected last */
+@media (max-width:1000px){
+ .app{grid-template-columns:1fr}
+ .side{position:sticky;top:0;height:auto;z-index:60;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:none}
+ .logosub{display:none}.logo{padding:4px 0}
+ .burger{display:block;background:none;border:1px solid #55524B;color:#EDEAE3;border-radius:6px;padding:5px 10px}
+ #nav{display:none;position:fixed;top:50px;left:0;right:0;bottom:0;background:var(--ink);padding:10px 14px 30px;overflow:auto}
+ #nav.open{display:block}
+ .top{position:static;padding:14px 16px}
+ .wbody{padding:14px 16px 40px}
+ .g4{grid-template-columns:repeat(2,1fr)}
+ .g3{grid-template-columns:repeat(2,1fr)}
+ .g3>*:nth-child(3):last-child{grid-column:1/-1}
+ .split{grid-template-columns:1fr}
+ .sys{grid-template-columns:1fr 1fr}
+ .pipe{grid-template-columns:repeat(3,1fr)}
+ .insp{top:50px}
+}
+@media (max-width:560px){
+ .demoflag{display:none}
+ h1{font-size:19px}
+ .scroll table.dt{min-width:600px}
+ .scroll .dt th:first-child,.scroll .dt td:first-child{position:sticky;left:0;background:#fff;z-index:1}
+ .hb{grid-template-columns:96px 1fr 62px}
+ .dv{grid-template-columns:100px 1fr 66px}
+ .sys{grid-template-columns:1fr}
+ .pipe{grid-template-columns:repeat(2,1fr)}
+ .kv{grid-template-columns:110px 1fr}
+ .stat .v{font-size:20px}
+ .q{flex-wrap:wrap}.q .a{margin-left:21px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+ <aside class="side">
+  <div><div class="logo">D S S</div><div class="logosub">Studio OS · powered by Telaia</div></div>
+  <button class="burger" id="burger" aria-label="Menu">☰</button>
+  <nav id="nav"></nav>
+ </aside>
+ <main class="main">
+  <div class="top"><div><div class="crumb" id="crumb"></div><h1 id="title"></h1></div><div class="demoflag">Demo · figures illustrative</div></div>
+  <div class="wbody" id="view"></div>
+ </main>
+</div>
+<aside class="insp" id="insp"><div class="ih"><div id="ihead"></div><button class="x" id="inspclose" aria-label="Close">×</button></div><div class="ib" id="ibody"></div></aside>
+<div class="toast" id="toast"></div>
+<script>
+// ---------- DATA ----------
+// TODAY fixed for the demo
+const TODAY=new Date('2026-11-13T09:00:00');
+const fmt=n=>'$'+Math.round(n).toLocaleString('en-CA');
+const k=n=>'$'+(n>=1000?(Math.round(n/100)/10)+'k':Math.round(n));
+const RATE=135; // blended billing rate (illustrative)
+const PH=['Pre-design','Schematic','Design dev.','Permit / CDs','Tender','Construction'];
+// phases: [fee, spentHrs, pctComplete]
+const projects=[
+ {id:'CW',name:'Calm Waters Retail',loc:'Tofino, BC',type:'Retail + office',client:'Tla-o-qui-aht First Nation',real:true,started:2021,
+  stage:2,phases:[[14000,104,1],[38000,290,1],[52000,330,.70],[61000,0,0],[9000,0,0],[44000,0,0]],
+  note:'Retail and office space for the Nation and its administration (from dariasheina.com). Phase fees, hours and progress are illustrative.'},
+ {id:'IC',name:'Ireland Canada Place',loc:'Vancouver, BC',type:'Public space',client:'ICP Society',real:true,started:2022,
+  stage:2,phases:[[9000,61,1],[26000,188,1],[31000,110,.55],[22000,0,0],[5000,0,0],[18000,0,0]],
+  note:'A permanent tribute to Irish immigrants and their descendants (from dariasheina.com). Figures illustrative.'},
+ {id:'FP',name:'East 33rd Fourplex',loc:'Vancouver, BC',type:'Multiplex · 4 units',client:'Private developer',real:false,started:2025,
+  stage:3,phases:[[6000,40,1],[18000,140,1],[24000,170,1],[34000,262,.82],[6000,0,0],[26000,0,0]],
+  note:'Illustrative missing-middle project, standing in for the multiplex work the studio describes.'},
+ {id:'LS',name:'Lakewood Sixplex',loc:'Vancouver, BC',type:'Multiplex · 6 units',client:'Private developer',real:false,started:2026,
+  stage:1,phases:[[8000,52,1],[24000,100,.60],[30000,0,0],[42000,0,0],[7000,0,0],[32000,0,0]],
+  note:'Illustrative second multiplex at schematic design.'},
+ {id:'RR',name:'Renfrew Ridge',loc:'Renfrew-Collingwood, Vancouver',type:'Duplex · 3 storeys',client:'Vanway Properties',real:true,started:2023,
+  stage:5,phases:[[5000,34,1],[16000,121,1],[20000,150,1],[28000,214,1],[4000,28,1],[22000,172,.96]],
+  note:'Completed 2026 per dariasheina.com. Shown in closeout; fees illustrative.'},
+ {id:'NE',name:'The Nest',loc:'Keats Island, BC',type:'Off-grid prefab retreat · 1,063 sf',client:'Private client',real:true,started:2023,
+  stage:6,phases:[[6000,40,1],[22000,160,1],[24000,175,1],[26000,190,1],[3000,20,1],[19000,138,1]],
+  note:'Completed 2025. Prefabricated mass timber by BC Passive House, flown in by helicopter, assembled in two days (Dezeen, Western Living). Fees illustrative.'},
+];
+projects.forEach(p=>{
+ p.fee=p.phases.reduce((s,x)=>s+x[0],0);
+ p.earned=p.phases.reduce((s,x)=>s+x[0]*x[2],0);
+ p.spent=p.phases.reduce((s,x)=>s+x[1]*RATE,0);
+ p.stageName=p.stage>=6?'Warranty':PH[p.stage];
+});
+const P=id=>projects.find(p=>p.id===id);
+const day=n=>{const d=new Date(TODAY);d.setDate(d.getDate()+n);return d};
+const dstr=d=>d.toLocaleDateString('en-CA',{month:'short',day:'numeric'});
+const team=[
+ {r:'Principal (Daria)',cap:40,h:{CW:9,IC:6,FP:7,LS:5,RR:2,admin:12}},
+ {r:'Project architect',cap:40,h:{CW:18,FP:16,RR:3,admin:2}},
+ {r:'Designer',cap:40,h:{IC:14,LS:17,CW:6,admin:1}},
+ {r:'Contract drafter',cap:24,h:{FP:15,CW:6}},
+];
+const permits=[
+ {id:'PM-1',p:'FP',body:'City of Vancouver',item:'Building permit — respond to plan-review comments (round 2)',due:4,status:'Comments received'},
+ {id:'PM-2',p:'LS',body:'City of Vancouver',item:'Multiplex pre-application enquiry',due:18,status:'Drafting'},
+ {id:'PM-3',p:'CW',body:'District of Tofino',item:'Development permit — submission package',due:34,status:'Drafting'},
+ {id:'PM-4',p:'IC',body:'City of Vancouver',item:'Site / public-realm review meeting',due:41,status:'Awaiting date'},
+ {id:'PM-5',p:'RR',body:'City of Vancouver',item:'Occupancy — final inspection sign-off',due:-6,status:'Issued'},
+ {id:'PM-6',p:'FP',body:'City of Vancouver',item:'Arborist report re-issue (tree protection)',due:9,status:'With consultant'},
+];
+const consultants=[
+ {p:'NE',role:'Structural',firm:'Equilibrium Consulting',real:true},
+ {p:'NE',role:'Prefabrication',firm:'BC Passive House',real:true},
+ {p:'NE',role:'Contractor',firm:'Lincoln Construction',real:true},
+ {p:'NE',role:'Energy advisor',firm:'Shape Energy',real:true},
+ {p:'NE',role:'Windows + doors',firm:'Innotech Windows + Doors',real:true},
+ {p:'FP',role:'Structural',firm:'Structural engineer (TBC)',real:false,ins:-3},
+ {p:'FP',role:'Arborist',firm:'Arborist (TBC)',real:false,ins:120},
+ {p:'FP',role:'General contractor',firm:'GC (TBC)',real:false,ins:200},
+ {p:'CW',role:'Structural',firm:'Structural engineer (TBC)',real:false,ins:61},
+ {p:'CW',role:'Mechanical / electrical',firm:'M+E engineer (TBC)',real:false,ins:12},
+ {p:'IC',role:'Landscape',firm:'Landscape architect (TBC)',real:false,ins:180},
+];
+let rfis=[
+ {id:'RFI-014',p:'FP',from:'GC (TBC)',q:'Stair 2 guard height at landing — confirm detail A5.03 vs code note',age:9,st:'open'},
+ {id:'RFI-015',p:'FP',from:'Structural (TBC)',q:'Beam B4 bearing at party wall — revise or add post?',age:6,st:'open'},
+ {id:'RFI-016',p:'RR',from:'Owner',q:'Deficiency list item 7 — exterior paint touch-up scope',age:3,st:'open'},
+ {id:'RFI-012',p:'FP',from:'Arborist (TBC)',q:'Excavation limit near city tree — confirm footing offset',age:15,st:'answered'},
+];
+const decisions=[
+ {p:'IC',what:'Concept option B — memorial wall material',asked:23,who:'ICP Society board',st:'waiting'},
+ {p:'CW',what:'Storefront glazing extent — DD set',asked:6,who:'Nation administration',st:'waiting'},
+ {p:'FP',what:'Exterior cladding colour (Unit 1–4)',asked:2,who:'Developer',st:'waiting'},
+ {p:'LS',what:'Unit mix — 2×3-bed vs 3×2-bed',asked:11,who:'Developer',st:'waiting'},
+ {p:'RR',what:'Landscape planting substitution',asked:30,who:'Vanway Properties',st:'approved'},
+];
+let invoices=[
+ {id:'INV-1187',p:'FP',ph:'Permit / CDs · 70%',amt:9500,age:47,st:'sent'},
+ {id:'INV-1192',p:'IC',ph:'Design dev. · 40%',amt:6200,age:33,st:'sent'},
+ {id:'INV-1195',p:'CW',ph:'Design dev. · 60%',amt:10400,age:19,st:'sent'},
+ {id:'INV-1196',p:'RR',ph:'Construction · final',amt:4400,age:12,st:'sent'},
+ {id:'INV-1198',p:'LS',ph:'Schematic · 50%',amt:6000,age:4,st:'sent'},
+ {id:'INV-1180',p:'NE',ph:'Construction · final',amt:3800,age:61,st:'paid'},
+];
+const inqMonths=['Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov'];
+const inqCounts=[29,21,13,10,9,11,8,7,10,9,12,6];
+let inquiries=[
+ {id:'Q-301',who:'Couple, Bowen Island',kind:'Off-grid cabin',src:'Dezeen',budget:'$900k–1.2M',days:12,fit:92,st:'new'},
+ {id:'Q-302',who:'Developer, East Van',kind:'Sixplex',src:'Referral',budget:'$4M+',days:8,fit:88,st:'new'},
+ {id:'Q-303',who:'Family, Sunshine Coast',kind:'Prefab retreat',src:'Instagram',budget:'$600–800k',days:6,fit:81,st:'new'},
+ {id:'Q-304',who:'Owner, Kitsilano',kind:'Laneway house',src:'Website',budget:'$450k',days:3,fit:64,st:'new'},
+ {id:'Q-305',who:'Lodge operator, Tofino',kind:'Guest cabins ×6',src:'Dwell',budget:'TBD',days:15,fit:85,st:'new'},
+ {id:'Q-306',who:'Homeowner, Whistler',kind:'Renovation',src:'Instagram',budget:'$250k',days:2,fit:42,st:'new'},
+ {id:'Q-307',who:'Gallery, Vancouver',kind:'Exhibition design',src:'Wallpaper',budget:'$80k',days:21,fit:70,st:'call booked'},
+ {id:'Q-308',who:'Builder, Pemberton',kind:'Prefab line (product)',src:'Designboom',budget:'Licensing',days:9,fit:77,st:'new'},
+];
+const press=[
+ ['Dwell','Two Days, One Helicopter, and the Perfect Prefab Cabin in British Columbia'],
+ ['Wallpaper*','In Canada, The Nest is a three-dimensional puzzle redefining remote living'],
+ ['Designboom','Prefabricated mass timber retreat… lands on remote Canadian island'],
+ ['An Interior','Daria Sheina Studio designs a geometric and compact, off-grid retreat'],
+ ['Dezeen','Daria Sheina Studio designs off-grid British Columbia cabin'],
+ ['Yatzer','The Nest: A Prefabricated Off-Grid Retreat off Vancouver\'s Coast'],
+];
+
+// ---------- NEW BUSINESS (illustrative) ----------
+const Q1={booked:58000,target:120000};
+let deals=[
+ {id:'D-1',who:'Developer, East Van',what:'Sixplex',stage:'Proposal sent',fee:96000,prob:.5,next:'Follow up on proposal',due:-2},
+ {id:'D-2',who:'Lodge operator, Tofino',what:'Guest cabins ×6',stage:'Call booked',fee:140000,prob:.3,next:'Discovery call',due:2},
+ {id:'D-3',who:'Gallery, Vancouver',what:'Exhibition design',stage:'Proposal drafting',fee:24000,prob:.4,next:'Send fee proposal',due:3},
+ {id:'D-4',who:'Couple, Bowen Island',what:'Off-grid cabin',stage:'Qualified',fee:110000,prob:.25,next:'Reply and book a call',due:-5},
+ {id:'D-5',who:'Builder, Pemberton',what:'Prefab line licensing',stage:'Qualified',fee:60000,prob:.2,next:'Send The Nest case study',due:1},
+ {id:'D-6',who:'Vanway Properties',what:'Next multiplex (repeat client)',stage:'Conversation',fee:85000,prob:.35,next:'Coffee check-in',due:6}
+];
+const STAGES=['Conversation','Qualified','Call booked','Proposal drafting','Proposal sent'];
+let opps=[
+ {id:'O-17',what:'Sixplex on two assembled lots',where:'Mount Pleasant',who:'Developer',signal:'Land title change',fit:86,age:2,st:'new'},
+ {id:'O-11',what:'Rezoning application, 6-unit multiplex',where:'Renfrew-Collingwood',who:'Owner-developer',signal:'City rezoning list',fit:90,age:3,st:'new'},
+ {id:'O-16',what:'Community hall renewal (RFP)',where:'Bowen Island',who:'Municipality',signal:'Public tender',fit:72,age:5,st:'new'},
+ {id:'O-12',what:'Multiplex-zoned lot sold',where:'Kensington-Cedar Cottage',who:'New owner',signal:'Land title change',fit:84,age:6,st:'new'},
+ {id:'O-13',what:'Development permit, infill + laneway',where:'Hastings-Sunrise',who:'Small builder',signal:'Permit application',fit:78,age:9,st:'new'},
+ {id:'O-14',what:'Prefab cabin cluster, 8 units',where:'Sunshine Coast',who:'Resort operator',signal:'Regional district notice',fit:82,age:12,st:'new'},
+ {id:'O-15',what:'Strata redevelopment study',where:'North Vancouver',who:'Strata council',signal:'Public meeting notice',fit:55,age:14,st:'new'}
+];
+let net=[
+ {id:'N-1',who:'Vanway Properties',rel:'Client · Renfrew Ridge',last:118,cad:90,idea:'Ask about their next multiplex site',real:true},
+ {id:'N-2',who:'Lincoln Construction',rel:'Builder · The Nest',last:75,cad:90,idea:'Share the Dwell feature; ask what they are bidding',real:true},
+ {id:'N-3',who:'Equilibrium Consulting',rel:'Structural engineer · The Nest',last:150,cad:120,idea:'Mass-timber projects they could refer',real:true},
+ {id:'N-4',who:'BC Passive House',rel:'Prefab partner · The Nest',last:60,cad:90,idea:'Joint case study on The Nest',real:true},
+ {id:'N-5',who:'Ireland Canada Place Society',rel:'Client · in design development',last:20,cad:30,idea:'Project update before the holidays',real:true},
+ {id:'N-6',who:'Andrew Latreille',rel:'Photographer · The Nest',last:200,cad:180,idea:'Book a shoot of Renfrew Ridge',real:true},
+ {id:'N-7',who:'Realtor, East Van',rel:'Referral source',last:95,cad:60,idea:'Ask for multiplex-zoned listings',real:false}
+];
+const funnel90=[{x:'Inquiries',v:34},{x:'Qualified',v:12},{x:'Proposals',v:5},{x:'Won',v:2}];
+
+// ---------- PHASE 1+: MEDIA, CONTENT (illustrative) ----------
+let media=[
+ {id:'M-1',out:'Dwell',who:'Features editor',topic:'Prefab & small homes',last:160,real:true,idea:'Pitch Renfrew Ridge as a missing-middle story'},
+ {id:'M-2',out:'Wallpaper*',who:'Architecture editor',topic:'Design-led residential',last:210,real:true,idea:'Share new work when it is photographed'},
+ {id:'M-3',out:'Designboom',who:'Submissions desk',topic:'Project features',last:190,real:true,idea:'Submit Renfrew Ridge'},
+ {id:'M-4',out:'Dezeen',who:'News desk',topic:'Architecture news',last:200,real:true,idea:'Submit when Ireland Canada Place is announced'},
+ {id:'M-5',out:'An Interior',who:'Editor',topic:'Interiors',last:240,real:true,idea:'Interiors angle on The Nest'},
+ {id:'M-6',out:'Yatzer',who:'Editor',topic:'Design culture',last:230,real:true,idea:'Studio profile'},
+ {id:'M-7',out:'Local architecture podcast',who:'Host',topic:'BC practice & housing',last:999,real:false,idea:'Guest spot on prefab and off-grid living'}
+];
+let awards=[
+ {id:'A-1',name:'International residential design award',due:16,fee:'$450',fit:'The Nest',st:'open'},
+ {id:'A-2',name:'Canadian wood design awards',due:38,fee:'$300',fit:'The Nest (mass timber)',st:'open'},
+ {id:'A-3',name:'Provincial architecture awards',due:61,fee:'$250',fit:'Renfrew Ridge',st:'open'},
+ {id:'A-4',name:'Prefab & innovation award',due:9,fee:'$200',fit:'The Nest',st:'drafting'},
+ {id:'A-5',name:'Emerging practice award',due:92,fee:'Free',fit:'The studio',st:'open'}
+];
+const events=[
+ {name:'Design week, Vancouver',when:'Jan 22–25',kind:'Event',why:'Developers and clients attend'},
+ {name:'Missing-middle housing forum',when:'Feb 6',kind:'Panel',why:'Speaking slot open to practitioners'},
+ {name:'Architecture & design podcast series',when:'Rolling',kind:'Podcast',why:'Looking for BC guests'},
+ {name:'Prefab & modular building summit',when:'Mar 12–13',kind:'Conference',why:'Builders and manufacturers'}
+];
+let drafts=[
+ {id:'C-1',proj:'The Nest',plat:'Instagram',kind:'Carousel · 6 photos',cap:'Arriving by helicopter, assembled in days. Six frames from The Nest, two years on.',st:'draft',c:'#494B21'},
+ {id:'C-2',proj:'Renfrew Ridge',plat:'Instagram',kind:'Single photo',cap:'Two homes on one lot, without giving up the garden. Renfrew Ridge, completed this year.',st:'draft',c:'#8A7430'},
+ {id:'C-3',proj:'Studio',plat:'Facebook',kind:'Post',cap:'We are taking on a small number of multiplex and custom home commissions for 2027.',st:'draft',c:'#1C1C1A'},
+ {id:'C-4',proj:'The Nest',plat:'TikTok',kind:'Short video · 24s',cap:'How an off-grid cabin gets to an island with no road.',st:'prepared',c:'#5D5A4E'},
+ {id:'C-5',proj:'Renfrew Ridge',plat:'Instagram ad',kind:'Ad · East Van homeowners',cap:'Thinking about a multiplex on your lot? Start with a conversation.',st:'draft',c:'#6F6A3A'},
+ {id:'C-6',proj:'The Nest',plat:'Instagram',kind:'Reel',cap:'The Nest, in 30 seconds.',st:'posted',c:'#3B3D1B'}
+];
+const postPerf=[{l:'The Nest · reel',v:4200},{l:'Renfrew Ridge · carousel',v:2100},{l:'Studio process',v:900},{l:'Press roundup',v:1300}];
+// ---------- PHASE 2: FEE ACCURACY (illustrative) ----------
+const feeHist=[ // avg actual hours vs proposed, by phase, last 6 completed projects
+ {ph:'Pre-design',r:1.05},{ph:'Schematic',r:1.12},{ph:'Design dev.',r:1.31},{ph:'Permit / CDs',r:1.24},{ph:'Tender',r:0.92},{ph:'Construction',r:1.18}];
+const feeByType=[{t:'Custom home',r:1.09},{t:'Multiplex',r:1.27},{t:'Prefab / off-grid',r:1.15},{t:'Commercial',r:0.97}];
+// ---------- PHASE 3: STUDIO LIBRARY (illustrative) ----------
+let lib=[
+ {id:'L-1',cat:'Cladding',item:'Charred cedar siding',sup:'Coastal timber supplier',spec:'1x6 T&G, shou sugi ban',lead:'6 wk',used:['NE','RR'],upd:12},
+ {id:'L-2',cat:'Structure',item:'CLT panels',sup:'Mass timber manufacturer',spec:'3-ply, 105 mm',lead:'10 wk',used:['NE'],upd:40},
+ {id:'L-3',cat:'Windows',item:'Triple-glazed tilt-turn',sup:'Window manufacturer',spec:'Passive House certified',lead:'14 wk',used:['NE','RR','FP'],upd:8},
+ {id:'L-4',cat:'Flooring',item:'White oak, wide plank',sup:'Flooring supplier',spec:'220 mm, matte oil',lead:'3 wk',used:['RR'],upd:95},
+ {id:'L-5',cat:'Roofing',item:'Standing seam metal',sup:'Metal roofing supplier',spec:'24 ga, charcoal',lead:'4 wk',used:['FP','LS'],upd:30},
+ {id:'L-6',cat:'Insulation',item:'Wood fibre board',sup:'Insulation distributor',spec:'60 mm, exterior',lead:'5 wk',used:['NE'],upd:150},
+ {id:'L-7',cat:'Tile',item:'Handmade zellige',sup:'Tile importer',spec:'10x10 cm, olive',lead:'8 wk',used:[],upd:20}
+];
+let sels=[
+ {id:'S-1',p:'FP',what:'Exterior cladding',opt:'Charred cedar siding',st:'approved'},
+ {id:'S-2',p:'FP',what:'Windows',opt:'Triple-glazed tilt-turn',st:'approved'},
+ {id:'S-3',p:'FP',what:'Kitchen tile',opt:'Handmade zellige',st:'waiting'},
+ {id:'S-4',p:'FP',what:'Flooring',opt:'White oak, wide plank',st:'waiting'},
+ {id:'S-5',p:'LS',what:'Roofing',opt:'Standing seam metal',st:'approved'},
+ {id:'S-6',p:'LS',what:'Cladding',opt:'To propose',st:'open'}
+];
+const PHASES={
+ 'Phase 1 · Growth':{when:'Build in December · live in January',n:1},
+ 'Phase 2 · Projects & money':{when:'When new work starts · early 2027',n:2},
+ 'Phase 3 · Studio library':{when:'Later in 2027',n:3}
+};
+let FB={};try{FB=JSON.parse(localStorage.getItem('dss-feedback')||'{}')}catch(e){FB={}}
+function saveFB(){try{localStorage.setItem('dss-feedback',JSON.stringify(FB))}catch(e){}queueSync()}
+/* Feedback also goes to Telaia: only through a validated server function; this key cannot read anything. */
+const SYNC={url:'https://dxxzlmxcfwlcglvmhloq.supabase.co/rest/v1/rpc/submit_demo_feedback',key:'sb_publishable_QOMG-1Tl_pnmGAaDK2ZWBg_WCLdG_kY',slug:'dss-508897'};
+let SID='';try{SID=localStorage.getItem('dss-sid')||''}catch(e){}
+if(!/^[A-Za-z0-9_-]{8,64}$/.test(SID)){SID='s'+Math.random().toString(36).slice(2,10)+Date.now().toString(36);try{localStorage.setItem('dss-sid',SID)}catch(e){}}
+let WHO='';try{WHO=localStorage.getItem('dss-who')||''}catch(e){}
+let syncState='idle',syncAt=null,_st=null;
+function setWho(v){WHO=v.slice(0,120);try{localStorage.setItem('dss-who',WHO)}catch(e){}queueSync()}
+function queueSync(){clearTimeout(_st);syncState='pending';paintSync();_st=setTimeout(syncNow,1800)}
+function fbItems(){const out=[];NAV.forEach(([g,i])=>i.forEach(([id,l])=>{const f=FB[id];if(f&&(f.r||(f.n&&f.n.trim())))out.push({screen:id,label:l,rating:f.r==='Essential'?'essential':f.r==='Nice to have'?'nice':f.r==='Not needed'?'not':'',note:(f.n||'').slice(0,4000)})}));return out}
+async function syncNow(manual){clearTimeout(_st);syncState='saving';paintSync();
+ try{const r=await fetch(SYNC.url,{method:'POST',headers:{'Content-Type':'application/json',apikey:SYNC.key,Authorization:'Bearer '+SYNC.key},body:JSON.stringify({p_slug:SYNC.slug,p_session:SID,p_reviewer:WHO||'Daria Sheina Studio',p_items:fbItems()})});
+  const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw new Error(j.error||j.message||r.status);
+  syncState='ok';syncAt=new Date();if(manual)toast('Sent to Telaia ✓')}
+ catch(e){syncState='err';if(manual)toast('Couldn’t reach Telaia · saved in this browser, will retry')}
+ paintSync()}
+function syncLabel(){return syncState==='ok'?'Saved and shared with Telaia'+(syncAt?' · '+syncAt.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}):''):syncState==='saving'?'Sending to Telaia…':syncState==='pending'?'Saving…':syncState==='err'?'Saved in this browser · couldn’t reach Telaia, will retry':'Shared with Telaia as you go'}
+function paintSync(){document.querySelectorAll('.syncst').forEach(e=>{e.textContent=syncLabel();e.dataset.s=syncState})}
+window.addEventListener('online',()=>{if(syncState==='err')syncNow()});
+setInterval(()=>{if(syncState==='err')syncNow()},30000);
+// ---------- PRIMITIVES ----------
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let TRUNC={};
+function cut(key,rows,n){if(TRUNC[key]==='all'||rows.length<=n)return{rows,hidden:0};return{rows:rows.slice(0,n),hidden:rows.length-n}}
+function moreBtn(key,h){return h?`<button class="moretog" onclick="TRUNC['${key}']='all';render()">Show ${h} more</button>`:''}
+function hbars(rows,max){max=max||Math.max(...rows.map(r=>r.v),1);return rows.map(r=>`<div class="hb" ${r.click?`style="cursor:pointer" onclick="${r.click}"`:''}><div class="lbl" title="${esc(r.l)}">${esc(r.l)}${r.sub?`<div class="sub">${esc(r.sub)}</div>`:''}</div><div class="tr"><div class="fl" style="width:${Math.min(100,r.v/max*100)}%;background:${r.c||'var(--ink)'}"></div></div><div class="vv">${r.t||r.v}</div></div>`).join('')}
+function diverge(rows){const m=Math.max(...rows.map(r=>Math.abs(r.v)),1);return rows.map(r=>{const w=Math.abs(r.v)/m*50;const left=r.v<0?50-w:50;return `<div class="dv" ${r.click?`style="cursor:pointer" onclick="${r.click}"`:''}><div class="lbl">${esc(r.l)}${r.sub?`<div class="sub">${esc(r.sub)}</div>`:''}</div><div class="tr"><div class="fl" style="left:${left}%;width:${w}%;background:${r.v<0?'var(--red)':'var(--moss)'}"></div></div><div class="num" style="color:${r.v<0?'var(--red)':'var(--moss)'}">${r.v<0?'−':'+'}${k(Math.abs(r.v))}</div></div>`}).join('')}
+function cols(items){const m=Math.max(...items.map(i=>i.v),1);return `<div class="cols">${items.map(i=>`<div class="c"><div class="b" style="height:${i.v/m*88}%;background:${i.c||'var(--ink)'}"><i>${i.v}</i></div><div class="xl">${i.x}</div></div>`).join('')}</div>`}
+function splitBar(segs){const t=segs.reduce((s,x)=>s+x.v,0)||1;return `<div class="sb">${segs.filter(s=>s.v).map(s=>`<div style="flex:${s.v/t};background:${s.c}" title="${s.l}"></div>`).join('')}</div><div class="legend">${segs.map(s=>`<span><i style="background:${s.c}"></i>${s.l} · ${s.t||s.v}</span>`).join('')}</div>`}
+function meter(v,cap){const pct=v/cap*100;return `<div class="meter"><b style="width:${Math.min(100,pct)}%;background:${pct>100?'var(--red)':pct>90?'var(--amber)':'var(--moss)'}"></b>${pct>100?'<u style="left:100%"></u>':''}</div><div class="sub">${Math.round(pct)}%${pct>100?' — over by '+Math.round(pct-100)+'%':''}</div>`}
+function dayBars(items,win){ // items with .due relative days; window 0..win
+ const out=items.filter(i=>i.due<0||i.due>win);const inn=items.filter(i=>i.due>=0&&i.due<=win);
+ const weeks=[];for(let w=0;w<Math.ceil(win/7);w++){const its=inn.filter(i=>Math.floor(i.due/7)===w);weeks.push({x:w===0?'This wk':'+'+w+' wk',v:its.length,c:w===0?'var(--red)':w===1?'var(--amber)':'var(--cedar)'})}
+ return cols(weeks)+(out.length?`<div class="sub" style="margin-top:6px">Outside this ${win}-day window: ${out.map(o=>esc(o.label)).join(' · ')}</div>`:'')}
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),2200)}
+const tag=r=>r?'<span class="real">real</span>':'<span class="illus">illustrative</span>';
+// ---------- NEEDS-YOU (derived) ----------
+function needs(){
+ const q=[];
+ permits.filter(x=>x.status!=='Issued'&&x.due<=7).forEach(x=>q.push({c:'var(--red)',t:`<b>${esc(x.item)}</b> — ${P(x.p).name}`,s:`${x.body} · due ${dstr(day(x.due))} (${x.due} days)`,a:`<button class="btn ghost" onclick="go('permits')">Open</button>`}));
+ projects.forEach(p=>p.phases.forEach((ph,i)=>{const earned=ph[0]*ph[2],spent=ph[1]*RATE;if(ph[2]>0&&ph[2]<1&&spent>earned*1.15)q.push({c:'var(--red)',t:`<b>${p.name} · ${PH[i]}</b> is burning ahead of progress`,s:`${k(spent)} of time spent vs ${k(earned)} earned at ${Math.round(ph[2]*100)}% complete`,a:`<button class="btn ghost" onclick="openProj('${p.id}')">Inspect</button>`})}));
+ rfis.filter(r=>r.st==='open'&&r.age>=7).forEach(r=>q.push({c:'var(--amber)',t:`<b>${r.id}</b> unanswered ${r.age} days — ${P(r.p).name}`,s:esc(r.q),a:`<button class="btn ghost" onclick="go('consultants')">Answer</button>`}));
+ invoices.filter(i=>i.st==='sent'&&i.age>30).forEach(i=>q.push({c:'var(--amber)',t:`<b>${i.id}</b> ${fmt(i.amt)} at ${i.age} days — ${P(i.p).name}`,s:i.ph,a:`<button class="btn ghost" onclick="go('money')">Chase</button>`}));
+ decisions.filter(d=>d.st==='waiting'&&d.asked>=14).forEach(d=>q.push({c:'var(--amber)',t:`<b>Client decision waiting ${d.asked} days</b> — ${P(d.p).name}`,s:`${esc(d.what)} · ${esc(d.who)}`,a:`<button class="btn ghost" onclick="go('clients')">View</button>`}));
+ if(typeof PL!=='undefined')q.push({c:'var(--red)',t:`<b>Plan reader found ${PL.flags.length} issues</b> in the Fourplex BP set (Rev 3)`,s:PL.flags[0].t,a:`<button class="btn ghost" onclick="plState.tab='review';go('plans')">Review</button>`});
+ deals.filter(d=>d.due<=0).forEach(d=>q.push({c:'var(--red)',t:`<b>${esc(d.next)}</b> — ${esc(d.who)}`,s:`${esc(d.what)} · ${k(d.fee)} fee · ${d.due<0?Math.abs(d.due)+' days overdue':'today'}`,a:`<button class="btn ghost" onclick="go('growth')">Open</button>`}));
+ const hot=opps.filter(o=>o.st==='new'&&o.fit>=84);if(hot.length)q.push({c:'var(--moss)',t:`<b>${hot.length} new opportunities</b> that fit your work`,s:hot.map(o=>o.what+' · '+o.where).join(' — '),a:`<button class="btn ghost" onclick="go('leads')">Review</button>`});
+ const cold=net.filter(n=>n.last>n.cad);if(cold.length)q.push({c:'var(--amber)',t:`<b>${cold.length} relationships</b> due a check-in`,s:cold.map(n=>n.who).join(' · '),a:`<button class="btn ghost" onclick="go('network')">See who</button>`});
+ const late=inquiries.filter(i=>i.st==='new'&&i.days>5);if(late.length)q.push({c:'var(--cedar)',t:`<b>${late.length} inquiries</b> waiting more than 5 days for a reply`,s:late.map(i=>i.kind).join(' · '),a:`<button class="btn ghost" onclick="go('inquiries')">Reply</button>`});
+ const ins=consultants.filter(c=>c.ins!=null&&c.ins<30);if(ins.length)q.push({c:'var(--amber)',t:`<b>${ins.length} consultant insurance certificate${ins.length>1?'s':''}</b> expired or expiring within 30 days`,s:ins.map(c=>c.role+' · '+P(c.p).name).join(' — '),a:`<button class="btn ghost" onclick="go('consultants')">Open</button>`});
+ return q;
+}
+// ---------- VIEWS ----------
+const NAV=[
+ ['Start',[['welcome','Welcome'],['today','Your day']]],
+ ['Phase 1 · Growth',[['growth','New business'],['leads','Opportunities'],['media','Media, awards & events'],['content','Content studio'],['network','Relationships'],['inquiries','Inquiries']]],
+ ['Phase 2 · Projects & money',[['projects','Projects'],['clients','Client view & decisions'],['fees','Fees & forecasting'],['money','Invoices & cash'],['permits','Permits'],['consultants','Consultants & RFIs'],['plans','Plan reader']]],
+ ['Phase 3 · Studio library',[['library','Materials & suppliers']]],
+ ['Your input',[['feedback','Your feedback'],['systems','How it connects']]],
+];
+let cur=location.hash.slice(1)||'welcome';
+const V={};
+V.today=()=>{const q=needs();const open=projects.filter(p=>p.stage<6);
+ return `<p class="lede">Good morning, Daria. Everything below is worked out from the projects, hours, permits and inbox. Nobody typed this list.</p>
+ <div class="g4">
+  <div class="stat ${q.length>5?'bad':'warn'}"><div class="k">Needs you</div><div class="v">${q.length}</div><div class="s">items today</div></div>
+  <div class="stat"><div class="k">Active projects</div><div class="v">${open.length}</div><div class="s">${open.filter(p=>p.real).length} real · ${open.filter(p=>!p.real).length} illustrative</div></div>
+  <div class="stat warn"><div class="k">Owed to you</div><div class="v">${k(invoices.filter(i=>i.st==='sent').reduce((s,i)=>s+i.amt,0))}</div><div class="s">${invoices.filter(i=>i.st==='sent'&&i.age>30).length} past 30 days</div></div>
+  <div class="stat"><div class="k">Team this week</div><div class="v">${team.reduce((s,t)=>s+Object.values(t.h).reduce((a,b)=>a+b,0),0)}h</div><div class="s">of ${team.reduce((s,t)=>s+t.cap,0)}h capacity</div></div>
+ </div>
+ <div class="split">
+  <div class="card"><div class="hd"><b>Needs you</b><span>most urgent first</span></div>${(()=>{const c=cut('q',q,7);return c.rows.map(x=>`<div class="q"><div class="dot" style="background:${x.c}"></div><div class="t">${x.t}<div class="sub">${x.s}</div></div><div class="a">${x.a}</div></div>`).join('')+moreBtn('q',c.hidden)})()||'<div class="bd">All clear.</div>'}</div>
+  <div>
+   <div class="card"><div class="hd"><b>Permit & submission deadlines</b><span>next 6 weeks</span></div><div class="bd">${dayBars(permits.filter(p=>p.status!=='Issued').map(p=>({due:p.due,label:P(p.p).name})),42)}</div></div>
+   <div class="card"><div class="hd"><b>Where the studio's hours went</b><span>this week</span></div><div class="bd">${hoursSplit()}</div></div>
+  </div>
+ </div>`};
+function hoursSplit(){const by={};team.forEach(t=>Object.entries(t.h).forEach(([p,h])=>by[p]=(by[p]||0)+h));const colors={CW:'var(--cedar)',IC:'var(--moss)',FP:'var(--ink)',LS:'#8C877C',RR:'#C9B9A6',NE:'#A9B48F',admin:'#E0DBD2'};return splitBar(Object.entries(by).sort((a,b)=>b[1]-a[1]).map(([p,h])=>({l:p==='admin'?'Admin & marketing':P(p).name,v:h,t:h+'h',c:colors[p]})))}
+V.pulse=()=>{const act=projects.filter(p=>p.stage<6);const tot=act.reduce((s,p)=>s+p.fee,0),earned=act.reduce((s,p)=>s+p.earned,0),spent=act.reduce((s,p)=>s+p.spent,0);
+ return `<p class="lede">The studio on one page: what's under contract, how much of it you've earned, and whether the time going in matches.</p>
+ <div class="g4">
+  <div class="stat"><div class="k">Fees under contract</div><div class="v">${k(tot)}</div><div class="s">active projects</div></div>
+  <div class="stat"><div class="k">Earned to date</div><div class="v">${k(earned)}</div><div class="s">${Math.round(earned/tot*100)}% of contracted</div></div>
+  <div class="stat ${spent>earned?'bad':'good'}"><div class="k">Time spent (at rate)</div><div class="v">${k(spent)}</div><div class="s">${spent>earned?'ahead of':'behind'} earned by ${k(Math.abs(spent-earned))}</div></div>
+  <div class="stat"><div class="k">Fee left to earn</div><div class="v">${k(tot-earned)}</div><div class="s">your pipeline of booked work</div></div>
+ </div>
+ <div class="split">
+  <div class="card"><div class="hd"><b>Earned minus spent, by project</b><span>green = ahead · red = eating fee</span></div><div class="bd">${diverge(act.map(p=>({l:p.name,sub:p.stageName,v:p.earned-p.spent,click:`openProj('${p.id}')`})).sort((a,b)=>a.v-b.v))}</div></div>
+  <div class="card"><div class="hd"><b>Fee left to earn, by stage</b><span>work on the books</span></div><div class="bd">${hbars(PH.map((ph,i)=>({l:ph,v:act.reduce((s,p)=>s+p.phases[i][0]*(1-p.phases[i][2]),0)})).map(r=>({...r,t:k(r.v),c:'var(--cedar)'})))}</div></div>
+ </div>`};
+V.projects=()=>{const counts=PH.map((_,i)=>projects.filter(p=>p.stage===i));
+ return `<p class="lede">Every project by stage. Click a project to see its fee by phase, consultants, open questions and decisions.</p>
+ <div class="card"><div class="hd"><b>Pipeline by stage</b><span>${projects.length} projects · The Nest in warranty</span></div><div class="bd"><div class="pipe">${PH.map((ph,i)=>`<div class="st"><span>${ph}</span><b>${counts[i].length}</b>${counts[i].map(p=>`<em>${p.name}</em>`).join('')}</div>`).join('')}</div></div></div>
+ <div class="card"><div class="scroll"><table class="dt"><thead><tr><th>Project</th><th>Client</th><th>Stage</th><th class="num">Fee</th><th>Fee used</th></tr></thead><tbody>
+ ${projects.map(p=>`<tr class="click" onclick="openProj('${p.id}')"><td><b>${p.name}</b>${tag(p.real)}<div class="sub">${p.type} · ${p.loc}</div></td><td>${esc(p.client)}</td><td><span class="pill ${p.stage>=5?'moss':'cedar'}">${p.stageName}</span></td><td class="num">${k(p.fee)}</td><td style="min-width:130px">${meter(p.spent,p.fee)}</td></tr>`).join('')}
+ </tbody></table></div></div>
+ <div class="note">Real: project names, clients, locations, types and status come from dariasheina.com. Every fee, hour and percentage is illustrative.</div>`};
+V.fees=()=>{let tab=V.fees.tab||'phase';const rows=[];projects.filter(p=>p.stage<6).forEach(p=>p.phases.forEach((ph,i)=>{if(ph[2]>0&&ph[2]<1)rows.push({p,i,fee:ph[0],earned:ph[0]*ph[2],spent:ph[1]*RATE,hrs:ph[1],pct:ph[2]})}));
+ const tabs=`<div class="tabs">${[['phase','Phases in progress'],['learn','Fee accuracy'],['team','Team this week']].map(([kk,l])=>`<button class="tab ${tab===kk?'on':''}" onclick="V.fees.tab='${kk}';render()">${l}</button>`).join('')}</div>`;
+ if(tab==='learn'){const worst=feeHist.slice().sort((a,b)=>b.r-a.r)[0];return tabs+`<p class="lede">Proposed hours against actual hours on your last six completed projects. ${worst.ph} runs ${Math.round((worst.r-1)*100)}% over on average, so it is the first place to adjust the next fee proposal.</p>
+  <div class="split"><div class="card"><div class="hd"><b>Actual vs proposed, by phase</b><span>over budget is left</span></div><div class="bd">${diverge(feeHist.map(f=>({l:f.ph,sub:(f.r>1?'+':'')+Math.round((f.r-1)*100)+'% vs proposal',v:Math.round((1-f.r)*100)})))}</div></div>
+  <div class="card"><div class="hd"><b>By project type</b></div><div class="bd">${diverge(feeByType.map(f=>({l:f.t,sub:(f.r>1?'+':'')+Math.round((f.r-1)*100)+'%',v:Math.round((1-f.r)*100)})))}</div></div></div>
+  <div class="card"><div class="hd"><b>Suggested for your next multiplex fee proposal</b><span>based on history</span></div><div class="scroll"><table class="dt"><thead><tr><th>Phase</th><th class="num">Typical fee</th><th class="num">Suggested</th><th>Why</th></tr></thead><tbody>${feeHist.map((f,i)=>{const base=[6,14,22,24,6,28][i]*1000;const sug=Math.round(base*Math.max(1,f.r)/500)*500;return `<tr><td>${f.ph}</td><td class="num">${k(base)}</td><td class="num"><b>${k(sug)}</b></td><td class="sub">${f.r>1.1?'Consistently over':f.r<1?'Under budget; keep':'Close to target'}</td></tr>`}).join('')}</tbody></table></div></div>
+  <div class="note">All history and suggestions are illustrative. The real version learns from your logged hours and milestones on each project.</div>`}
+ if(tab==='team')return tabs+`<p class="lede">Hours logged this week against each person's capacity. Hours go straight onto the project phase, so fee burn updates as people log time.</p>
+  <div class="card"><div class="hd"><b>Load vs capacity</b><span>this week</span></div><div class="bd">${team.map(t=>{const h=Object.values(t.h).reduce((a,b)=>a+b,0);return `<div style="margin:8px 0"><div style="display:flex;justify-content:space-between"><span>${t.r}</span><span class="num">${h}h / ${t.cap}h</span></div>${meter(h,t.cap)}</div>`}).join('')}</div></div>
+  <div class="card"><div class="scroll"><table class="dt"><thead><tr><th>Person</th>${projects.filter(p=>p.stage<6).map(p=>`<th class="num">${p.id}</th>`).join('')}<th class="num">Admin</th></tr></thead><tbody>${team.map(t=>`<tr><td>${t.r}</td>${projects.filter(p=>p.stage<6).map(p=>`<td class="num">${t.h[p.id]||'·'}</td>`).join('')}<td class="num">${t.h.admin||'·'}</td></tr>`).join('')}</tbody></table></div></div>`;
+ return tabs+`<p class="lede">How far each phase has really got, compared with how much of its fee the time already used up. This is where a small studio's margin goes, one phase at a time.</p>
+ <div class="card"><div class="hd"><b>Progress vs fee used</b><span>phases in progress</span></div><div class="bd">${diverge(rows.map(r=>({l:r.p.name,sub:PH[r.i]+' · '+Math.round(r.pct*100)+'% done',v:r.earned-r.spent,click:`openProj('${r.p.id}')`})).sort((a,b)=>a.v-b.v))}</div></div>
+ <div class="card"><div class="scroll"><table class="dt"><thead><tr><th>Phase</th><th class="num">Phase fee</th><th class="num">Done</th><th class="num">Hours</th><th>Fee used</th></tr></thead><tbody>${rows.map(r=>`<tr class="click" onclick="openProj('${r.p.id}')"><td><b>${r.p.name}</b><div class="sub">${PH[r.i]}</div></td><td class="num">${k(r.fee)}</td><td class="num">${Math.round(r.pct*100)}%</td><td class="num">${r.hrs}</td><td style="min-width:130px">${meter(r.spent,r.fee)}</td></tr>`).join('')}</tbody></table></div></div>
+ <div class="note">Fee used = hours × a blended ${fmt(RATE)}/h rate (illustrative). We'd set real rates per person.</div>`};
+V.permits=()=>{const open=permits.filter(p=>p.status!=='Issued').sort((a,b)=>a.due-b.due);const c=cut('permits',open,8);
+ return `<p class="lede">Every submission, comment round and inspection across the City of Vancouver, the District of Tofino and anyone else, with the date it's due.</p>
+ <div class="split"><div class="card"><div class="hd"><b>Due by week</b><span>next 6 weeks</span></div><div class="bd">${dayBars(open.map(p=>({due:p.due,label:P(p.p).name})),42)}</div></div>
+ <div class="card"><div class="hd"><b>By authority</b></div><div class="bd">${hbars(Object.entries(open.reduce((m,p)=>(m[p.body]=(m[p.body]||0)+1,m),{})).map(([l,v])=>({l,v,c:'var(--cedar)'})))}</div></div></div>
+ <div class="card"><div class="scroll"><table class="dt"><thead><tr><th>Item</th><th>Authority</th><th>Status</th><th class="num">Due</th></tr></thead><tbody>${c.rows.map(p=>`<tr class="click" onclick="openProj('${p.p}')"><td><b>${esc(p.item)}</b><div class="sub">${P(p.p).name}</div></td><td>${p.body}</td><td><span class="pill">${p.status}</span></td><td class="num"><span class="pill ${p.due<=7?'red':p.due<=14?'amber':''}">${dstr(day(p.due))} · ${p.due}d</span></td></tr>`).join('')}</tbody></table></div>${moreBtn('permits',c.hidden)}</div>
+ <div class="note">All permit items and dates are illustrative.</div>`};
+V.consultants=()=>{const open=rfis.filter(r=>r.st==='open').sort((a,b)=>b.age-a.age);
+ return `<p class="lede">Questions from contractors and consultants, with how long each has waited, plus everyone on each team and when their insurance runs out.</p>
+ <div class="split"><div class="card"><div class="hd"><b>Open RFIs by age</b><span>days waiting</span></div><div class="bd">${open.length?hbars(open.map(r=>({l:r.id,sub:P(r.p).name,v:r.age,t:r.age+'d',c:r.age>=7?'var(--red)':'var(--amber)'}))):'No open RFIs.'}</div></div>
+ <div class="card"><div class="hd"><b>Insurance certificates</b><span>days left</span></div><div class="bd">${hbars(consultants.filter(c=>c.ins!=null).sort((a,b)=>a.ins-b.ins).slice(0,5).map(c=>({l:c.firm,sub:P(c.p).name,v:Math.max(c.ins,0)+5,t:c.ins<0?'expired':c.ins+'d',c:c.ins<30?'var(--red)':'var(--moss)'})))}</div></div></div>
+ <div class="card"><div class="hd"><b>RFI log</b><span>${open.length} open</span></div><div class="scroll"><table class="dt"><thead><tr><th>RFI</th><th>Question</th><th class="num">Age</th><th></th></tr></thead><tbody>${rfis.map(r=>`<tr><td><b>${r.id}</b><div class="sub">${P(r.p).name} · ${esc(r.from)}</div></td><td>${esc(r.q)}</td><td class="num">${r.age}d</td><td>${r.st==='open'?`<button class="btn" onclick="answerRfi('${r.id}')">Mark answered</button>`:'<span class="pill moss">Answered</span>'}</td></tr>`).join('')}</tbody></table></div></div>
+ <div class="card"><div class="hd"><b>The Nest's team</b><span>from the published project credits</span></div><div class="scroll"><table class="dt"><tbody>${consultants.filter(c=>c.p==='NE').map(c=>`<tr><td>${c.role}</td><td><b>${c.firm}</b>${tag(true)}</td></tr>`).join('')}</tbody></table></div></div>
+ <div class="note">The Nest's consultant names come from Dezeen's project credits. Every other consultant, RFI and certificate date is illustrative.</div>`};
+V.clients=()=>{const w=decisions.filter(d=>d.st==='waiting').sort((a,b)=>b.asked-a.asked);
+ return `<p class="lede">Every decision you've asked a client to make, how long it has waited, and a client view where they approve with one tap. Each approval is recorded with the date.</p>
+ <div class="split"><div class="card"><div class="hd"><b>Decisions waiting on clients</b><span>days since asked</span></div><div class="bd">${hbars(w.map(d=>({l:P(d.p).name,sub:d.what,v:d.asked,t:d.asked+'d',c:d.asked>=14?'var(--red)':d.asked>=7?'var(--amber)':'var(--moss)'})))}</div></div>
+ <div class="portal"><div class="ph"><span>Client portal · Ireland Canada Place</span><span>preview</span></div><div class="pb">
+  <div class="sub" style="margin-bottom:8px">What the ICP Society board would see</div>
+  <div class="dec"><b>Concept option B — memorial wall material</b><div class="sub">Asked ${dstr(day(-23))} · 3 boards attached</div><div style="margin-top:8px;display:flex;gap:6px"><button class="btn" onclick="toast('Demo: approval would be logged with name + timestamp')">Approve</button><button class="btn ghost" onclick="toast('Demo: comment thread opens')">Comment</button></div></div>
+  <div class="dec"><b>Invoice INV-1192</b><div class="sub">Design development · 40% · ${fmt(6200)}</div></div>
+  <div class="dec"><b>Next meeting</b><div class="sub">Site / public-realm review · date to confirm</div></div>
+ </div></div></div>
+ <div class="card" style="margin-top:12px"><div class="scroll"><table class="dt"><thead><tr><th>Decision</th><th>Who</th><th class="num">Waiting</th><th>Status</th></tr></thead><tbody>${decisions.map(d=>`<tr><td><b>${esc(d.what)}</b><div class="sub">${P(d.p).name}</div></td><td>${esc(d.who)}</td><td class="num">${d.asked}d</td><td><span class="pill ${d.st==='approved'?'moss':d.asked>=14?'red':'amber'}">${d.st}</span></td></tr>`).join('')}</tbody></table></div></div>
+ <div class="note">Decision items and timing are illustrative.</div>`};
+V.inquiries=()=>{const open=inquiries.filter(i=>i.st==='new').sort((a,b)=>b.fit-a.fit);const c=cut('inq',open,6);
+ return `<p class="lede">The Nest's press run brought people to you. This captures every inquiry from Instagram DMs, the website form and email, scores how well it fits, and keeps any of them from going cold.</p>
+ <div class="split"><div class="card"><div class="hd"><b>Inquiries per month</b><span>illustrative · after the Dezeen feature</span></div><div class="bd">${cols(inqMonths.map((m,i)=>({x:m,v:inqCounts[i],c:i<2?'var(--cedar)':'var(--ink)'})))}</div></div>
+ <div class="card"><div class="hd"><b>Where open inquiries came from</b></div><div class="bd">${splitBar(Object.entries(open.reduce((m,i)=>{const s=['Instagram','Website','Referral'].includes(i.src)?i.src:'Press';m[s]=(m[s]||0)+1;return m},{})).map(([l,v],j)=>({l,v,c:['var(--cedar)','var(--moss)','var(--ink)','#C9B9A6'][j]})))}
+  <div style="margin-top:14px">${hbars(open.slice().sort((a,b)=>b.days-a.days).slice(0,4).map(i=>({l:i.kind,sub:i.who,v:i.days,t:i.days+'d',c:i.days>5?'var(--red)':'var(--moss)'})))}<div class="sub">Longest waiting for a reply</div></div></div></div></div>
+ <div class="card" style="margin-top:12px"><div class="hd"><b>Open inquiries</b><span>sorted by fit</span></div><div class="scroll"><table class="dt"><thead><tr><th>Inquiry</th><th>Source</th><th>Budget</th><th class="num">Fit</th><th class="num">Waiting</th><th></th></tr></thead><tbody>${c.rows.map(i=>`<tr><td><b>${esc(i.kind)}</b><div class="sub">${esc(i.who)}</div></td><td>${i.src}</td><td>${i.budget}</td><td class="num">${i.fit}</td><td class="num"><span class="pill ${i.days>5?'red':''}">${i.days}d</span></td><td><button class="btn" onclick="replyInq('${i.id}')">Send reply</button></td></tr>`).join('')}</tbody></table></div>${moreBtn('inq',c.hidden)}</div>
+ <div class="note">Every inquiry, count and score here is illustrative. The fit score would weigh project type, budget, location and current studio load.</div>`};
+V.press=()=>`<p class="lede">Your coverage in one place: what ran, which project it featured, the photo credit to include, and what's next to submit.</p>
+ <div class="g3"><div class="stat good"><div class="k">Features</div><div class="v">${press.length}</div><div class="s">all for The Nest</div></div><div class="stat"><div class="k">Shortlists</div><div class="v">1</div><div class="s">Architecture Hunter Awards 2025</div></div><div class="stat"><div class="k">Photo credit</div><div class="v" style="font-size:17px">A. Latreille</div><div class="s">auto-attached to press kits</div></div></div>
+ <div class="card"><div class="hd"><b>Coverage</b><span>from dariasheina.com/press</span></div><div class="scroll"><table class="dt"><tbody>${press.map(([o,t])=>`<tr><td><b>${o}</b>${tag(true)}</td><td>${esc(t)}</td><td><span class="pill">The Nest</span></td></tr>`).join('')}</tbody></table></div></div>
+ <div class="card"><div class="hd"><b>What could be pitched next</b><span>suggestion</span></div><div class="bd">${hbars([{l:'Renfrew Ridge',sub:'Completed 2026 · missing middle story',v:3,t:'ready',c:'var(--moss)'},{l:'Ireland Canada Place',sub:'At design development',v:1,t:'later',c:'#C9B9A6'},{l:'Calm Waters Retail',sub:'Needs the Nation’s consent first',v:1,t:'ask first',c:'#C9B9A6'}],3)}</div></div>`;
+V.money=()=>{const open=invoices.filter(i=>i.st==='sent');const b=[['0–30',0,30],['31–45',31,45],['46–60',46,60],['60+',61,999]].map(([l,a,z])=>({l,v:open.filter(i=>i.age>=a&&i.age<=z).reduce((s,i)=>s+i.amt,0)}));
+ const wk=[18.2,6.4,9.8,4.1,12.6,3.0,7.7,10.4];
+ return `<p class="lede">Invoices raised from phase progress, how long each has been out, and the cash you can expect over the next eight weeks.</p>
+ <div class="split"><div class="card"><div class="hd"><b>Receivables by age</b><span>${k(open.reduce((s,i)=>s+i.amt,0))} outstanding</span></div><div class="bd">${hbars(b.map((x,i)=>({l:x.l+' days',v:x.v,t:k(x.v),c:['var(--moss)','var(--amber)','var(--red)','var(--red)'][i]})))}</div></div>
+ <div class="card"><div class="hd"><b>Expected cash in</b><span>next 8 weeks · $k</span></div><div class="bd">${cols(wk.map((v,i)=>({x:'W'+(i+1),v,c:'var(--cedar)'})))}</div></div></div>
+ <div class="card" style="margin-top:12px"><div class="scroll"><table class="dt"><thead><tr><th>Invoice</th><th>Phase</th><th class="num">Amount</th><th class="num">Age</th><th></th></tr></thead><tbody>${invoices.map(i=>`<tr><td><b>${i.id}</b><div class="sub">${P(i.p).name}</div></td><td>${i.ph}</td><td class="num">${fmt(i.amt)}</td><td class="num"><span class="pill ${i.st==='paid'?'moss':i.age>45?'red':i.age>30?'amber':''}">${i.st==='paid'?'paid':i.age+'d'}</span></td><td>${i.st==='sent'&&i.age>30?`<button class="btn" onclick="chase('${i.id}')">Send reminder</button>`:i.st==='reminded'?'<span class="pill">reminded</span>':''}</td></tr>`).join('')}</tbody></table></div></div>
+ <div class="note">All amounts are illustrative, before GST. Invoices would sync to your accounting tool.</div>`};
+
+V.growth=()=>{const open=deals.filter(d=>d.stage!=='Won');const wtd=open.reduce((s,d)=>s+d.fee*d.prob,0);const out=open.filter(d=>d.stage==='Proposal sent');const due=open.filter(d=>d.due<=3);const pct=Math.round(Q1.booked/Q1.target*100);const fresh=opps.filter(o=>o.st==='new'&&o.age<=7).length;
+ const c=cut('deals',open.slice().sort((a,b)=>a.due-b.due),6);
+ return `<p class="lede">The first quarter of 2027 is ${pct}% booked. ${k(wtd)} of likely fees sits in the pipeline, and ${due.length} follow-ups are due in the next three days. Everything here is worked out from inquiries, opportunities and your calendar.</p>
+ <div class="g4">
+  <div class="stat ${pct<60?'warn':'good'}"><div class="k">Q1 2027 booked</div><div class="v">${pct}%</div><div class="s">${k(Q1.booked)} of ${k(Q1.target)} target</div></div>
+  <div class="stat"><div class="k">Likely fees in pipeline</div><div class="v">${k(wtd)}</div><div class="s">${open.length} conversations, weighted</div></div>
+  <div class="stat ${due.some(d=>d.due<0)?'bad':''}"><div class="k">Follow-ups due</div><div class="v">${due.length}</div><div class="s">${due.filter(d=>d.due<0).length} overdue</div></div>
+  <div class="stat good"><div class="k">New opportunities</div><div class="v">${fresh}</div><div class="s">found this week</div></div>
+ </div>
+ <div class="split"><div class="card"><div class="hd"><b>Pipeline by stage</b><span>fees weighted by likelihood</span></div><div class="bd">${hbars(STAGES.map(st=>{const ds=open.filter(d=>d.stage===st);return {l:st,sub:ds.length?ds.map(d=>d.what).join(' · '):'—',v:ds.reduce((s,d)=>s+d.fee*d.prob,0),t:k(ds.reduce((s,d)=>s+d.fee*d.prob,0)),c:st==='Proposal sent'?'var(--moss)':'var(--cedar)'}}))}</div></div>
+ <div class="card"><div class="hd"><b>Last 90 days</b><span>inquiry to signed</span></div><div class="bd">${cols(funnel90.map((f,i)=>({x:f.x,v:f.v,c:i===3?'var(--moss)':'var(--cedar)'})))}<div class="sub" style="margin-top:6px">1 in 6 inquiries reaches a proposal; 2 of 5 proposals are won.</div></div></div></div>
+ <div class="card"><div class="hd"><b>Next steps</b><span>soonest first</span></div><div class="scroll"><table class="dt"><thead><tr><th>Who</th><th>Stage</th><th class="num">Fee</th><th>Next step</th><th></th></tr></thead><tbody>${c.rows.map(d=>`<tr><td><b>${esc(d.who)}</b><div class="sub">${esc(d.what)}</div></td><td>${d.stage}</td><td class="num">${k(d.fee)}</td><td>${esc(d.next)} <span class="pill ${d.due<0?'red':d.due<=3?'amber':''}">${d.due<0?Math.abs(d.due)+'d overdue':d.due===0?'today':'in '+d.due+'d'}</span></td><td><button class="btn ghost" onclick="doneDeal('${d.id}')">Done</button></td></tr>`).join('')}</tbody></table></div>${moreBtn('deals',c.hidden)}</div>
+ <div class="note">Every deal, fee and percentage here is illustrative. The real version builds this from your inbox, Instagram, website form and calendar.</div>`};
+V.leads=()=>{const open=opps.filter(o=>o.st==='new').sort((a,b)=>b.fit-a.fit);const c=cut('opps',open.slice().sort((x,y)=>x.age-y.age),6);const bySig={};open.forEach(o=>bySig[o.signal]=(bySig[o.signal]||0)+1);
+ return `<p class="lede">Projects that are likely to need an architect, spotted before anyone goes looking for one: rezonings, permit applications, multiplex-zoned lots changing hands and public tenders. Each is scored against the kind of work you do.</p>
+ <div class="split"><div class="card"><div class="hd"><b>Best fits right now</b><span>fit score</span></div><div class="bd">${hbars(open.slice(0,5).map(o=>({l:o.what,sub:o.where+' · '+o.who,v:o.fit,t:String(o.fit),c:o.fit>=84?'var(--moss)':'var(--cedar)'})),100)}</div></div>
+ <div class="card"><div class="hd"><b>Where they came from</b><span>${open.length} open</span></div><div class="bd">${splitBar(Object.entries(bySig).map(([l,v],i)=>({l,v,c:['var(--moss)','var(--cedar)','#000','#B8B29F','var(--amber)','#7C8A9A'][i%6]})))}</div></div></div>
+ <div class="card"><div class="hd"><b>Opportunities</b><span>newest first</span></div><div class="scroll"><table class="dt"><thead><tr><th>Opportunity</th><th>Signal</th><th class="num">Fit</th><th></th></tr></thead><tbody>${c.rows.map(o=>`<tr><td><b>${esc(o.what)}</b><div class="sub">${esc(o.where)} · ${esc(o.who)}</div></td><td>${esc(o.signal)}<div class="sub">${o.age} days ago</div></td><td class="num"><span class="pill ${o.fit>=84?'moss':''}">${o.fit}</span></td><td><button class="btn" onclick="addOpp('${o.id}')">Add to pipeline</button></td></tr>`).join('')}</tbody></table></div>${moreBtn('opps',c.hidden)}</div>
+ <div class="note">All opportunities here are illustrative. The real version watches public sources such as rezoning and permit lists, land title changes and tenders for the areas and project types you choose.</div>`};
+V.network=()=>{const rows=net.slice().sort((a,b)=>(b.last/b.cad)-(a.last/a.cad));const due=rows.filter(n=>n.last>n.cad);
+ return `<p class="lede">Past clients, builders, engineers and other collaborators are an architect's best source of new work. ${due.length} of them are due a check-in, each with a reason to get in touch.</p>
+ <div class="card"><div class="hd"><b>Time since last contact</b><span>bar turns red past the usual rhythm</span></div><div class="bd">${hbars(rows.map(n=>({l:n.who,sub:n.rel,v:n.last,t:n.last+' days',c:n.last>n.cad?'var(--red)':'var(--moss)'})))}</div></div>
+ <div class="card"><div class="hd"><b>Who to reach out to</b><span>with a reason</span></div><div class="scroll"><table class="dt"><tbody>${rows.map(n=>`<tr><td><b>${esc(n.who)}</b>${tag(n.real)}<div class="sub">${esc(n.rel)}</div></td><td>${esc(n.idea)}</td><td class="num">${n.last>n.cad?`<button class="btn" onclick="checkIn('${n.id}')">Log check-in</button>`:'<span class="pill moss">up to date</span>'}</td></tr>`).join('')}</tbody></table></div></div>
+ <div class="note">Names marked real are collaborators credited on The Nest and Renfrew Ridge. Contact dates and suggestions are illustrative.</div>`};
+
+V.welcome=()=>{const rated=Object.values(FB).filter(f=>f.r||f.n).length;const scr=NAV.filter(([g])=>PHASES[g]).reduce((s,[g,i])=>s+i.length,0);
+ return `<p class="lede">Hi Daria. This is an early look at Studio OS, organised by the three phases in the proposal. Click through each screen, and use the box at the bottom of every page to say whether it's essential, nice to have or not needed, and what's missing. Your notes are shared with us as you go, so there's nothing to send, and the Your feedback page shows everything you've said.</p>
+ <div class="card who"><div class="bd"><label for="who">Your name</label><input id="who" placeholder="So we know who's speaking" value="${esc(WHO)}" oninput="setWho(this.value)"></div></div>
+ <div class="phcards">
+  <div class="phcard"><div class="n">Phase 1 · build in December</div><h3>Growth</h3><div class="sub">Winning new commissions</div><ul><li>Opportunities spotted before a brief exists</li><li>Pipeline and follow-ups</li><li>Media, awards and events</li><li>Content studio, in your voice</li><li>Relationships</li></ul><button class="btn" onclick="go('growth')">Start here</button></div>
+  <div class="phcard"><div class="n">Phase 2 · early 2027</div><h3>Projects & money</h3><div class="sub">When new work starts</div><ul><li>Projects by stage, with client view</li><li>Fees vs actual progress, and what to charge next time</li><li>Invoices and cash flow</li><li>Permits, consultants, plan reader</li></ul><button class="btn ghost" onclick="go('projects')">Open phase 2</button></div>
+  <div class="phcard"><div class="n">Phase 3 · later in 2027</div><h3>Studio library</h3><div class="sub">One source for materials</div><ul><li>Suppliers, materials and specs in one place</li><li>Feeds each project</li><li>Client selections and approvals</li></ul><button class="btn ghost" onclick="go('library')">Open phase 3</button></div>
+ </div>
+ <div class="card"><div class="hd"><b>Your feedback so far</b><span>${rated} of ${scr} screens</span></div><div class="bd">${meter(rated,scr)}<button class="btn ghost" style="margin-top:8px" onclick="go('feedback')">See your feedback</button></div></div>
+ <div class="note">Your real projects, collaborators and press are included. Every figure, deal, contact date and draft is a placeholder.</div>`};
+V.media=()=>{const tab=V.media.tab||'contacts';
+ const tabs=`<div class="tabs">${[['contacts','Media contacts'],['awards','Awards'],['events','Events & podcasts'],['coverage','Coverage']].map(([kk,l])=>`<button class="tab ${tab===kk?'on':''}" onclick="V.media.tab='${kk}';render()">${l}</button>`).join('')}</div>`;
+ if(tab==='awards'){const a=awards.slice().sort((x,y)=>x.due-y.due);return tabs+`<p class="lede">Award deadlines in date order, with the project that fits each one. The next deadline is in ${a[0].due} days.</p>
+  <div class="card"><div class="hd"><b>Days to deadline</b><span>next 100 days</span></div><div class="bd">${hbars(a.map(x=>({l:x.name,sub:x.fit,v:Math.max(1,100-x.due),t:x.due+' days',c:x.due<=14?'var(--red)':x.due<=40?'var(--amber)':'var(--moss)'})),100)}</div></div>
+  <div class="card"><div class="scroll"><table class="dt"><thead><tr><th>Award</th><th>Best fit</th><th class="num">Entry</th><th></th></tr></thead><tbody>${a.map(x=>`<tr><td><b>${esc(x.name)}</b><div class="sub">due in ${x.due} days</div></td><td>${esc(x.fit)}</td><td class="num">${x.fee}</td><td class="num">${x.st==='entered'?'<span class="pill moss">entered</span>':`<button class="btn ghost" onclick="awardStart('${x.id}')">${x.st==='drafting'?'Mark entered':'Start entry'}</button>`}</td></tr>`).join('')}</tbody></table></div></div>
+  <div class="note">Award names and deadlines are illustrative. The real version tracks the awards you choose and adds new ones as they open.</div>`}
+ if(tab==='events')return tabs+`<p class="lede">Events, panels and podcasts worth your time, with why each one matters for new work.</p>
+  <div class="card"><div class="scroll"><table class="dt"><tbody>${events.map(e=>`<tr><td><b>${esc(e.name)}</b><div class="sub">${e.kind}</div></td><td>${e.when}</td><td>${esc(e.why)}</td></tr>`).join('')}</tbody></table></div></div>
+  <div class="note">Illustrative. The calendar would be filled from the sources you follow, and suggest which to attend or pitch.</div>`;
+ if(tab==='coverage')return tabs+V.press();
+ const rows=media.slice().sort((a,b)=>b.last-a.last);
+ return tabs+`<p class="lede">The editors and hosts you've built relationships with, when you last spoke, and a timely reason to get back in touch.</p>
+  <div class="card"><div class="hd"><b>Time since last contact</b><span>days</span></div><div class="bd">${hbars(rows.filter(m=>m.last<999).map(m=>({l:m.out,sub:m.who,v:m.last,t:m.last+' days',c:m.last>180?'var(--red)':'var(--moss)'})))}</div></div>
+  <div class="card"><div class="scroll"><table class="dt"><tbody>${rows.map(m=>`<tr><td><b>${esc(m.out)}</b>${tag(m.real)}<div class="sub">${esc(m.who)} · ${esc(m.topic)}</div></td><td>${esc(m.idea)}</td><td class="num"><button class="btn ghost" onclick="pitch('${m.id}')">Draft pitch</button></td></tr>`).join('')}</tbody></table></div></div>
+  <div class="note">Outlets marked real covered The Nest. Contact names, dates and suggestions are illustrative.</div>`};
+V.content=()=>{const q=drafts.filter(d=>d.st==='draft');
+ return `<p class="lede">Posts and ads drafted from your project photos in Google Drive, written in your voice. ${q.length} drafts are waiting for you. Nothing is published without your approval.</p>
+ <div class="split"><div class="card"><div class="hd"><b>What's working</b><span>reach, last 30 days</span></div><div class="bd">${hbars(postPerf.map(p=>({l:p.l,v:p.v,t:p.v.toLocaleString(),c:'var(--cedar)'})))}</div></div>
+ <div class="card"><div class="hd"><b>This week</b></div><div class="bd">${splitBar([{l:'Waiting for you',v:q.length,c:'var(--amber)'},{l:'Approved',v:drafts.filter(d=>d.st==='approved').length,c:'var(--moss)'},{l:'Ready to post (TikTok)',v:drafts.filter(d=>d.st==='prepared').length,c:'#B8B29F'},{l:'Posted',v:drafts.filter(d=>d.st==='posted').length,c:'#000'}])}</div></div></div>
+ <div class="tiles">${drafts.map(d=>`<div class="post"><div class="img" style="background:${d.c}">${esc(d.proj)} · ${esc(d.kind)}</div><div class="bd"><div class="sub">${esc(d.plat)}</div><p style="margin:6px 0 10px">${esc(d.cap)}</p>${d.st==='draft'?`<button class="btn" onclick="approvePost('${d.id}')">Approve</button> <button class="btn ghost" onclick="toast('Opened for editing')">Edit</button>`:`<span class="pill ${d.st==='posted'?'':'moss'}">${d.st==='prepared'?'ready for you to post':d.st}</span>`}</div></div>`).join('')}</div>
+ <div class="note">Captions, reach and drafts are illustrative; colour blocks stand in for your photos. Instagram and Facebook post directly once approved; TikTok posts are prepared for you to publish.</div>`};
+V.library=()=>{const tab=V.library.tab||'lib';
+ const tabs=`<div class="tabs">${[['lib','Studio library'],['sel','Client selections']].map(([kk,l])=>`<button class="tab ${tab===kk?'on':''}" onclick="V.library.tab='${kk}';render()">${l}</button>`).join('')}</div>`;
+ if(tab==='sel'){const ps=[...new Set(sels.map(x=>x.p))];return tabs+`<p class="lede">Each project's selections come straight from the library, and clients approve them from their project page.</p>
+  <div class="card"><div class="hd"><b>Selections by project</b></div><div class="bd">${ps.map(p=>`<div style="margin:6px 0"><div class="sub">${P(p).name}</div>${splitBar([{l:'Approved',v:sels.filter(x=>x.p===p&&x.st==='approved').length,c:'var(--moss)'},{l:'Waiting on client',v:sels.filter(x=>x.p===p&&x.st==='waiting').length,c:'var(--amber)'},{l:'To propose',v:sels.filter(x=>x.p===p&&x.st==='open').length,c:'#B8B29F'}])}</div>`).join('')}</div></div>
+  <div class="card"><div class="scroll"><table class="dt"><thead><tr><th>Project</th><th>Selection</th><th>Option</th><th></th></tr></thead><tbody>${sels.map(x=>`<tr><td>${P(x.p).name}</td><td><b>${esc(x.what)}</b></td><td>${esc(x.opt)}</td><td class="num">${x.st==='approved'?'<span class="pill moss">approved</span>':x.st==='waiting'?`<button class="btn ghost" onclick="clientApprove('${x.id}')">Simulate client approval</button>`:'<span class="pill">to propose</span>'}</td></tr>`).join('')}</tbody></table></div></div>`}
+ const stale=lib.filter(l=>l.upd>90);
+ return tabs+`<p class="lede">One studio database of suppliers, materials and specs that every project draws from, instead of a new spreadsheet each time. ${stale.length} entries haven't been checked in 90 days.</p>
+  <div class="split"><div class="card"><div class="hd"><b>Most used across projects</b></div><div class="bd">${hbars(lib.slice().sort((a,b)=>b.used.length-a.used.length).slice(0,5).map(l=>({l:l.item,sub:l.cat,v:l.used.length,t:l.used.length+' projects',c:'var(--moss)'})))}</div></div>
+  <div class="card"><div class="hd"><b>Freshness</b></div><div class="bd">${splitBar([{l:'Checked this quarter',v:lib.length-stale.length,c:'var(--moss)'},{l:'Needs a check',v:stale.length,c:'var(--amber)'}])}</div></div></div>
+  <div class="card"><div class="scroll"><table class="dt"><thead><tr><th>Material</th><th>Supplier</th><th>Spec</th><th class="num">Lead time</th><th></th></tr></thead><tbody>${lib.map(l=>`<tr><td><b>${esc(l.item)}</b><div class="sub">${l.cat}</div></td><td>${esc(l.sup)}</td><td>${esc(l.spec)}</td><td class="num">${l.lead}</td><td class="num"><button class="btn ghost" onclick="addToProj('${l.id}')">Add to project</button></td></tr>`).join('')}</tbody></table></div></div>
+  <div class="note">Illustrative entries. Your existing supplier spreadsheet would be imported as the starting library.</div>`};
+V.feedback=()=>{const groups=NAV.filter(([g])=>PHASES[g]);let tot={Essential:0,'Nice to have':0,'Not needed':0};
+ groups.forEach(([g,i])=>i.forEach(([id])=>{const f=FB[id];if(f&&f.r)tot[f.r]++}));
+ return `<p class="lede">Everything you've marked so far, by phase. It's already shared with Telaia; press Send now if you want to be sure the latest is in.</p><p class="syncline"><span class="syncst" data-s="${syncState}">${syncLabel()}</span></p>
+ <div class="card"><div class="hd"><b>Your ratings</b></div><div class="bd">${splitBar([{l:'Essential',v:tot.Essential,c:'var(--moss)'},{l:'Nice to have',v:tot['Nice to have'],c:'var(--amber)'},{l:'Not needed',v:tot['Not needed'],c:'#B8B29F'}])}</div></div>
+ ${groups.map(([g,i])=>`<div class="card"><div class="hd"><b>${g}</b><span>${PHASES[g].when}</span></div><div class="scroll"><table class="dt"><tbody>${i.map(([id,l])=>{const f=FB[id]||{};return `<tr class="click" onclick="go('${id}')"><td><b>${l}</b></td><td>${f.r?`<span class="pill ${f.r==='Essential'?'moss':f.r==='Nice to have'?'amber':''}">${f.r}</span>`:'<span class="sub">not rated</span>'}</td><td>${f.n?esc(f.n):''}</td></tr>`}).join('')}</tbody></table></div></div>`).join('')}
+ <button class="btn" onclick="syncNow(true)">Send now</button> <button class="btn ghost" onclick="copyFB()">Copy as text</button> <button class="btn ghost" onclick="if(confirmClear())render()">Clear</button>
+ <textarea id="fbout" style="display:none;width:100%;min-height:160px;margin-top:10px"></textarea>`};
+V.systems=()=>`<p class="lede">What Studio OS would sit on top of. It doesn't replace your drawing software. It connects the work around it.</p>
+ <div class="sys">${[
+  ['Drawings & models','Your CAD/BIM tool stays. Issued sets, revisions and transmittals are logged against each project.'],
+  ['Email & calendar','Google or Outlook. RFIs, client decisions and permit letters get filed to the right project automatically.'],
+  ['Instagram & website','DMs and form fills land in Inquiries with a fit score. No more lost leads after a press run.'],
+  ['Accounting','QuickBooks or Xero. Invoices are raised from phase progress and payments sync back.'],
+  ['Time','A 30-second daily log on your phone, by project and phase. It feeds fee burn live.'],
+  ['Client portal','Approvals, invoices and meeting notes for each client. Every approval is recorded with the date.'],
+ ].map(([t,d])=>`<div class="card"><div class="hd"><b>${t}</b></div><div class="bd sub" style="font-size:13px">${d}</div></div>`).join('')}</div>
+ <div class="note" style="margin-top:14px">This is a demo built from public information: dariasheina.com, Architizer and the press coverage of The Nest. Anything marked illustrative is placeholder data that we'd replace with yours.</div>`;
+// ---------- PLAN READER ----------
+// Unit A layout in feet [name, type, level, x, y, w, h] — areas are computed from these outlines
+const UA=[
+ ['Entry','circ',1,0,0,6,8],['Powder','bath',1,0,8,6,6],['Stair','circ',1,0,14,6,12],['Kitchen','living',1,6,0,18,10],['Dining','living',1,6,10,18,6],['Living','living',1,6,16,18,10],
+ ['Bedroom 1','bed',2,0,0,13,12],['Ensuite','bath',2,13,0,11,7],['Walk-in closet','circ',2,13,7,11,5],['Stair + hall','circ',2,0,12,6,14],['Bedroom 2','bed',2,6,12,9,10],['Bedroom 3','bed',2,15,12,9,10],['Bathroom','bath',2,6,22,9,4],['Laundry','circ',2,15,22,9,4],
+];
+const unitRooms=u=>UA.map(r=>{let [n,t,l,x,y,w,h]=r;if((u==='C'||u==='D')&&n==='Bedroom 3'){n='Den';t='living';w=9;h=10-4.7}return{u,n,t,l,x,y,w,h,a:Math.round(w*h)}});
+const PL={set:'East 33rd Fourplex — BP set Rev 3',pages:34,units:['A','B','C','D']};
+PL.rooms=PL.units.flatMap(unitRooms);
+PL.unitArea=u=>PL.rooms.filter(r=>r.u===u).reduce((s,r)=>s+r.a,0);
+PL.total=PL.units.reduce((s,u)=>s+PL.unitArea(u),0);
+PL.baths=PL.rooms.filter(r=>r.t==='bath').length;
+PL.wallLf=Math.round(PL.rooms.reduce((s,r)=>s+2*(r.w+r.h),0)/2);
+PL.doors=PL.rooms.filter(r=>!['Kitchen','Dining','Living','Stair','Stair + hall'].includes(r.n)).length+PL.units.length*2;
+PL.windows=PL.units.length*11;
+PL.sheets=[['A0.01','Cover + drawing list',3],['A0.02','Area schedule',3],['A1.01','Site plan',2],['A2.01','Level 1 plans',3],['A2.02','Level 2 plans',3],['A2.03','Roof plan',2],['A3.01','Elevations N + S',3],['A3.02','Elevations E + W',3],['A3.04','Building sections',3],['A4.01','Door + window schedule',3],['A5.03','Stair details',3],['S1.01','Foundation plan (structural)',2],['S2.01','Framing plans (structural)',2]];
+PL.flags=[
+ {sev:'red',t:'Area schedule doesn’t match the drawings for Units C + D',d:`A0.02 lists ${PL.unitArea('A')} sf for each unit. The traced outlines give Units C + D ${PL.unitArea('C')} sf, because the Den is smaller than the Bedroom 3 it replaced in Rev 3.`,sh:'A0.02'},
+ {sev:'amber',t:'A3.04 has no scale bar',d:'Section areas were skipped. Add a scale, or confirm 1/4" = 1\'-0".',sh:'A3.04'},
+ {sev:'amber',t:'2 doors in the schedule aren’t on the plans',d:'D-14 and D-15 appear on A4.01 but not on A2.01 or A2.02.',sh:'A4.01'},
+ {sev:'amber',t:'Stair guard detail is referenced by an open RFI',d:'RFI-014 asks about the guard height at the landing on A5.03. It is still unanswered.',sh:'A5.03'},
+];
+PL.diff=[{l:'Unit A',v:0},{l:'Unit B',v:0},{l:'Unit C',v:-42},{l:'Unit D',v:-42},{l:'Doors',v:2,u:'pc'},{l:'Windows',v:4,u:'pc'}];
+PL.rates=[ // illustrative catalogue
+ ['Floor finish','sf',()=>PL.total,14],['Interior paint (walls, 9 ft)','sf wall',()=>PL.wallLf*9*2,3.2],['Interior doors','pc',()=>PL.doors,850],['Windows','pc',()=>PL.windows,1900],['Bathroom fixtures','per bath',()=>PL.baths,9500],['Kitchen','per unit',()=>PL.units.length,38000],
+];
+PL.cantQ=[['Mechanical / HVAC','No M+E drawings in this set'],['Landscape','Not in this set'],['Exterior cladding','Elevations have no material keys yet']];
+let plState={tab:'spaces',unit:'A',level:1,parsing:null,limit:null,usage:{sets:3,pages:212}};
+function plFile(ev){const f=ev.target.files[0];const steps=['Reading pages','Sorting sheets','Tracing room outlines','Counting doors + windows','Checking schedules against drawings'];PL._steps=steps;plState.parsing={name:f?f.name:'set.pdf',i:0};render();
+ const tick=()=>{plState.parsing.i++;if(plState.parsing.i>=steps.length){plState.parsing=null;plState.usage.sets++;plState.usage.pages+=PL.pages;plState.tab='review';toast('Parsed. In this demo the result is the bundled Fourplex set');render();return}render();setTimeout(tick,650)};setTimeout(tick,650)}
+function plSvg(){const rs=PL.rooms.filter(r=>r.u===plState.unit&&r.l===plState.level);const S=14,col={living:'#E9D6C6',bed:'#DEE3D0',bath:'#D9E2E6',circ:'#EEEBE5'};
+ return `<svg viewBox="-4 -4 ${24*S+8} ${26*S+8}" style="width:100%;max-width:380px;display:block;margin:auto" role="img" aria-label="Traced floor plan">${rs.map(r=>`<g style="cursor:pointer" onclick="toast('${esc(r.n)} · ${r.a} sf · ${r.w}′ × ${r.h}′')"><rect x="${r.x*S}" y="${r.y*S}" width="${r.w*S}" height="${r.h*S}" fill="${col[r.t]}" stroke="#1C1C1A" stroke-width="2"/><text x="${(r.x+r.w/2)*S}" y="${(r.y+r.h/2)*S}" text-anchor="middle" font-size="${r.w<8?9:11}" font-family="Archivo" fill="#1C1C1A">${esc(r.n)}</text><text x="${(r.x+r.w/2)*S}" y="${(r.y+r.h/2)*S+13}" text-anchor="middle" font-size="10" font-family="IBM Plex Mono" fill="#6E6A62">${r.a} sf</text></g>`).join('')}</svg>`}
+V.plans=()=>{const t=plState.tab;
+ if(plState.parsing){const i=plState.parsing.i;return `<p class="lede">Reading <b>${esc(plState.parsing.name)}</b>…</p><div class="card"><div class="bd">${PL._steps.map((s,j)=>`<div style="margin:8px 0;display:flex;gap:10px;align-items:center"><span class="pill ${j<i?'moss':j===i?'amber':''}">${j<i?'done':j===i?'working':'waiting'}</span>${s}</div>`).join('')}</div></div>`}
+ const tabs=[['spaces','Spaces'],['quantities','Quantities'],['estimate','Estimate'],['review','Review'],['compare','Rev 2 → Rev 3'],['sheets','Sheets'],['viewer','Viewer']];
+ const head=`<p class="lede">Drop in a plan set (PDF, DWG, DXF or IFC). The reader sorts the sheets, traces every room, counts doors and windows, and checks your schedules against the drawings before the City does. It's the same reader our construction clients use for takeoffs.</p>
+ <div class="card"><div class="bd" style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between"><div><b>${PL.set}</b>${tag(false)}<div class="sub">${PL.pages} pages · ${PL.sheets.length} sheets · ${PL.units.length} units · ${PL.rooms.length} rooms traced</div></div>
+ <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="sub">This month: ${plState.usage.sets}/20 sets · ${plState.usage.pages}/600 pages</span><label class="btn" style="cursor:pointer">Upload a set<input type="file" accept=".pdf,.dwg,.dxf,.ifc,.zip" style="display:none" onchange="plFile(event)"></label></div></div></div>
+ <div class="tabs">${tabs.map(([kk,l])=>`<button class="tab ${t===kk?'on':''}" onclick="plState.tab='${kk}';render()">${l}${kk==='review'?` · ${PL.flags.length}`:''}</button>`).join('')}</div>`;
+ let body='';
+ if(t==='spaces'){const lim=plState.limit;body=`<div class="split"><div class="card"><div class="hd"><b>Floor area by unit</b><span>traced from outlines</span></div><div class="bd">${hbars(PL.units.map(u=>({l:'Unit '+u,v:PL.unitArea(u),t:PL.unitArea(u).toLocaleString()+' sf',c:u==='C'||u==='D'?'var(--amber)':'var(--moss)'})))}</div></div>
+  <div class="card"><div class="hd"><b>Total floor area vs your limit</b><span>enter the site's allowable area</span></div><div class="bd"><div style="font:500 22px var(--mono)">${PL.total.toLocaleString()} sf</div>${lim?meter(PL.total,lim):'<div class="sub">Set a limit to check headroom.</div>'}<div style="margin-top:10px;display:flex;gap:8px;align-items:center"><input id="plim" type="number" placeholder="e.g. 5200" value="${lim||''}" style="width:120px;padding:5px 8px;border:1px solid var(--line);border-radius:6px;font:13px var(--mono)"><button class="btn ghost" onclick="plState.limit=+document.getElementById('plim').value||null;render()">Check</button></div><div class="sub" style="margin-top:6px">Gross vs net rules vary by zone. This compares the traced net area only.</div></div></div></div>
+  <div class="card"><div class="hd"><b>Room schedule</b><span>Unit ${plState.unit}</span></div><div class="tabs" style="padding:10px 14px 0">${PL.units.map(u=>`<button class="tab ${plState.unit===u?'on':''}" onclick="plState.unit='${u}';render()">Unit ${u}</button>`).join('')}</div><div class="scroll"><table class="dt"><thead><tr><th>Room</th><th>Level</th><th class="num">Size</th><th class="num">Area</th></tr></thead><tbody>${PL.rooms.filter(r=>r.u===plState.unit).map(r=>`<tr><td>${esc(r.n)}</td><td>L${r.l}</td><td class="num">${r.w}′ × ${r.h}′</td><td class="num">${r.a} sf</td></tr>`).join('')}</tbody></table></div></div>`}
+ if(t==='quantities'){const q=[['Net floor area',PL.total.toLocaleString()+' sf'],['Interior wall length',PL.wallLf.toLocaleString()+' lf'],['Doors',PL.doors+' pc'],['Windows',PL.windows+' pc'],['Bathrooms + powder',PL.baths],['Kitchens',PL.units.length]];
+  body=`<div class="g3">${q.slice(0,3).map(([a,b])=>`<div class="stat"><div class="k">${a}</div><div class="v">${b}</div></div>`).join('')}</div><div class="g3">${q.slice(3).map(([a,b])=>`<div class="stat"><div class="k">${a}</div><div class="v">${b}</div></div>`).join('')}</div>
+  <div class="card"><div class="hd"><b>Area by room type</b><span>all units</span></div><div class="bd">${splitBar([['living','Living + kitchen','var(--cedar)'],['bed','Bedrooms','var(--moss)'],['bath','Baths','#8FA4AE'],['circ','Circulation + storage','#C9C3B8']].map(([ty,l,c])=>{const v=PL.rooms.filter(r=>r.t===ty).reduce((s,r)=>s+r.a,0);return{l,v,t:v.toLocaleString()+' sf',c}}))}</div></div>`}
+ if(t==='estimate'){const lines=PL.rates.map(([n,u,q,r])=>({n,u,q:Math.round(q()),r,tot:Math.round(q())*r}));const tot=lines.reduce((s,l)=>s+l.tot,0);
+  body=`<div class="split"><div class="card"><div class="hd"><b>Order-of-magnitude estimate</b><span>${k(tot)} · from your rate catalogue</span></div><div class="bd">${hbars(lines.sort((a,b)=>b.tot-a.tot).map(l=>({l:l.n,v:l.tot,t:k(l.tot),c:'var(--cedar)'})))}</div></div>
+  <div class="card"><div class="hd"><b>Not priced from this set</b><span>and why</span></div><div class="bd">${PL.cantQ.map(([a,b])=>`<div style="margin:6px 0"><b>${a}</b><div class="sub">${b}</div></div>`).join('')}</div></div></div>
+  <div class="card"><div class="scroll"><table class="dt"><thead><tr><th>Line</th><th class="num">Qty</th><th>Unit</th><th class="num">Rate</th><th class="num">Total</th></tr></thead><tbody>${lines.map(l=>`<tr><td>${l.n}</td><td class="num">${l.q.toLocaleString()}</td><td>${l.u}</td><td class="num">${fmt(l.r)}</td><td class="num">${fmt(l.tot)}</td></tr>`).join('')}</tbody></table></div></div>
+  <div class="note">Rates are placeholders. The studio keeps its own catalogue, and quantities update each time a new revision is read.</div>`}
+ if(t==='review')body=`<div class="card"><div class="hd"><b>What the reader caught</b><span>fix these before the City does</span></div>${PL.flags.map(f=>`<div class="q"><div class="dot" style="background:var(--${f.sev})"></div><div class="t"><b>${f.t}</b><div class="sub">${f.d}</div></div><div class="a"><span class="pill">${f.sh}</span></div></div>`).join('')}</div>`;
+ if(t==='compare')body=`<div class="card"><div class="hd"><b>What changed since Rev 2</b><span>area in sf · counts in pieces</span></div><div class="bd">${PL.diff.map(d=>`<div class="dv"><div class="lbl">${d.l}</div><div class="tr">${d.v?`<div class="fl" style="left:${d.v<0?50-Math.abs(d.v)/42*45:50}%;width:${Math.abs(d.v)/42*45}%;background:${d.v<0?'var(--red)':'var(--moss)'}"></div>`:''}</div><div class="num">${d.v>0?'+':d.v<0?'−':''}${Math.abs(d.v)}${d.u?' '+d.u:' sf'}</div></div>`).join('')}</div></div>
+  <div class="card"><div class="bd sub" style="font-size:13px">Rev 3 swapped Bedroom 3 for a Den in Units C + D and added two doors and four windows. Every change is linked to its sheet, so the permit response letter writes itself.</div></div>`;
+ if(t==='sheets')body=`<div class="card"><div class="scroll"><table class="dt"><thead><tr><th>Sheet</th><th>Title</th><th>Rev</th><th>Flags</th></tr></thead><tbody>${PL.sheets.map(([n,ti,r])=>{const f=PL.flags.filter(x=>x.sh===n).length;return `<tr><td class="num" style="text-align:left">${n}</td><td>${ti}</td><td>${r}</td><td>${f?`<span class="pill amber">${f}</span>`:''}</td></tr>`}).join('')}</tbody></table></div></div>`;
+ if(t==='viewer')body=`<div class="card"><div class="hd"><b>Traced plan · Unit ${plState.unit} · Level ${plState.level}</b><span>tap a room</span></div><div class="tabs" style="padding:10px 14px 0">${PL.units.map(u=>`<button class="tab ${plState.unit===u?'on':''}" onclick="plState.unit='${u}';render()">Unit ${u}</button>`).join('')}${[1,2].map(l=>`<button class="tab ${plState.level===l?'on':''}" onclick="plState.level=${l};render()">Level ${l}</button>`).join('')}</div><div class="bd">${plSvg()}</div></div>`;
+ return head+body+`<div class="note">The plan set, rooms and quantities are illustrative. Upload one of the studio's real sets and the reader fills this in from it.</div>`};
+
+// ---------- INSPECTOR ----------
+function openProj(id){const p=P(id);$('#ihead').innerHTML=`<div class="crumb">${p.type}</div><b style="font-size:17px">${p.name}</b>${tag(p.real)}<div class="sub">${esc(p.loc)} · ${esc(p.client)}</div>`;
+ $('#ibody').innerHTML=`<dl class="kv"><dt>Stage</dt><dd>${p.stageName}</dd><dt>Started</dt><dd>${p.started}</dd><dt>Total fee</dt><dd>${fmt(p.fee)}</dd><dt>Earned / spent</dt><dd>${fmt(p.earned)} / ${fmt(p.spent)}</dd></dl>
+ <div class="note">${esc(p.note)}</div>
+ <b>Fee by phase</b>${p.phases.map((ph,i)=>`<div style="margin:9px 0"><div style="display:flex;justify-content:space-between;font-size:13px"><span>${PH[i]} · ${Math.round(ph[2]*100)}% done</span><span class="num">${k(ph[0])}</span></div>${ph[1]?meter(ph[1]*RATE,ph[0]):'<div class="sub">not started</div>'}</div>`).join('')}
+ ${(()=>{const c=consultants.filter(c=>c.p===id);return c.length?`<b style="display:block;margin-top:14px">Team</b>`+c.map(c=>`<div class="sub" style="margin:4px 0">${c.role} — ${esc(c.firm)}</div>`).join(''):''})()}
+ ${(()=>{const r=rfis.filter(r=>r.p===id&&r.st==='open');return r.length?`<b style="display:block;margin-top:14px">Open RFIs</b>`+r.map(r=>`<div class="sub" style="margin:4px 0">${r.id} · ${r.age}d — ${esc(r.q)}</div>`).join(''):''})()}
+ ${(()=>{const d=decisions.filter(d=>d.p===id&&d.st==='waiting');return d.length?`<b style="display:block;margin-top:14px">Waiting on client</b>`+d.map(d=>`<div class="sub" style="margin:4px 0">${esc(d.what)} · ${d.asked}d</div>`).join(''):''})()}`;
+ $('#insp').classList.add('open')}
+$('#inspclose').onclick=()=>$('#insp').classList.remove('open');
+// ---------- ACTIONS ----------
+function answerRfi(id){rfis.find(r=>r.id===id).st='answered';toast(id+' marked answered. The contractor is notified');render()}
+function awardStart(id){const a=awards.find(x=>x.id===id);if(a.st==='drafting'){a.st='entered';toast('Marked as entered')}else{a.st='drafting';toast('Entry started · reminder set before the deadline')}render()}
+function pitch(id){const m=media.find(x=>x.id===id);m.last=0;toast('Pitch drafted for '+m.out+' · ready for your edits')}
+function approvePost(id){const d=drafts.find(x=>x.id===id);d.st='approved';toast('Approved · scheduled for the next open slot');render()}
+function clientApprove(id){const x=sels.find(y=>y.id===id);x.st='approved';toast('Client approved '+x.what);render()}
+function addToProj(id){const l=lib.find(x=>x.id===id);toast(l.item+' added to East 33rd Fourplex selections')}
+function fbHTML(id,label){const f=FB[id]||{};return `<div class="fb"><div class="q">Your feedback on “${esc(label)}”</div><div class="opts">${['Essential','Nice to have','Not needed'].map(o=>`<button class="opt ${f.r===o?'on':''}" onclick="rate('${id}','${o}')">${o}</button>`).join('')}</div><textarea placeholder="What's missing, or what would make this more useful?" oninput="note('${id}',this.value)">${f.n?esc(f.n):''}</textarea><div class="saved"><span class="syncst" data-s="${syncState}">${syncLabel()}</span> · see all on <a href="#feedback" onclick="go('feedback');return false">Your feedback</a></div></div>`}
+function rate(id,o){FB[id]=FB[id]||{};FB[id].r=FB[id].r===o?null:o;saveFB();render()}
+function note(id,v){FB[id]=FB[id]||{};FB[id].n=v;saveFB()}
+function fbText(){let t='Studio OS: feedback from Daria\n';NAV.filter(([g])=>PHASES[g]).forEach(([g,i])=>{t+='\n'+g+'\n';i.forEach(([id,l])=>{const f=FB[id]||{};t+='- '+l+': '+(f.r||'not rated')+(f.n?' — '+f.n:'')+'\n'})});return t}
+function copyFB(){const t=fbText();const out=document.getElementById('fbout');try{navigator.clipboard.writeText(t).then(()=>toast('Copied · paste it into an email'),()=>{out.style.display='block';out.value=t;out.select();toast('Select all and copy')})}catch(e){out.style.display='block';out.value=t;out.select();toast('Select all and copy')}}
+let _clr=0;function confirmClear(){if(Date.now()-_clr<3000){FB={};saveFB();toast('Feedback cleared');return true}_clr=Date.now();toast('Press Clear again to confirm');return false}
+function doneDeal(id){const d=deals.find(x=>x.id===id);d.due=7;d.next='Next touchpoint';toast('Marked done · next follow-up in 7 days');render()}
+function addOpp(id){const o=opps.find(x=>x.id===id);o.st='added';deals.push({id:'D-'+(deals.length+1),who:o.who+', '+o.where,what:o.what,stage:'Conversation',fee:70000,prob:.15,next:'Intro email',due:2});toast('Added to pipeline with an intro email to draft');render()}
+function checkIn(id){const n=net.find(x=>x.id===id);n.last=0;toast('Check-in logged for '+n.who);render()}
+function replyInq(id){const i=inquiries.find(x=>x.id===id);i.st='replied';toast('Reply sent to '+i.who+' from your template');render()}
+function chase(id){invoices.find(x=>x.id===id).st='reminded';toast('Reminder sent for '+id);render()}
+// ---------- SHELL ----------
+function navHTML(){const q=needs().length;return NAV.map(([g,items])=>`<div class="navgrp">${g}</div>`+items.map(([id,l])=>`<button class="navbtn ${cur===id?'on':''}" onclick="go('${id}')"><span>${l}</span>${id==='today'&&q?`<span class="badge">${q}</span>`:''}</button>`).join('')).join('')}
+function go(id){cur=id;TRUNC={};history.replaceState(null,'','#'+id);$('#nav').classList.remove('open');document.body.style.overflow='';$('#insp').classList.remove('open');render();window.scrollTo(0,0)}
+function render(){const label=NAV.flatMap(([g,i])=>i.map(x=>[g,...x])).find(x=>x[1]===cur)||['Start','welcome','Welcome'];$('#crumb').textContent=label[0];$('#title').textContent=label[2];const ph=PHASES[label[0]];$('#view').innerHTML=(ph?`<div class="phasebar"><b>${label[0]}</b><span>${label[2]}</span><span class="when">${ph.when}</span></div>`:'')+V[cur]()+(ph?fbHTML(cur,label[2]):'');$('#nav').innerHTML=navHTML()}
+$('#burger').onclick=()=>{const n=$('#nav');n.classList.toggle('open');document.body.style.overflow=n.classList.contains('open')?'hidden':''};
+if(!V[cur])cur='welcome';
+window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(V[h]&&h!==cur){cur=h;TRUNC={};render()}});
+render();
+</script>
+</body>
+</html>
