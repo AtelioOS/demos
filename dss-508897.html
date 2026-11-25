@@ -168,6 +168,33 @@ table.dt{width:100%;border-collapse:collapse;font-size:13.5px}
 .asst-foot{display:flex;gap:6px;padding:10px 12px;border-top:1px solid var(--line)}.asst-foot input{flex:1;min-width:0;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font:inherit;font-size:13.5px}
 @media (max-width:1000px){.wk{grid-template-columns:1fr}.wd{min-height:0}.wd.we:not(.today){display:none}}
 @media (max-width:560px){.asst-panel{right:0;bottom:0;width:100vw;height:100svh;border-radius:0}.pipe[style]{grid-template-columns:repeat(2,1fr)!important}}
+
+/* guided tour */
+.topr{display:flex;align-items:center;gap:8px;flex:none}.tourbtn{flex:none;white-space:nowrap;background:var(--moss);border-color:var(--moss)}
+.tourinv{border-color:var(--moss);background:#F6F7EF}.tourinv .bd{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+#tour{position:fixed;inset:0;z-index:100}
+.tourhole{position:absolute;border-radius:10px;box-shadow:0 0 0 9999px rgba(20,20,12,.55);outline:2px solid #C9B46A;transition:top .25s,left .25s,width .25s,height .25s;pointer-events:none}
+.tourcard{position:absolute;background:var(--card);border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.28);padding:14px 16px;max-height:calc(100svh - 20px);overflow:auto}
+.tourcard.center{left:50%;top:50%;transform:translate(-50%,-50%);width:min(460px,calc(100vw - 24px))}
+.tourcard.sheet{left:0;right:0;bottom:0;top:auto!important;width:auto!important;border-radius:14px 14px 0 0;max-height:52svh}
+.tourcard h3{margin:6px 0 6px;font-size:16.5px}.tourcard p{margin:0 0 10px;font-size:13.5px;line-height:1.5}
+.tc-top{display:flex;justify-content:space-between;align-items:center}.tc-bar{height:3px;background:#EEEBE5;border-radius:2px;margin-top:6px;overflow:hidden}.tc-bar b{display:block;height:100%;background:var(--moss)}
+.tc-rate{border-top:1px solid var(--line);padding-top:8px;margin-bottom:10px}.tc-rate .opts{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.tc-rate .opt{border:1px solid var(--line);background:#fff;border-radius:16px;padding:4px 11px;font-size:12.5px}.tc-rate .opt.on{background:var(--moss);border-color:var(--moss);color:#fff}.tc-rate .ta{min-height:44px}
+.tc-nav{display:flex;justify-content:space-between;gap:8px}
+body.touring .asst-fab{display:none}
+/* horizontal calendar */
+.tl2{min-width:860px;padding:6px 12px 10px}
+.tl2-row{display:grid;grid-template-columns:118px 1fr;border-bottom:1px solid var(--line)}.tl2-row:last-child{border-bottom:0}
+.tl2-head{grid-template-columns:118px repeat(14,minmax(0,1fr));position:sticky;top:0}
+.tl2-day{font-size:11px;color:var(--mute);text-align:center;padding:6px 0 4px;text-transform:uppercase;letter-spacing:.04em}.tl2-day b{display:block;color:var(--ink);font-size:14px;letter-spacing:0}.tl2-day.today b{background:var(--moss);color:#fff;border-radius:50%;width:24px;height:24px;line-height:24px;margin:2px auto 0}.tl2-day.we{opacity:.6}
+.tl2-lane{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:500;padding:8px 6px 8px 0}.tl2-lane i{width:9px;height:9px;border-radius:2px;flex:none}.tl2-lane .sub{margin-left:auto;font-weight:400}
+.tl2-cells{position:relative;display:grid;grid-template-columns:repeat(14,minmax(0,1fr));grid-auto-flow:row dense;gap:3px 0;padding:5px 0;min-height:38px;align-content:start}
+.tl2-bg{position:absolute;inset:0;display:grid;grid-template-columns:repeat(14,minmax(0,1fr))}.tl2-cell{border-left:1px solid #F0EDE7}.tl2-cell.we{background:#FAF8F4}.tl2-cell.today{background:#F2F4E8;border-left:2px solid var(--moss)}
+.tl2-ev{position:relative;z-index:1;margin:0 2px;background:#fff;border:1px solid var(--line);border-left:3px solid var(--c);border-radius:5px;padding:3px 5px;font-size:11.5px;line-height:1.28;min-width:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow-wrap:anywhere;hyphens:auto}.tl2-ev[onclick]{cursor:pointer}.tl2-ev[onclick]:hover{background:#FAF8F2}
+.tl2-ev span{display:block;color:var(--mute);font-family:var(--mono);font-size:10px}.tl2-ev span:empty{display:none}
+.tl2-ev.draft,.tl2-ev.prepared{border-style:dashed;border-left-style:solid;background:#FDFCF8}.tl2-ev.posted{opacity:.6}
+@media (max-width:760px){.tl2{min-width:960px}.tl2-row{grid-template-columns:96px 1fr}.tl2-head{grid-template-columns:96px repeat(14,minmax(0,1fr))}.tl2-lane{position:sticky;left:0;z-index:2;background:#fff;padding-left:2px;font-size:12px}}
+@media (max-width:560px){.topr .demoflag{display:none}.tourbtn{padding:5px 9px;font-size:12px}}
 /* responsive — injected last */
 @media (max-width:1000px){
  .app{grid-template-columns:1fr}
@@ -209,7 +236,7 @@ table.dt{width:100%;border-collapse:collapse;font-size:13.5px}
   <nav id="nav"></nav>
  </aside>
  <main class="main">
-  <div class="top"><div><div class="crumb" id="crumb"></div><h1 id="title"></h1></div><div class="demoflag">Demo · figures illustrative</div></div>
+  <div class="top"><div><div class="crumb" id="crumb"></div><h1 id="title"></h1></div><div class="topr"><button class="btn tourbtn" onclick="tourStart(0)">▷ Guided tour</button><div class="demoflag">Demo · figures illustrative</div></div></div>
   <div class="wbody" id="view"></div>
  </main>
 </div>
@@ -596,6 +623,7 @@ V.network=()=>{const rows=net.slice().sort((a,b)=>(b.last/b.cad)-(a.last/a.cad))
 
 V.welcome=()=>{const rated=Object.values(FB).filter(f=>f.r||f.n).length;const scr=NAV.filter(([g])=>PHASES[g]).reduce((s,[g,i])=>s+i.length,0);
  return `<p class="lede">Hi Daria. This is an early look at Studio OS, organised by the three phases in the proposal. Click through each screen, and use the box at the bottom of every page to say whether it's essential, nice to have or not needed, and what's missing. Your notes are shared with us as you go, so there's nothing to send, and the Your feedback page shows everything you've said.</p>
+ <div class="card tourinv"><div class="bd"><div><b>New here? Take the guided tour</b><div class="sub">About 6 minutes. It clicks through each screen for you and lets you rate it as you go.</div></div><button class="btn" onclick="tourStart(0)">Start the tour</button></div></div>
  <div class="card who"><div class="bd"><label for="who">Your name</label><input id="who" placeholder="So we know who's speaking" value="${esc(WHO)}" oninput="setWho(this.value)"></div></div>
  <div class="phcards">
   <div class="phcard"><div class="n">Phase 1 · build in December</div><h3>Growth</h3><div class="sub">Winning new commissions</div><ul><li>Contacts, emails and texts, drafted by AI</li><li>Calendar, follow-ups and an assistant to ask</li><li>Opportunities, with a shared proposal workspace</li><li>Media, awards and events</li><li>Content studio, in your voice</li><li>Relationships</li></ul><button class="btn" onclick="go('growth')">Start here</button></div>
@@ -725,7 +753,7 @@ $('#inspclose').onclick=()=>$('#insp').classList.remove('open');
 function answerRfi(id){rfis.find(r=>r.id===id).st='answered';toast(id+' marked answered. The contractor is notified');render()}
 function awardStart(id){const a=awards.find(x=>x.id===id);if(a.st==='drafting'){a.st='entered';toast('Marked as entered')}else{a.st='drafting';toast('Entry started · reminder set before the deadline')}render()}
 function pitch(id){const m=media.find(x=>x.id===id);m.last=0;toast('Pitch drafted for '+m.out+' · ready for your edits')}
-function approvePost(id){const d=drafts.find(x=>x.id===id);d.st='approved';toast('Approved · scheduled for the next open slot');render()}
+function approvePost(id){const d=drafts.find(x=>x.id===id);d.st='approved';mcal.filter(e=>e.ref===id).forEach(e=>e.st='approved');toast('Approved · scheduled for the next open slot');render()}
 function clientApprove(id){const x=sels.find(y=>y.id===id);x.st='approved';toast('Client approved '+x.what);render()}
 function addToProj(id){const l=lib.find(x=>x.id===id);toast(l.item+' added to East 33rd Fourplex selections')}
 function fbHTML(id,label){const f=FB[id]||{};return `<div class="fb"><div class="q">Your feedback on “${esc(label)}”</div><div class="opts">${['Essential','Nice to have','Not needed'].map(o=>`<button class="opt ${f.r===o?'on':''}" onclick="rate('${id}','${o}')">${o}</button>`).join('')}</div><textarea placeholder="What's missing, or what would make this more useful?" oninput="note('${id}',this.value)">${f.n?esc(f.n):''}</textarea><div class="saved"><span class="syncst" data-s="${syncState}">${syncLabel()}</span> · see all on <a href="#feedback" onclick="go('feedback');return false">Your feedback</a></div></div>`}
@@ -825,6 +853,14 @@ let cal=[
  {id:'E8',d:7,h:9,dur:.5,t:'Prefab & innovation award entry due',k:'deadline'},
  {id:'E9',d:-2,h:16,dur:1,t:'Larchway · proposal follow-up call',k:'call',pid:'P9'},
  {id:'E10',d:-3,h:10,dur:1,t:'Studio stand-up',k:'internal'},
+ {id:'E11',d:10,h:10,dur:1,t:'Studio stand-up',k:'internal'},
+ {id:'E12',d:17,h:10,dur:1,t:'Studio stand-up',k:'internal'},
+ {id:'E13',d:18,h:13,dur:1,t:'Larchway · decision meeting',k:'meeting',pid:'P9'},
+ {id:'E14',d:19,h:18,dur:1.5,t:'Ireland Canada Place · board meeting',k:'meeting',pid:'P5'},
+ {id:'E15',d:20,h:9,dur:2,t:'Site visit · Lakewood Sixplex',k:'site'},
+ {id:'E16',d:21,h:11,dur:.5,t:'Check-in call · Northline Builders',k:'call',pid:'P15'},
+ {id:'E17',d:24,h:16,dur:.5,t:'Permit resubmission due · Fourplex',k:'deadline'},
+ {id:'E18',d:25,h:14,dur:1,t:'Joint case study · BC Passive House',k:'meeting',pid:'P4'},
 ];
 const KCOL={call:'var(--moss)',meeting:'var(--cedar)',site:'#000',post:'#B8B29F',deadline:'var(--red)',internal:'#D9D4C7',follow:'var(--amber)'};
 const KLBL={call:'Call',meeting:'Meeting',site:'Site visit',post:'Scheduled post',deadline:'Deadline',internal:'Internal',follow:'Follow-up due'};
@@ -939,18 +975,48 @@ V.crm=()=>{const all=people;const kinds=['All','Client','Collaborator','Lead','R
   <div class="tabs">${tags.map(t=>`<button class="tab tagf ${CRMF.tag===t?'on':''}" onclick="CRMF.tag=CRMF.tag==='${t}'?null:'${t}';TRUNC={};render()">#${esc(t)}</button>`).join('')}</div></div>
   <div class="scroll"><table class="dt"><thead><tr><th>Contact</th><th>Last conversation</th><th></th></tr></thead><tbody>${c.rows.map(p=>{const l=lastMsg(p);return `<tr class="click" onclick="openContact('${p.id}')"><td><b>${esc(p.name)}</b>${p.real?tag(true):''}<div class="sub">${esc(p.org)}</div><div class="tgs sm">${p.tags.slice(0,3).map(chip).join('')}</div></td><td><span class="ch ch-${l.ch}">${CHL[l.ch]}</span> ${l.dir==='in'?'<b>'+esc(l.t)+'</b>':esc(l.t)}<div class="sub">${l.dir==='in'?'from them':'from you'} · ${ago(l.d)}</div></td><td class="num" onclick="event.stopPropagation()"><button class="btn" onclick="openCompose('${p.id}','email')">Email</button> <button class="btn ghost" onclick="openCompose('${p.id}','sms')">Text</button></td></tr>`}).join('')||'<tr><td colspan="3" class="sub">No contacts match.</td></tr>'}</tbody></table></div>${moreBtn('crm',c.hidden)}</div>
  <div class="note">Names marked real are collaborators credited on The Nest and Renfrew Ridge; their contact details and message history here are invented. Every lead, number and message is illustrative.</div>`};
-let CALW=1;
-V.calendar=()=>{const items=calItems();const start=day(-((TODAY.getDay()+6)%7)+CALW*7);const offs=i=>Math.round((new Date(start.getFullYear(),start.getMonth(),start.getDate()+i)-new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()))/864e5);
- const days=[0,1,2,3,4,5,6].map(i=>({i,o:offs(i),date:new Date(start.getFullYear(),start.getMonth(),start.getDate()+i)}));const wk=items.filter(e=>e.d>=days[0].o&&e.d<=days[6].o);
- const by={};wk.forEach(e=>by[e.k]=(by[e.k]||0)+1);const ext=wk.filter(e=>['call','meeting','site'].includes(e.k)).length;const next=items.filter(e=>e.d>=0&&e.k!=='internal').sort((a,b)=>a.d-b.d||a.h-b.h).slice(0,4);
- return `<p class="lede">Calls, meetings, site visits, follow-ups and deadlines in one week view. Follow-ups from the pipeline land here automatically, and booking a call from a contact or the assistant fills the first open slot.</p>
- <div class="g4"><div class="stat"><div class="k">This view</div><div class="v" style="font-size:18px">${dstr(days[0].date)}–${dstr(days[6].date)}</div><div class="s">${CALW===0?'this week':'next week'}</div></div><div class="stat good"><div class="k">Client time</div><div class="v">${ext}</div><div class="s">calls, meetings, site visits</div></div><div class="stat ${by.follow?'warn':''}"><div class="k">Follow-ups due</div><div class="v">${by.follow||0}</div><div class="s">from the pipeline</div></div><div class="stat ${by.deadline?'bad':''}"><div class="k">Deadlines</div><div class="v">${by.deadline||0}</div><div class="s">awards and submissions</div></div></div>
- <div class="card"><div class="hd"><b>Week</b><div class="tabs" style="margin:0"><button class="tab ${CALW===0?'on':''}" onclick="CALW=0;render()">This week</button><button class="tab ${CALW===1?'on':''}" onclick="CALW=1;render()">Next week</button></div></div>
-  <div class="wk">${days.map(dd=>{const es=wk.filter(e=>e.d===dd.o).sort((a,b)=>a.h-b.h);return `<div class="wd ${dd.o===0?'today':''} ${dd.date.getDay()%6===0?'we':''}"><div class="wdh">${dd.date.toLocaleDateString('en-CA',{weekday:'short'})} <b>${dd.date.getDate()}</b></div>${es.map(e=>`<div class="ev" style="border-left-color:${KCOL[e.k]}" ${e.pid?`onclick="openContact('${e.pid}')"`:''}><span class="sub">${e.k==='follow'?'due':hm(e.h)}</span><div>${esc(e.t)}</div></div>`).join('')||'<div class="sub" style="padding:4px 2px">—</div>'}</div>`}).join('')}</div>
-  <div class="bd" style="padding-top:0">${Object.keys(KLBL).filter(k=>by[k]).map(k=>`<span class="lg"><i style="background:${KCOL[k]}"></i>${KLBL[k]} · ${by[k]}</span>`).join('')}</div></div>
- <div class="split"><div class="card"><div class="hd"><b>Coming up</b></div><div class="bd">${next.map(e=>`<div class="q" style="padding:7px 0"><div class="dot" style="background:${KCOL[e.k]}"></div><div class="t"><b>${esc(e.t)}</b><div class="sub">${e.d===0?'Today':dstr(day(e.d))} · ${e.k==='follow'?'follow-up':hm(e.h)}</div></div></div>`).join('')}</div></div>
- <div class="card"><div class="hd"><b>Open slots for calls</b><span>offered in AI drafts</span></div><div class="bd">${freeSlots(3).map(s=>`<div class="q" style="padding:7px 0"><div class="dot" style="background:var(--moss)"></div><div class="t">${slotStr(s)}</div></div>`).join('')}</div></div></div>
- <div class="note">Connects to Google or Outlook calendar. Every event here is illustrative.</div>`};
+let CALW=0,CALV='studio';
+// marketing calendar (illustrative): d = days from today, span = days it runs
+let mcal=[
+ {id:'M1',d:-3,h:9,t:'The Nest · reel',k:'ig',st:'posted',ref:'C-6'},
+ {id:'M2',d:3,h:10,t:'The Nest · carousel',k:'ig',st:'draft',ref:'C-1'},
+ {id:'M3',d:5,h:12,t:'Studio is taking 2027 commissions',k:'fb',st:'draft',ref:'C-3'},
+ {id:'M4',d:6,h:18,t:'How a cabin gets to an island',k:'tt',st:'prepared',ref:'C-4'},
+ {id:'M5',d:10,h:10,t:'Renfrew Ridge · single photo',k:'ig',st:'draft',ref:'C-2'},
+ {id:'M6',d:3,span:14,t:'Ad · East Van homeowners',k:'ad',st:'draft',ref:'C-5'},
+ {id:'M7',d:4,h:11,t:'Pitch Dwell: Renfrew Ridge',k:'press',st:'planned'},
+ {id:'M8',d:12,h:10,t:'Submit Renfrew Ridge to Designboom',k:'press',st:'planned'},
+ {id:'M9',d:7,h:17,t:'Prefab & innovation award due',k:'award',st:'drafting'},
+ {id:'M10',d:16,h:17,t:'Residential design award due',k:'award',st:'open'},
+ {id:'M11',d:9,h:10,span:2,t:'Case study shoot · BC Passive House',k:'press',st:'planned'},
+ {id:'M12',d:18,h:10,t:'Missing-middle forum · speaker form',k:'award',st:'open'},
+ {id:'M13',d:-1,h:12,t:'Studio process · story',k:'ig',st:'posted'},
+];
+const SLANES=[['call','Calls'],['meeting','Meetings'],['site','Site visits'],['follow','Follow-ups'],['deadline','Deadlines'],['internal','Studio']];
+const MLANES=[['ig','Instagram','var(--cedar)'],['fb','Facebook','#3E5C8A'],['tt','TikTok','#000'],['ad','Ads','var(--amber)'],['press','Press & pitches','var(--moss)'],['award','Awards & events','var(--red)']];
+function calHTML(){const items=CALV==='studio'?calItems():mcal;const lanes=CALV==='studio'?SLANES.map(([k,l])=>[k,l,KCOL[k]]):MLANES;
+ const mon=-((TODAY.getDay()+6)%7)+CALW*14;const days=[...Array(14)].map((_,i)=>({o:mon+i,date:day(mon+i)}));const lo=days[0].o,hi=days[13].o;
+ const inR=e=>e.d<=hi&&e.d+(e.span||1)-1>=lo;const vis=items.filter(inR);
+ const head=`<div class="tl2-row tl2-head"><div class="tl2-lane"></div>${days.map(x=>`<div class="tl2-day ${x.o===0?'today':''} ${x.date.getDay()%6===0?'we':''}">${x.date.toLocaleDateString('en-CA',{weekday:'short'}).slice(0,2)}<b>${x.date.getDate()}</b></div>`).join('')}</div>`;
+ const rows=lanes.map(([k,l,c])=>{const es=vis.filter(e=>e.k===k).sort((a,b)=>a.d-b.d);
+  return `<div class="tl2-row"><div class="tl2-lane"><i style="background:${c}"></i>${l}<span class="sub">${es.length||''}</span></div><div class="tl2-cells"><div class="tl2-bg">${days.map(x=>`<div class="tl2-cell ${x.o===0?'today':''} ${x.date.getDay()%6===0?'we':''}"></div>`).join('')}</div>${es.map(e=>{const s=Math.max(e.d,lo)-lo,en=Math.min(e.d+(e.span||1)-1,hi)-lo;const click=e.pid?`openContact('${e.pid}')`:e.ref?`go('content')`:e.k==='award'||e.k==='press'?`go('media')`:'';
+   return `<div class="tl2-ev ${e.st||''}" title="${esc(e.t)}" style="grid-column:${s+1}/${en+2};--c:${c}" ${click?`onclick="${click}"`:''}><span>${e.k==='follow'||e.span?'':hm(e.h)+' '}</span>${esc(e.t)}</div>`}).join('')}</div></div>`}).join('');
+ return `<div class="scroll"><div class="tl2">${head}${rows}</div></div>`}
+V.calendar=()=>{const mon=-((TODAY.getDay()+6)%7)+CALW*14,lo=mon,hi=mon+13;const inR=e=>e.d<=hi&&e.d+(e.span||1)-1>=lo;
+ const tabs=`<div class="tabs" style="margin:0"><button class="tab ${CALV==='studio'?'on':''}" onclick="CALV='studio';render()">Studio</button><button class="tab ${CALV==='marketing'?'on':''}" onclick="CALV='marketing';render()">Marketing</button><span style="width:10px"></span><button class="tab ${CALW===0?'on':''}" onclick="CALW=0;render()">${dstr(day(-((TODAY.getDay()+6)%7)))} – ${dstr(day(-((TODAY.getDay()+6)%7)+13))}</button><button class="tab ${CALW===1?'on':''}" onclick="CALW=1;render()">${dstr(day(-((TODAY.getDay()+6)%7)+14))} – ${dstr(day(-((TODAY.getDay()+6)%7)+27))}</button></div>`;
+ let stats,lede,side;
+ if(CALV==='studio'){const v=calItems().filter(inR);const ext=v.filter(e=>['call','meeting','site'].includes(e.k)).length;const fu=v.filter(e=>e.k==='follow').length,dl=v.filter(e=>e.k==='deadline').length;
+  lede='Two weeks across, one row for each kind of activity: calls, meetings, site visits, follow-ups and deadlines. Pipeline follow-ups appear on their own, and booking a call from a contact or the assistant fills the first open slot.';
+  stats=`<div class="stat good"><div class="k">Client time</div><div class="v">${ext}</div><div class="s">calls, meetings, site visits</div></div><div class="stat ${fu?'warn':''}"><div class="k">Follow-ups due</div><div class="v">${fu}</div><div class="s">from the pipeline</div></div><div class="stat ${dl?'bad':''}"><div class="k">Deadlines</div><div class="v">${dl}</div><div class="s">submissions and entries</div></div><div class="stat"><div class="k">Open for calls</div><div class="v" style="font-size:16px">${slotStr(freeSlots(1)[0])}</div><div class="s">next free slot</div></div>`;
+  const next=calItems().filter(e=>e.d>=0&&e.k!=='internal').sort((a,b)=>a.d-b.d||a.h-b.h).slice(0,4);
+  side=`<div class="split"><div class="card"><div class="hd"><b>Coming up</b></div><div class="bd">${next.map(e=>`<div class="q" style="padding:7px 0"><div class="dot" style="background:${KCOL[e.k]}"></div><div class="t"><b>${esc(e.t)}</b><div class="sub">${e.d===0?'Today':dstr(day(e.d))} · ${e.k==='follow'?'follow-up':hm(e.h)}</div></div></div>`).join('')}</div></div><div class="card"><div class="hd"><b>Open slots for calls</b><span>offered in AI drafts</span></div><div class="bd">${freeSlots(3).map(s=>`<div class="q" style="padding:7px 0"><div class="dot" style="background:var(--moss)"></div><div class="t">${slotStr(s)}</div></div>`).join('')}</div></div></div>`}
+ else{const v=mcal.filter(inR);const posts=v.filter(e=>['ig','fb','tt'].includes(e.k));const wait=posts.filter(e=>e.st==='draft'||e.st==='prepared').length;const gaps=[...Array(14)].map((_,i)=>lo+i).filter(o=>o>=0&&day(o).getDay()%6!==0&&!mcal.some(e=>['ig','fb','tt'].includes(e.k)&&e.d===o)).length;
+  lede='Everything that puts the studio in front of people, two weeks across: posts by platform, ad flights, press pitches, award deadlines and events. Approving a draft in Content studio places it here; gaps show where nothing is planned.';
+  stats=`<div class="stat good"><div class="k">Posts planned</div><div class="v">${posts.length}</div><div class="s">Instagram, Facebook, TikTok</div></div><div class="stat ${wait?'warn':''}"><div class="k">Waiting for you</div><div class="v">${wait}</div><div class="s">drafts to approve</div></div><div class="stat"><div class="k">Pitches & entries</div><div class="v">${v.filter(e=>['press','award'].includes(e.k)).length}</div><div class="s">press, awards, events</div></div><div class="stat ${gaps>4?'warn':''}"><div class="k">Quiet weekdays</div><div class="v">${gaps}</div><div class="s">no post planned yet</div></div>`;
+  side=`<div class="card"><div class="hd"><b>Status</b></div><div class="bd"><span class="lg"><i style="background:var(--cedar)"></i>Posted / planned (solid)</span><span class="lg"><i style="background:#fff;border:1px dashed var(--cedar)"></i>Draft waiting for your approval (dashed)</span><span class="lg"><i style="background:var(--amber)"></i>Ad running across days</span></div></div>`}
+ return `<p class="lede">${lede}</p><div class="g4">${stats}</div>
+ <div class="card"><div class="hd" style="flex-wrap:wrap;gap:8px"><b>${CALV==='studio'?'Studio calendar':'Marketing calendar'}</b>${tabs}</div>${calHTML()}</div>${side}
+ <div class="note">Connects to Google or Outlook calendar${CALV==='marketing'?', and to Meta and TikTok for scheduled posts':''}. Every item here is illustrative.</div>`};
 
 // overrides for existing Phase 1 screens
 V.leads=()=>{const open=opps.filter(o=>o.st==='new').sort((a,b)=>b.fit-a.fit);const c=cut('opps',open.slice().sort((x,y)=>x.age-y.age),6);const bySig={};open.forEach(o=>bySig[o.signal]=(bySig[o.signal]||0)+1);
@@ -1011,14 +1077,70 @@ function asstAnswer(q){const s=q.toLowerCase();const p=findPerson(q);const btn=(
  return `I can help with follow-ups, drafting emails and texts, your calendar, opportunities and proposals, inquiries, awards and content. Try “who should I follow up with this week?” or “draft a text to Priya”.`}
 function asstAsk(q){q=(q||'').trim();if(!q)return;ASST.turns.push({r:'u',c:q},{r:'a',c:'<span class="sub">Reading your contacts and calendar…</span>'});paintAsst();setTimeout(()=>{ASST.turns[ASST.turns.length-1].c=asstAnswer(q);paintAsst()},450)}
 
+// ---------- GUIDED WALKTHROUGH: drives the real demo, one thing at a time ----------
+const closeAll=()=>{$('#insp').classList.remove('open');if(ASST.open){ASST.open=false;paintAsst()}};
+const TOUR=[
+ {at:()=>{go('welcome')},target:null,t:'Welcome, Daria',b:'This short tour walks through Studio OS in the order of the proposal: <b>Phase 1 Growth</b> first, then a quick look at Phase 2 and 3. It clicks through the real screens for you. After each screen you can mark it <b>Essential</b>, <b>Nice to have</b> or <b>Not needed</b>, and add a note. Your answers come straight to us.<br><br>Use the arrow keys or the buttons below. You can leave at any time and explore on your own.'},
+ {at:()=>{go('welcome')},target:'.phcards',t:'Three phases',b:'Phase 1 is built in December and live in January. Phases 2 and 3 follow in 2027, so you only take on what you need now.'},
+ {at:()=>{go('growth')},target:'#view .g4',rate:'growth',t:'New business, at a glance',b:'How booked the first quarter is, the likely fees in your pipeline, follow-ups due and new opportunities. It is all worked out from your inbox, calendar and pipeline, so nobody keeps a spreadsheet.'},
+ {at:()=>{go('growth')},target:'#view .split',t:'Where the work is',b:'The pipeline by stage, weighted by how likely each project is to sign, and the last 90 days from inquiry to signed work.'},
+ {at:()=>{go('crm')},target:'#view .split .card',rate:'crm',t:'Everyone in one place',b:'Clients, collaborators and leads, with every email, text, call, DM and note. This chart shows who is <b>waiting on a reply from you</b>, longest first.'},
+ {at:()=>{go('crm')},target:'#view .card:nth-of-type(2)',t:'Tags, types and search',b:'Filter by clients, collaborators or leads, or by tags you choose, like <i>Multiplex</i>, <i>Prefab</i> or <i>Hot</i>. Each row shows the last message and lets you email or text straight from the list.'},
+ {at:()=>{go('crm');openContact('P8')},target:'#insp',t:'A contact, with the whole conversation',b:'The Reids found you through Dezeen. You see their story, their tags and every message in order. From here you can email, text, log a call, add a note or book a call.'},
+ {at:()=>{go('crm');openCompose('P8','email','reply');CMP.slots=true;cmpDraft()},target:'#insp',t:'Replies drafted in your voice',b:'Telaia AI drafts the reply from their last message and your work. Here it mentions The Nest, because they have the same island access problem. It also offers two open times from your calendar. Choose a <b>purpose</b> and a <b>tone</b>, edit anything, then send. <b>Nothing goes out until you press Send.</b> Texts work the same way.'},
+ {at:()=>{CALV='studio';CALW=0;go('calendar')},target:'.tl2',rate:'calendar',t:'Your next two weeks',b:'Days run across the top, with one row for calls, meetings, site visits, follow-ups and deadlines. Follow-ups from the pipeline appear on their own, and booking a call from a contact takes the first free slot. Today is outlined.'},
+ {at:()=>{CALV='marketing';CALW=0;go('calendar')},target:'.tl2',t:'The marketing calendar',b:'The same view for getting the studio seen: posts by platform, the ad running across the fortnight, press pitches, award deadlines and events. <b>Dashed</b> items are drafts waiting for your approval. Approve one in Content studio and it turns solid here. Empty weekdays show where nothing is planned.'},
+ {at:()=>{go('leads')},target:'#view .split .card',rate:'leads',t:'Opportunities before there is a brief',b:'Rezonings, permit applications, multiplex-zoned lots changing hands and public tenders, each scored for how well it fits your work. You choose the areas and project types it watches.'},
+ {at:()=>{go('leads');openOpp('O-11')},target:'#insp',t:'Make the proposal stand out, together',b:'Open an opportunity and you get suggestions on what will set your proposal apart. Each one draws on your own projects and fee history. Mark the ones to use and give each an owner. An outline and team notes keep you and your team working in one place.'},
+ {at:()=>{go('network')},target:'#view .card',rate:'network',t:'Relationships that bring work',b:'Past clients, builders and engineers, with how long since you last spoke. Red means it has been longer than usual. Each one has a reason to get in touch and a check-in drafted for you.'},
+ {at:()=>{go('inquiries')},target:'.pipe',rate:'inquiries',t:'Inquiries that never go cold',b:'Instagram DMs, the website form and email arrive here as conversations, scored for fit, with a reply drafted. You can see at a glance what is new, replied, booked and at proposal.'},
+ {at:()=>{go('media')},target:'#view .card',rate:'media',t:'Media, awards and events',b:'The editors who covered The Nest, the award deadlines coming up, and events worth attending. Pitches and award entries can be drafted for you.'},
+ {at:()=>{CALV='studio';go('content')},target:'.tiles .post',rate:'content',t:'Content, in your voice',b:'Posts and ads drafted from your project photos. Instagram and Facebook post once you approve. TikTok posts are prepared for you to publish.'},
+ {at:()=>{go('growth');ASST.open=true;paintAsst()},target:'.asst-panel',t:'Ask anything',b:'This assistant is on every screen. It shows what needs a decision today, and you can just ask it a question.'},
+ {at:()=>{go('growth');ASST.open=true;ASST.turns=[];paintAsst();asstAsk('Who should I follow up with this week?')},wait:650,target:'.asst-panel',t:'Like this',b:'Ask “who should I follow up with this week?” and you get a short list, most urgent first, each with a draft one tap away. You can also ask “how is Q1 looking?”, “what’s on my calendar?” or “draft a text to Priya”.'},
+ {at:()=>{ASST.turns=[];go('projects')},target:'#view .card',rate:'projects',t:'Phase 2: projects and money',b:'When the new work starts, Phase 2 follows each project by stage, compares fees with actual progress, raises invoices, and tracks permits and consultants. A quick look now, and the rest is there to explore.'},
+ {at:()=>{V.fees.tab='learn';go('fees')},target:'#view .card',rate:'fees',t:'What to charge next time',b:'Your past projects show where fees ran over, phase by phase and by project type, so the next proposal is priced from real numbers.'},
+ {at:()=>{go('library')},target:'#view .card',rate:'library',t:'Phase 3: the studio library',b:'Suppliers, materials and specs in one place. They feed each project and the client’s selections.'},
+ {at:()=>{go('feedback')},target:'#view .card',t:'Your feedback',b:'Everything you marked is here and has already been shared with us. Every other screen has the same box at the bottom, so carry on exploring and add notes wherever something is missing.'},
+ {at:()=>{go('feedback')},target:null,t:'Thank you',b:'That’s the tour. Everything in the demo is clickable, so try drafting a message, booking a call or asking the assistant a question.<br><br>We’ll go through your notes together on Friday. You can restart the tour any time from the <b>Guided tour</b> button at the top.'},
+];
+let TS={on:false,i:0};
+window.__TOURLEN__=TOUR.length;
+function tourStart(i){TS={on:true,i:i||0};document.body.classList.add('touring');if(!$('#tour')){const d=document.createElement('div');d.id='tour';d.innerHTML='<div class="tourhole"></div><div class="tourcard" role="dialog" aria-live="polite"></div>';document.body.appendChild(d)}tourGo(TS.i)}
+function tourEnd(){TS.on=false;const t=$('#tour');if(t)t.remove();document.body.classList.remove('touring');closeAll();try{localStorage.setItem('dss-tour','done')}catch(e){}render()}
+function tourGo(i){if(i<0||i>=TOUR.length)return;TS.i=i;window.__TOURN__=i;const s=TOUR[i];closeAll();ASST.turns=s.at.toString().includes('asstAsk')?ASST.turns:[];s.at();window.scrollTo(0,0);
+ const card=$('#tour .tourcard');const f=s.rate?(FB[s.rate]||{}):null;
+ card.innerHTML=`<div class="tc-top"><span class="sub">${i+1} of ${TOUR.length}</span><button class="lnk" onclick="tourEnd()">Exit tour</button></div><div class="tc-bar"><b style="width:${(i+1)/TOUR.length*100}%"></b></div><h3>${s.t}</h3><p>${s.b}</p>
+ ${s.rate?`<div class="tc-rate"><div class="sub">Your take on this screen</div><div class="opts">${['Essential','Nice to have','Not needed'].map(o=>`<button class="opt ${f.r===o?'on':''}" onclick="tourRate('${s.rate}','${o}')">${o}</button>`).join('')}</div><textarea class="ta" rows="2" placeholder="Anything missing? (optional)" oninput="note('${s.rate}',this.value)">${f.n?esc(f.n):''}</textarea></div>`:''}
+ <div class="tc-nav"><button class="btn ghost" onclick="tourGo(${i-1})" ${i===0?'disabled':''}>Back</button>${i<TOUR.length-1?`<button class="btn" onclick="tourGo(${i+1})">Next</button>`:`<button class="btn" onclick="tourEnd()">Finish</button>`}</div>`;
+ setTimeout(tourPlace,s.wait||260)}
+function tourRate(id,o){FB[id]=FB[id]||{};FB[id].r=FB[id].r===o?null:o;saveFB();$('#tour .tc-rate .opts').innerHTML=['Essential','Nice to have','Not needed'].map(x=>`<button class="opt ${FB[id].r===x?'on':''}" onclick="tourRate('${id}','${x}')">${x}</button>`).join('')}
+function tourPlace(){if(!TS.on)return;const s=TOUR[TS.i];const hole=$('#tour .tourhole'),card=$('#tour .tourcard');const vw=innerWidth,vh=innerHeight,M=10;
+ const el=s.target?document.querySelector(s.target):null;window.__TOURTARGET__=!!el;
+ if(!el){hole.style.display='none';card.className='tourcard center';card.style.cssText='';return}
+ if(!el.closest('#insp')&&!el.closest('.asst-panel')){const r0=el.getBoundingClientRect();if(r0.top<70||r0.bottom>vh*0.55)window.scrollTo(0,Math.max(0,scrollY+r0.top-(vw<760?70:90)))}
+ const r=el.getBoundingClientRect();const top=Math.max(4,r.top-6),left=Math.max(4,r.left-6),bottom=Math.min(vh-4,r.bottom+6),right=Math.min(vw-4,r.right+6);
+ hole.style.display='block';Object.assign(hole.style,{top:top+'px',left:left+'px',width:(right-left)+'px',height:Math.max(20,bottom-top)+'px'});
+ if(vw<760){card.className='tourcard sheet';card.style.cssText='';return}
+ card.className='tourcard';const cw=Math.min(380,vw-2*M);card.style.width=cw+'px';const ch=card.offsetHeight;let x,y;
+ const tall=bottom-top>vh*0.6||right-left>vw*0.75&&bottom-top>vh*0.45;
+ if(tall&&(left-M>=cw+M||vw-right>=cw+M)){x=left-M>=cw+M?left-cw-M:right+M;y=Math.min(vh-ch-M,Math.max(M,top))}
+ else if(vh-bottom>=ch+M){y=bottom+M;x=Math.min(vw-cw-M,Math.max(M,left))}
+ else if(top>=ch+M){y=top-ch-M;x=Math.min(vw-cw-M,Math.max(M,left))}
+ else{y=vh-ch-M;x=vw-cw-M} // no room above or below: bottom-right, over the quietest part (weekends, table tails)
+ card.style.left=x+'px';card.style.top=Math.max(M,y)+'px'}
+addEventListener('resize',()=>TS.on&&tourPlace());
+addEventListener('keydown',e=>{if(!TS.on)return;if(e.target.tagName==='TEXTAREA')return;if(e.key==='ArrowRight')tourGo(TS.i+1);else if(e.key==='ArrowLeft')tourGo(TS.i-1);else if(e.key==='Escape')tourEnd()});
+
 // ---------- SHELL ----------
 function navHTML(){const q=needs().length;return NAV.map(([g,items])=>`<div class="navgrp">${g}</div>`+items.map(([id,l])=>`<button class="navbtn ${cur===id?'on':''}" onclick="go('${id}')"><span>${l}</span>${id==='today'&&q?`<span class="badge">${q}</span>`:''}</button>`).join('')).join('')}
 function go(id){cur=id;TRUNC={};history.replaceState(null,'','#'+id);$('#nav').classList.remove('open');document.body.style.overflow='';$('#insp').classList.remove('open');render();window.scrollTo(0,0)}
-function render(){const label=NAV.flatMap(([g,i])=>i.map(x=>[g,...x])).find(x=>x[1]===cur)||['Start','welcome','Welcome'];$('#crumb').textContent=label[0];$('#title').textContent=label[2];const ph=PHASES[label[0]];$('#view').innerHTML=(ph?`<div class="phasebar"><b>${label[0]}</b><span>${label[2]}</span><span class="when">${ph.when}</span></div>`:'')+V[cur]()+(ph?fbHTML(cur,label[2]):'');$('#nav').innerHTML=navHTML();paintAsst()}
+function render(){const label=NAV.flatMap(([g,i])=>i.map(x=>[g,...x])).find(x=>x[1]===cur)||['Start','welcome','Welcome'];$('#crumb').textContent=label[0];$('#title').textContent=label[2];const ph=PHASES[label[0]];$('#view').innerHTML=(ph?`<div class="phasebar"><b>${label[0]}</b><span>${label[2]}</span><span class="when">${ph.when}</span></div>`:'')+V[cur]()+(ph?fbHTML(cur,label[2]):'');$('#nav').innerHTML=navHTML();paintAsst();if(cur==='calendar'){const t=document.querySelector('.tl2-day.today'),sc=document.querySelector('.tl2')&&document.querySelector('.tl2').parentElement;if(t&&sc&&sc.scrollWidth>sc.clientWidth+4)sc.scrollLeft=Math.max(0,t.offsetLeft-140)}}
 $('#burger').onclick=()=>{const n=$('#nav');n.classList.toggle('open');document.body.style.overflow=n.classList.contains('open')?'hidden':''};
 if(!V[cur])cur='welcome';
 window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(V[h]&&h!==cur){cur=h;TRUNC={};render()}});
 render();
+if(/[?&]tour=1/.test(location.search))setTimeout(()=>tourStart(0),300);
 </script>
 </body>
 </html>
