@@ -230,6 +230,8 @@ body.touring .asst-fab{display:none}
 .vf{align-items:flex-start;border-bottom:1px solid var(--line);padding:9px 0}.vf.done b{text-decoration:line-through;opacity:.6}.vf input{margin-top:3px}
 .dotk{display:inline-block;width:10px;height:10px;border-radius:50%}.acc td,.acc th{vertical-align:top}
 @media(max-width:900px){.secs{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.secs{grid-template-columns:1fr}}
+.jointbox{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:0 0 12px;background:#FAF8F2}
+.chans{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 </style>
 </head>
 <body>
@@ -630,7 +632,7 @@ V.welcome=()=>{const rated=Object.values(FB).filter(f=>f.r||f.n).length;const sc
  <div class="card tourinv"><div class="bd"><div><b>New here? Take the guided tour</b><div class="sub">About 6 minutes. It clicks through each screen for you and lets you rate it as you go.</div></div><button class="btn" onclick="tourStart(0)">Start the tour</button></div></div>
  <div class="card who"><div class="bd"><label for="who">Your name</label><input id="who" placeholder="So we know who's speaking" value="${esc(WHO)}" oninput="setWho(this.value)"></div></div>
  <div class="phcards">
-  <div class="phcard"><div class="n">Phase 1 · build in December</div><h3>Growth</h3><div class="sub">Winning new commissions</div><ul><li>Contacts, emails and texts, drafted by AI</li><li>Calendar, follow-ups and an assistant to ask</li><li>Opportunities across your eight sectors, with a shared proposal workspace</li><li>Local visibility: being found by Vancouver clients</li><li>Media, awards and events</li><li>Content studio, in the studio’s voice and yours</li><li>Relationships</li></ul><button class="btn" onclick="go('growth')">Start here</button></div>
+  <div class="phcard"><div class="n">Phase 1 · build in December</div><h3>Growth</h3><div class="sub">Winning new commissions</div><ul><li>Contacts, emails and texts, drafted by AI</li><li>Calendar, follow-ups and an assistant to ask</li><li>Opportunities across your sectors, plus international, with joint bids and a shared proposal workspace</li><li>Ongoing outreach to people who’ve already seen your work</li><li>Local visibility, plus recommendations for your website update</li><li>Media, awards and events</li><li>Content studio, in your voice, at the pace you set, drafted from your Drive</li><li>Relationships</li></ul><button class="btn" onclick="go('growth')">Start here</button></div>
   <div class="phcard"><div class="n">Phase 2 · early 2027</div><h3>Projects & money</h3><div class="sub">When new work starts</div><ul><li>Projects by stage, with client view</li><li>Files and sharing, on your Drive structure</li><li>Fees vs actual progress, and what to charge next time</li><li>Invoices and cash flow</li><li>Permits, consultants, plan reader</li></ul><button class="btn ghost" onclick="go('projects')">Open phase 2</button></div>
   <div class="phcard"><div class="n">Phase 3 · later in 2027</div><h3>Studio library</h3><div class="sub">One source for materials</div><ul><li>Suppliers, materials and specs in one place</li><li>Feeds each project</li><li>Client selections and approvals</li></ul><button class="btn ghost" onclick="go('library')">Open phase 3</button></div>
  </div>
@@ -1119,16 +1121,16 @@ NEWOPP.forEach(([id,what,where,who,signal,fit,age,sec,tags,desc,angles])=>opps.p
  angles:angles.map(([t,w],i)=>({id:id+'-a'+i,t,who:w,st:i<1?'use':'idea'})),outline:['Why us, in one page','Site and brief read','Approach and phases','Fee and schedule','Team and references'].map((t,i)=>({t,who:i%2?'PA':'DS',done:false})),comments:[]}));
 let OPPSEC='all';
 function toggleSector(k){const s=SEC(k);s.on=!s.on;if(OPPSEC===k&&!s.on)OPPSEC='all';TRUNC={};render()}
-V.leads=()=>{const live=opps.filter(o=>o.st==='new'&&SEC(o.sec).on);const open=live.filter(o=>OPPSEC==='all'||o.sec===OPPSEC).sort((a,b)=>b.fit-a.fit);
+V.leads=()=>{const live=opps.filter(o=>o.st==='new'&&SEC(o.sec).on&&regOk(o));const open=live.filter(o=>OPPSEC==='all'||o.sec===OPPSEC).sort((a,b)=>b.fit-a.fit);
  const c=cut('opps',open.slice().sort((x,y)=>x.age-y.age),8);const work=opps.filter(o=>o.outline.some(s=>s.done)||o.comments.length);
  const bySec=SECTORS.filter(s=>s.on).map(s=>({l:s.l,v:live.filter(o=>o.sec===s.k).length})).filter(x=>x.v);
- return `<p class="lede">Projects likely to need an architect, spotted before anyone goes looking, across the eight kinds of work you want more of. Switch a sector off and it stops looking there. Open any opportunity to see why it fits and work on the proposal together.</p>
- <div class="card"><div class="hd"><b>What you’re looking for</b><span>from your notes · tap to switch on or off</span></div><div class="bd"><div class="secs">${SECTORS.map(s=>`<button class="sec ${s.on?'on':''}" onclick="toggleSector('${s.k}')" title="${esc(s.d)}"><b>${s.l}</b><span>${esc(s.d)}</span></button>`).join('')}</div></div></div>
+ return `<p class="lede">Projects likely to need an architect, spotted before anyone goes looking, across the kinds of work you want more of, with international work as a lower priority. Switch a sector off and it stops looking there. Open any opportunity to see why it fits and work on the proposal together.</p>
+ <div class="card"><div class="hd"><b>What you’re looking for</b><span>from your notes · tap to switch on or off</span></div><div class="bd"><div class="secs">${SECTORS.map(s=>`<button class="sec ${s.on?'on':''}" onclick="toggleSector('${s.k}')" title="${esc(s.d)}"><b>${s.l}</b><span>${esc(s.d)}</span></button>`).join('')}</div></div></div>${regHTML()}
  <div class="split"><div class="card"><div class="hd"><b>Best fits right now</b><span>fit score · tap to open</span></div><div class="bd">${hbars(open.slice(0,6).map(o=>({l:o.what,sub:SEC(o.sec).l+' · '+o.where,v:o.fit,t:String(o.fit),c:o.fit>=84?'var(--moss)':'var(--cedar)',click:`openOpp('${o.id}')`})),100)}</div></div>
  <div class="card"><div class="hd"><b>Open opportunities by sector</b><span>${live.length} open</span></div><div class="bd">${hbars(bySec.map(x=>({l:x.l,v:x.v,t:String(x.v),c:'var(--cedar)'})))}
   ${work.length?`<div style="margin-top:12px"><b style="font-size:13px">Proposals in progress</b>${work.map(o=>{const d=o.outline.filter(s=>s.done).length;return `<div style="margin-top:8px;cursor:pointer" onclick="openOpp('${o.id}')"><div style="display:flex;justify-content:space-between;font-size:13px"><span>${esc(o.what)}</span><span class="num">${d}/${o.outline.length}</span></div>${meter(d,o.outline.length)}</div>`}).join('')}</div>`:''}</div></div></div>
  <div class="card"><div class="hd" style="flex-wrap:wrap;gap:8px"><b>Opportunities</b><span>newest first</span></div><div class="bd" style="padding-bottom:0"><div class="tabs"><button class="tab ${OPPSEC==='all'?'on':''}" onclick="OPPSEC='all';TRUNC={};render()">All</button>${SECTORS.filter(s=>s.on).map(s=>`<button class="tab ${OPPSEC===s.k?'on':''}" onclick="OPPSEC='${s.k}';TRUNC={};render()">${s.l} · ${live.filter(o=>o.sec===s.k).length}</button>`).join('')}</div></div>
- <div class="scroll"><table class="dt"><thead><tr><th>Opportunity</th><th>Signal</th><th class="num">Fit</th><th></th></tr></thead><tbody>${c.rows.map(o=>`<tr class="click" onclick="openOpp('${o.id}')"><td><b>${esc(o.what)}</b><div class="sub">${SEC(o.sec).l} · ${esc(o.where)} · ${esc(o.who)}</div><div class="tgs sm">${o.tags.slice(0,3).map(chip).join('')}</div></td><td>${esc(o.signal)}<div class="sub">${o.age} days ago</div></td><td class="num"><span class="pill ${o.fit>=84?'moss':''}">${o.fit}</span></td><td onclick="event.stopPropagation()"><button class="btn" onclick="addOpp('${o.id}')">Add to pipeline</button></td></tr>`).join('')||'<tr><td colspan="4" class="sub">Nothing open in this sector right now.</td></tr>'}</tbody></table></div>${moreBtn('opps',c.hidden)}</div>
+ <div class="scroll"><table class="dt"><thead><tr><th>Opportunity</th><th>Signal</th><th class="num">Fit</th><th></th></tr></thead><tbody>${c.rows.map(o=>`<tr class="click" onclick="openOpp('${o.id}')"><td><b>${esc(o.what)}</b><div class="sub">${SEC(o.sec).l} · ${esc(o.where)} · ${esc(o.who)}</div><div class="tgs sm">${o.big&&REG==='joint'?'<span class="tg" style="background:#E8E2CC">Joint bid</span>':''}${o.tags.slice(0,3).map(chip).join('')}</div></td><td>${esc(o.signal)}<div class="sub">${o.age} days ago</div></td><td class="num"><span class="pill ${o.fit>=84?'moss':''}">${o.fit}</span></td><td onclick="event.stopPropagation()"><button class="btn" onclick="addOpp('${o.id}')">Add to pipeline</button></td></tr>`).join('')||'<tr><td colspan="4" class="sub">Nothing open in this sector right now.</td></tr>'}</tbody></table></div>${moreBtn('opps',c.hidden)}</div>
  <div class="card"><div class="hd"><b>Where it looks, by sector</b></div><div class="scroll"><table class="dt"><tbody>${SECTORS.map(s=>`<tr><td><b>${s.l}</b></td><td>${esc(s.src)}</td></tr>`).join('')}</tbody></table></div></div>
  <div class="note">The sectors are from your notes. Every opportunity, owner and fit score is illustrative. The real version watches the sources above for the regions you choose, from Vancouver to the islands and small towns.</div>`};
 
@@ -1222,6 +1224,75 @@ asstAnswer=function(q){const s=q.toLowerCase();
  if(m&&/opportunit|lead|project|any|find|look/.test(s)){const os=opps.filter(o=>o.sec===m.k&&o.st==='new').sort((a,b)=>b.fit-a.fit);return os.length?`${os.length} open in <b>${m.l}</b>:<ul>${os.slice(0,3).map(o=>`<li><b>${esc(o.what)}</b>, ${esc(o.where)} (fit ${o.fit}) <button class="lnk" onclick="asstClose();openOpp('${o.id}')">open</button></li>`).join('')}</ul>`:`Nothing open in ${m.l} right now. I’ll flag the next one.`}
  return _asstAnswerV6(q)};
 
+// ---------- V8: from the Nov 27 meeting (international, registration, joint bids, warm outreach, posting rhythm, website, data) ----------
+SECTORS.push({k:'intl',l:'International',d:'Lower priority. Residential in Europe and the US first, where fees are higher',on:true,src:'International competitions, open calls, overseas residential inquiries',low:true});
+const NEWOPP8=[
+ ['O-35','Coastal private residence','Comporta, Portugal','Private client','Inquiry via Dezeen feature',72,5,'intl',['International','Residential'],'An overseas client saw The Nest on Dezeen and is looking for an architect for a coastal home.',[['Lead with The Nest: remote site, prefab, fast assembly','DS'],['Offer remote concept design with a local architect of record','PA']]],
+ ['O-36','Cabin retreat, 6 units','Catskills, New York','Hospitality developer','Developer request for proposals',70,9,'intl',['International','Cabins'],'A developer is planning six prefab cabins on a wooded site.',[['Repeatable cabin type, like The Nest, adapted for a US builder','PA']]],
+ ['O-37','Open call: timber housing for artists','Europe','Housing foundation','International competition',66,14,'intl',['International','Competition','Housing'],'An open ideas competition for timber housing with shared studio space.',[['Close to your artists’ housing idea, and a way to develop it','DS']]],
+];
+NEWOPP8.forEach(([id,what,where,who,signal,fit,age,sec,tags,desc,angles])=>opps.push({id,what,where,who,signal,fit,age,st:'new',sec,tags,desc,
+ angles:angles.map(([t,w],i)=>({id:id+'-a'+i,t,who:w,st:i<1?'use':'idea'})),outline:['Why us, in one page','Site and brief read','Approach and phases','Fee and schedule','Team and references'].map((t,i)=>({t,who:i%2?'PA':'DS',done:false})),comments:[]}));
+// larger or institutional projects that need a registered architect until April
+['O-16','O-26','O-27','O-31','O-32','O-34','O-15'].forEach(id=>{const o=opps.find(x=>x.id===id);if(o)o.big=true});
+(()=>{const o=opps.find(x=>x.id==='O-31');o.mine=true;o.joint=true;if(!o.tags.includes('Your bid'))o.tags.unshift('Your bid');o.desc+=' You’re already preparing a bid for this one; we’ll load the real details when you send them.'})();
+let REG='joint';
+const regOk=o=>!o.big||REG!=='hide';
+function setReg(v){REG=v;TRUNC={};render()}
+function regHTML(){const n=opps.filter(o=>o.big&&o.st==='new').length;
+ return `<div class="card regcard"><div class="hd"><b>Until your registration in April</b><span>${n} larger or institutional projects</span></div><div class="bd"><p style="margin:0 0 10px;font-size:13.5px">Until you’re registered, larger projects are held back by size and category. They come back automatically in April, or sooner if you bid jointly with your partner firm.</p>
+ <div class="tabs" style="margin:0">${[['hide','Hide until April'],['joint','Show as joint bids'],['all','Show everything']].map(([k,l])=>`<button class="tab ${REG===k?'on':''}" onclick="setReg('${k}')">${l}</button>`).join('')}</div>
+ <div class="sub" style="margin-top:8px">You choose the limits (size, category, budget) at setup.</div></div></div>`}
+function toggleJoint(id){const o=opps.find(x=>x.id===id);o.joint=!o.joint;toast(o.joint?'Set up as a joint proposal with your partner firm':'Back to a studio-only proposal');openOpp(id)}
+const _openOppV7=openOpp;
+openOpp=function(id){_openOppV7(id);const o=opps.find(x=>x.id===id);const b=$('#ibody');if(!b)return;
+ const box=document.createElement('div');box.className='jointbox';
+ box.innerHTML=`${o.mine?'<div class="pill moss" style="margin-bottom:8px">Your bid · details to come</div>':''}${o.big?`<div class="sub" style="margin-bottom:6px">Larger or institutional project: before April this needs a joint proposal with a registered partner.</div>`:''}
+ <label class="chk" style="padding:0"><input type="checkbox" ${o.joint?'checked':''} onchange="toggleJoint('${o.id}')"><span><b>Joint proposal with your partner firm</b><span class="sub" style="display:block">Shared outline and notes, a split of roles and fees, both studios’ references. They see only this proposal.</span></span></label>`;
+ b.prepend(box)};
+
+// warm outreach: people who have already seen the work
+let WARM=[
+ {id:'W1',who:'Reader who wrote in after the Dwell feature',src:'Email · The Nest',ago:21,st:'todo'},
+ {id:'W2',who:'Developer who followed after the Dezeen article',src:'Instagram · followed and saved 3 posts',ago:12,st:'todo'},
+ {id:'W3',who:'Couple who commented “dream cabin” on The Nest reel',src:'Instagram comment',ago:9,st:'todo'},
+ {id:'W4',who:'Juror contact from the Architizer shortlist',src:'Awards',ago:40,st:'todo'},
+ {id:'W5',who:'Western Living reader asking about multiplexes',src:'Website form, no reply yet',ago:6,st:'todo'},
+];
+function warmDraft(){WARM.filter(w=>w.st==='todo').slice(0,5).forEach(w=>w.st='drafted');toast('5 check-ins drafted in your voice · waiting for you to send');render()}
+function warmImport(){toast('Send us your developer list and it lands here, ready for outreach')}
+function warmHTML(){const todo=WARM.filter(w=>w.st==='todo').length;
+ return `<div class="card warm"><div class="hd"><b>People who’ve already seen your work</b><span>ongoing outreach · a few a week</span></div><div class="bd">
+ <p style="margin:0 0 8px;font-size:13.5px">The press brought attention, but not many follow-ups. This list gathers everyone who has already reacted to the work: readers, followers, commenters, award contacts and your developer list. A few warm notes go out each week, so the momentum turns into conversations.</p>
+ ${WARM.map(w=>`<div class="q" style="padding:7px 0"><div class="dot" style="background:${w.st==='todo'?'var(--amber)':'var(--moss)'}"></div><div class="t"><b>${esc(w.who)}</b><div class="sub">${esc(w.src)} · ${w.ago} days ago</div></div>${w.st==='todo'?'':'<span class="pill moss">drafted</span>'}</div>`).join('')}
+ <div class="acts" style="margin-top:8px"><button class="btn" onclick="warmDraft()" ${todo?'':'disabled'}>Draft this week’s check-ins</button><button class="btn ghost" onclick="warmImport()">Add your developer list</button></div></div></div>`}
+const _networkV7=V.network;V.network=()=>{const h=_networkV7();const i=h.indexOf('</p>');return i>0?h.slice(0,i+4)+warmHTML()+h.slice(i+4):warmHTML()+h};
+
+// channels on contacts
+const _crmV7=V.crm;
+V.crm=()=>`<div class="card"><div class="bd chans"><b style="font-size:13px">Channels</b><span class="pill moss">Email · connected</span><span class="pill">Phone & texts · connect when ready</span><span class="pill">WhatsApp · connect when ready</span><span class="pill">Instagram DMs · connect when ready</span></div></div>`+_crmV7();
+
+// content: posting rhythm, Drive source, sketch prep
+let PPW=3;
+function setPPW(d){PPW=Math.max(1,Math.min(7,PPW+d));render()}
+const DRIVEF=[['The Nest','photos, sketches, film clips'],['Renfrew Ridge','photos, site visits'],['Calm Waters Retail','photos, drawings'],['Ireland Canada Place','photos'],['Studio life','team, models, materials']];
+const _contentV7=V.content;
+V.content=()=>`<div class="card rhythm"><div class="hd"><b>Posting rhythm</b><span>you set the pace</span></div><div class="bd"><div class="split" style="margin:0">
+ <div><div style="display:flex;align-items:center;gap:10px"><button class="btn ghost" onclick="setPPW(-1)" aria-label="Fewer posts">−</button><b style="font-size:22px">${PPW}</b><span>posts a week</span><button class="btn ghost" onclick="setPPW(1)" aria-label="More posts">+</button></div>
+ <ul style="margin:10px 0 0;padding-left:18px;font-size:13.5px"><li>Organic, not algorithm-driven: a steady pace, no trend-chasing, nothing goes out until you approve it.</li><li>It learns what works: which stories, formats and times get saves, shares and inquiries, not just likes.</li><li>Sketches and scans are cleaned up and cropped for you, so editing doesn’t eat your time.</li></ul></div>
+ <div><b style="font-size:13px">Drafted from your Google Drive</b><div class="sub" style="margin-bottom:4px">Studio content › one folder per project</div>${DRIVEF.map(([f,w])=>`<div class="q" style="padding:5px 0"><div class="dot" style="background:var(--cedar)"></div><div class="t">${esc(f)}<div class="sub">${w}</div></div></div>`).join('')}</div></div></div></div>`+_contentV7();
+
+// website recommendations on Local visibility
+const WEBREC=[['A page for every project and sector','Each with the place and project type in the title, e.g. “Prefab island cabin, Keats Island, BC”.'],['Titles and descriptions written for search','Every page gets a clear title and a short description that says what you do and where.'],['Tell Google you’re an architecture studio','Structured data with your studio name, address, service areas and projects.'],['Describe every image','Alt text on photos, so image search finds the work too.'],['Connect Google Search Console','See which searches find you and fix pages Google can’t read.'],['Fast on phones','Compressed images and quick pages, since most clients look on their phone.']];
+const _visV7=V.visibility;
+V.visibility=()=>{const h=_visV7();const card=`<div class="card webrec"><div class="hd"><b>For your website update</b><span>visibility, search and metadata</span></div><div class="bd">${WEBREC.map(([t,d],i)=>`<div class="q" style="padding:7px 0"><div class="dot" style="background:var(--moss)"></div><div class="t"><b>${i+1}. ${esc(t)}</b><div class="sub">${esc(d)}</div></div></div>`).join('')}<div class="note" style="margin-top:6px">We’ll send these as a short brief, so your website update starts on the right foundation.</div></div></div>`;
+ const i=h.lastIndexOf('<div class="note">');return i>0?h.slice(0,i)+card+h.slice(i):h+card};
+
+// welcome: data ownership
+const _welcomeV7=V.welcome;
+V.welcome=()=>{const h=_welcomeV7();const card=`<div class="card owndata"><div class="hd"><b>Your data stays yours</b></div><div class="bd"><ul style="margin:0;padding-left:18px;font-size:13.5px"><li>Your data is never sold. The contract says so.</li><li>It sits on your own protected server, not shared with anyone else.</li><li>If we ever part ways you can disconnect everything, switch the server off, or take a full export.</li></ul></div></div>`;
+ const i=h.lastIndexOf('<div class="note">');return i>0?h.slice(0,i)+card+h.slice(i):h+card};
+
 const TOUR=[
  {at:()=>{go('welcome')},target:null,t:'Welcome, Daria',b:'This short tour walks through Studio OS in the order of the proposal: <b>Phase 1 Growth</b> first, then a quick look at Phase 2 and 3. It clicks through the real screens for you. After each screen you can mark it <b>Essential</b>, <b>Nice to have</b> or <b>Not needed</b>, and add a note. Your answers come straight to us.<br><br>Use the arrow keys or the buttons below. You can leave at any time and explore on your own.'},
  {at:()=>{go('welcome')},target:'.phcards',t:'Three phases',b:'Phase 1 is built in December and live in January. Phases 2 and 3 follow in 2027, so you only take on what you need now.'},
@@ -1235,12 +1306,16 @@ const TOUR=[
  {at:()=>{CALV='marketing';CALW=0;go('calendar')},target:'.tl2',t:'The marketing calendar',b:'The same view for getting the studio seen: posts by platform, the ad running across the fortnight, press pitches, award deadlines and events. <b>Dashed</b> items are drafts waiting for your approval. Approve one in Content studio and it turns solid here. Empty weekdays show where nothing is planned.'},
  {at:()=>{go('leads')},target:'#view .split .card',rate:'leads',t:'Opportunities before there is a brief',b:'Rezonings, permit applications, multiplex-zoned lots changing hands and public tenders, each scored for how well it fits your work. You choose the areas and project types it watches.'},
  {at:()=>{go('leads');openOpp('O-11')},target:'#insp',t:'Make the proposal stand out, together',b:'Open an opportunity and you get suggestions on what will set your proposal apart. Each one draws on your own projects and fee history. Mark the ones to use and give each an owner. An outline and team notes keep you and your team working in one place.'},
- {at:()=>{closeAll();OPPSEC='all';go('leads')},target:'.secs',t:'The work you asked for',b:'Your eight sectors, from remote cabins to childcare, wellness, Indigenous community projects and island arts centres. Each one watches its own sources, and you can switch any off.'},
+ {at:()=>{closeAll();OPPSEC='all';go('leads')},target:'.secs',t:'The work you asked for',b:'Your sectors, from remote cabins to childcare, wellness, Indigenous community projects and island arts centres, plus International as a lower priority (Europe and the US first). Each one watches its own sources, and you can switch any off.'},
+ {at:()=>{go('leads')},target:'.regcard',t:'Until April',b:'Before your registration, larger and institutional projects are held back. You can hide them, or keep them visible as joint bids with your partner firm. They come back automatically in April.'},
+ {at:()=>{go('leads');openOpp('O-31')},target:'#insp',t:'Joint proposals',b:'The Sunshine Coast family and child centre is marked as your bid. Any proposal can become a joint one with your partner firm: shared outline and notes, roles and fees split, and they see only that proposal.'},
  {at:()=>{go('visibility')},target:'#view .g4',rate:'visibility',t:'Known worldwide, hard to find locally',b:'You raised this: The Nest has international coverage, but a Vancouver client searching for an architect can’t find the studio. This screen measures the gap, real coverage against local searches, and gives the steps to close it, ticked off as they’re done.'},
- {at:()=>{go('network')},target:'#view .card',rate:'network',t:'Relationships that bring work',b:'Past clients, builders and engineers, with how long since you last spoke. Red means it has been longer than usual. Each one has a reason to get in touch and a check-in drafted for you.'},
+ {at:()=>{closeAll();go('network')},target:'.warm .hd',rate:'network',t:'People who’ve already seen your work',b:'The press brought attention but not many follow-ups. Everyone who reacted to the work, plus your developer list, gathers here, and a few warm check-ins go out each week, drafted in your voice for you to send.'},
+ {at:()=>{go('network')},target:'.warm + .card .hd',t:'Relationships that bring work',b:'Past clients, builders and engineers, with how long since you last spoke. Red means it has been longer than usual. Each one has a reason to get in touch and a check-in drafted for you.'},
  {at:()=>{go('inquiries')},target:'.pipe',rate:'inquiries',t:'Inquiries that never go cold',b:'Instagram DMs, the website form and email arrive here as conversations, scored for fit, with a reply drafted. You can see at a glance what is new, replied, booked and at proposal.'},
  {at:()=>{go('media')},target:'#view .card',rate:'media',t:'Media, awards and events',b:'The editors who covered The Nest, the award deadlines coming up, and events worth attending. Pitches and award entries can be drafted for you.'},
- {at:()=>{VOICE='studio';go('content')},target:'#view .card',t:'Your voice, not just your photos',b:'Written the way you described: the studio, its collaborators and community first, like Mesura, with your own stories alongside, like Marta and Linah. One site visit becomes a week of photo essays, films and journal pieces, so it takes less of your time.'},
+ {at:()=>{go('content')},target:'.rhythm',t:'At your pace, from your Drive',b:'You set how many posts go out each week. It stays organic: a steady rhythm, nothing posted without your approval. It learns which stories bring saves and inquiries, and it drafts from your project folders in Google Drive.'},
+ {at:()=>{VOICE='studio';go('content')},target:'#view .card:nth-of-type(2)',t:'Your voice, not just your photos',b:'Written the way you described: the studio, its collaborators and community first, like Mesura, with your own stories alongside, like Marta and Linah. One site visit becomes a week of photo essays, films and journal pieces, so it takes less of your time.'},
  {at:()=>{CALV='studio';go('content')},target:'.tiles .post',rate:'content',t:'Content, in your voice',b:'Posts and ads drafted from your project photos. Instagram and Facebook post once you approve. TikTok posts are prepared for you to publish.'},
  {at:()=>{go('growth');ASST.open=true;paintAsst()},target:'.asst-panel',t:'Ask anything',b:'This assistant is on every screen. It shows what needs a decision today, and you can just ask it a question.'},
  {at:()=>{go('growth');ASST.open=true;ASST.turns=[];paintAsst();asstAsk('Who should I follow up with this week?')},wait:650,target:'.asst-panel',t:'Like this',b:'Ask “who should I follow up with this week?” and you get a short list, most urgent first, each with a draft one tap away. You can also ask “how is Q1 looking?”, “what’s on my calendar?” or “draft a text to Priya”.'},
