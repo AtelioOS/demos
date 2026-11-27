@@ -1235,7 +1235,22 @@ NEWOPP8.forEach(([id,what,where,who,signal,fit,age,sec,tags,desc,angles])=>opps.
  angles:angles.map(([t,w],i)=>({id:id+'-a'+i,t,who:w,st:i<1?'use':'idea'})),outline:['Why us, in one page','Site and brief read','Approach and phases','Fee and schedule','Team and references'].map((t,i)=>({t,who:i%2?'PA':'DS',done:false})),comments:[]}));
 // larger or institutional projects that need a registered architect until April
 ['O-16','O-26','O-27','O-31','O-32','O-34','O-15'].forEach(id=>{const o=opps.find(x=>x.id===id);if(o)o.big=true});
-(()=>{const o=opps.find(x=>x.id==='O-31');o.mine=true;o.joint=true;if(!o.tags.includes('Your bid'))o.tags.unshift('Your bid');o.desc+=' You’re already preparing a bid for this one; we’ll load the real details when you send them.'})();
+(()=>{const o=opps.find(x=>x.id==='O-31');Object.assign(o,{what:'Child and family centre, Sunshine Coast',where:'Sunshine Coast',who:'Watch list · no open call yet',signal:'Sunshine Coast Child Care Action Plan',age:2,joint:true,brief:true,
+ tags:['Watch list','Childcare','Indigenous','Real signals'],
+ desc:'No open call yet: we checked BC Bid, CanadaBuys and MERX on Nov 27, 2026. But the signals are real. The Sunshine Coast Child Care Action Plan (January 2026 update) names closer work with shíshálh Nation and Sḵwx̱wú7mesh Úxwumixw as a priority, and Nations across BC have been putting out calls for child and family centres all year. This is the time to get ready, so you can respond when one opens.',
+ angles:[['Build the relationship before there is a call: the action plan makes collaboration with shíshálh Nation and Sḵwx̱wú7mesh Úxwumixw a priority','DS'],['Prepare a child and family centre package now. Recent calls gave three to four weeks to respond','PA'],['Line up your partner firm. Recent calls ask for firms licensed to practise architecture in BC','DS'],['Know the funding rules: Nation-led centres usually follow Indigenous Services Canada’s child and family services capital guide','AI']].map(([t,w],k)=>({id:'O-31-a'+k,t,who:w,st:k<2?'use':'idea'}))})})();
+const O31BRIEF=`<div style="margin-top:10px"><b style="font-size:13px">Recent calls like this in BC</b><div class="sub">All closed. They show what a call asks for and how fast it moves.</div>
+ <ul style="margin:6px 0 0;padding-left:18px;font-size:13px">
+ <li>Kitasoo Xai’xais Nation · Child and Family Wellness Centre, Klemtu · posted late March, closed Apr 17, 2026</li>
+ <li>Tŝilhqot’in National Government · six child and family centres, about 17,000–38,000 sq ft each · licensed BC architects only · closed Apr 22, 2026</li>
+ <li>Shackan Indian Band · Child and Wellness Centre, about 16,000 sq ft · closed Jul 14, 2026</li>
+ <li>Mowachaht/Muchalaht First Nation · Child and Family Wellbeing Centre, Tsaxana · posted Jul 15, closed Aug 5, 2026</li></ul>
+ <b style="font-size:13px;display:block;margin-top:10px">On the Sunshine Coast now</b>
+ <ul style="margin:6px 0 0;padding-left:18px;font-size:13px">
+ <li>A 43-space child care centre opened at O’Shea Place, Gibsons, with more than $2.8M from the ChildCareBC New Spaces Fund</li>
+ <li>56 homes for shíshálh Nation Elders and families are under construction near Selma Park</li>
+ <li>shíshálh Nation runs the mem7iman Child Development Centre, which follows a Reggio Emilia approach</li></ul>
+ <div class="sub" style="margin-top:8px">Studio OS watches BC Bid, CanadaBuys and MERX for “child and family” calls and flags the next one the day it’s posted.</div></div>`;
 let REG='joint';
 const regOk=o=>!o.big||REG!=='hide';
 function setReg(v){REG=v;TRUNC={};render()}
@@ -1247,8 +1262,8 @@ function toggleJoint(id){const o=opps.find(x=>x.id===id);o.joint=!o.joint;toast(
 const _openOppV7=openOpp;
 openOpp=function(id){_openOppV7(id);const o=opps.find(x=>x.id===id);const b=$('#ibody');if(!b)return;
  const box=document.createElement('div');box.className='jointbox';
- box.innerHTML=`${o.mine?'<div class="pill moss" style="margin-bottom:8px">Your bid · details to come</div>':''}${o.big?`<div class="sub" style="margin-bottom:6px">Larger or institutional project: before April this needs a joint proposal with a registered partner.</div>`:''}
- <label class="chk" style="padding:0"><input type="checkbox" ${o.joint?'checked':''} onchange="toggleJoint('${o.id}')"><span><b>Joint proposal with your partner firm</b><span class="sub" style="display:block">Shared outline and notes, a split of roles and fees, both studios’ references. They see only this proposal.</span></span></label>`;
+ box.innerHTML=`${o.brief?'<div class="pill" style="margin-bottom:8px">Watch list · real signals, no open call yet</div>':''}${o.big?`<div class="sub" style="margin-bottom:6px">Larger or institutional project: before April this needs a joint proposal with a registered partner.</div>`:''}
+ <label class="chk" style="padding:0"><input type="checkbox" ${o.joint?'checked':''} onchange="toggleJoint('${o.id}')"><span><b>Joint proposal with your partner firm</b><span class="sub" style="display:block">Shared outline and notes, a split of roles and fees, both studios’ references. They see only this proposal.</span></span></label>${o.brief?O31BRIEF:''}`;
  b.prepend(box)};
 
 // warm outreach: people who have already seen the work
@@ -1308,7 +1323,7 @@ const TOUR=[
  {at:()=>{go('leads');openOpp('O-11')},target:'#insp',t:'Make the proposal stand out, together',b:'Open an opportunity and you get suggestions on what will set your proposal apart. Each one draws on your own projects and fee history. Mark the ones to use and give each an owner. An outline and team notes keep you and your team working in one place.'},
  {at:()=>{closeAll();OPPSEC='all';go('leads')},target:'.secs',t:'The work you asked for',b:'Your sectors, from remote cabins to childcare, wellness, Indigenous community projects and island arts centres, plus International as a lower priority (Europe and the US first). Each one watches its own sources, and you can switch any off.'},
  {at:()=>{go('leads')},target:'.regcard',t:'Until April',b:'Before your registration, larger and institutional projects are held back. You can hide them, or keep them visible as joint bids with your partner firm. They come back automatically in April.'},
- {at:()=>{go('leads');openOpp('O-31')},target:'#insp',t:'Joint proposals',b:'The Sunshine Coast family and child centre is marked as your bid. Any proposal can become a joint one with your partner firm: shared outline and notes, roles and fees split, and they see only that proposal.'},
+ {at:()=>{go('leads');openOpp('O-31')},target:'#insp',t:'Joint proposals',b:'The Sunshine Coast child and family centre is on your watch list. There’s no open call yet, but the signals and recent calls elsewhere in BC are here, so you can get ready. Any proposal can become a joint one with your partner firm: shared outline and notes, roles and fees split, and they see only that proposal.'},
  {at:()=>{go('visibility')},target:'#view .g4',rate:'visibility',t:'Known worldwide, hard to find locally',b:'You raised this: The Nest has international coverage, but a Vancouver client searching for an architect can’t find the studio. This screen measures the gap, real coverage against local searches, and gives the steps to close it, ticked off as they’re done.'},
  {at:()=>{closeAll();go('network')},target:'.warm .hd',rate:'network',t:'People who’ve already seen your work',b:'The press brought attention but not many follow-ups. Everyone who reacted to the work, plus your developer list, gathers here, and a few warm check-ins go out each week, drafted in your voice for you to send.'},
  {at:()=>{go('network')},target:'.warm + .card .hd',t:'Relationships that bring work',b:'Past clients, builders and engineers, with how long since you last spoke. Red means it has been longer than usual. Each one has a reason to get in touch and a check-in drafted for you.'},
